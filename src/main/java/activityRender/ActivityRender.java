@@ -39,7 +39,7 @@ public class ActivityRender {
 	/**
 	 * Interval between which the image needs to be captured.
 	 */
-	public static int captureInterval = 1000;
+	public static int captureInterval = 100;
 
 	/**
 	 * Temporary folder to store the screenshot.
