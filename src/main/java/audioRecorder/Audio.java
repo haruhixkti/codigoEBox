@@ -21,6 +21,7 @@ public class Audio {
  
     // the line from which audio data is captured
     TargetDataLine line;
+    Audio recorder;
  
     /**
      * Defines an audio format
@@ -39,6 +40,7 @@ public class Audio {
     /**
      * Captures the sound and record into a WAV file
      */
+  
     void start() {
         try {
             AudioFormat format = getAudioFormat();
@@ -81,25 +83,26 @@ public class Audio {
     /**
      * Entry to run the program
      */
+      public void inicializar(){
+     recorder = new Audio();
+     
+        // start recording
+        recorder.start();
+    }
+    public void detener(){
+     recorder.finish();
+    
+    }
+    
     public static void main(String[] args) {
-        final Audio recorder = new Audio();
+        //final Audio recorder = new Audio();
  
         // creates a new thread that waits for a specified
         // of time before stopping
-        Thread stopper = new Thread(new Runnable() {
-            public void run() {
-                try {
-                    Thread.sleep(RECORD_TIME);
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
-                recorder.finish();
-            }
-        });
+  
  
-        stopper.start();
- 
+       
         // start recording
-        recorder.start();
+       // recorder.start();
     }
 }

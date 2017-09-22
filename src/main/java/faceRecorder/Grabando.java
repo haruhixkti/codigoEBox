@@ -17,9 +17,13 @@ import com.xuggle.xuggler.IPixelFormat;
 import com.xuggle.xuggler.IVideoPicture;
 import com.xuggle.xuggler.video.ConverterFactory;
 import com.xuggle.xuggler.video.IConverter;
-import java.awt.Image;
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+
 import javax.swing.ImageIcon;
 /**
  *
@@ -35,6 +39,10 @@ public class Grabando extends javax.swing.JFrame {
     BufferedImage image, image2;
     IConverter converter;
     IVideoPicture frame;
+    Calendar calendario = Calendar.getInstance();
+    int hora, minutos, segundos;
+     int hora2, minutos2, segundos2;
+      public static String store = "FaceRecorderTemporal";
     
     /**
      * Creates new form Grabando
@@ -91,10 +99,21 @@ public class Grabando extends javax.swing.JFrame {
         // TODO add your handling code here:
               if(!isRunning){
             isRunning = true;
+                 File f = new File(store);
+		if(!f.exists()){
+			f.mkdir();
+                        System.out.println("Se creo directorio");
+		}
+             Calendar calendario = new GregorianCalendar();
             new VideoFeedTaker().start();
         }
         else{
             isRunning = false;
+            hora2 =calendario.get(Calendar.HOUR_OF_DAY);
+            minutos2 = calendario.get(Calendar.MINUTE);
+                segundos2 = calendario.get(Calendar.SECOND);
+                  System.out.println(hora + ":" + minutos + ":" + segundos);
+                  System.out.println(hora2 + ":" + minutos2 + ":" + segundos2);
         }
     }//GEN-LAST:event_btnInicioActionPerformed
 
@@ -143,7 +162,8 @@ public class Grabando extends javax.swing.JFrame {
             
 
             webcam = Webcam.getDefault();
-            webcam.setViewSize(size);
+              webcam.setViewSize(new Dimension(320,240));
+//webcam.setViewSize(size);
             webcam.open(true);
             System.out.println("Se debio haber abierto la camara");
             start = System.currentTimeMillis();
@@ -153,6 +173,10 @@ public class Grabando extends javax.swing.JFrame {
                 try {
                    image = ConverterFactory.convertToType(webcam.getImage(), BufferedImage.TYPE_3BYTE_BGR);
                    image2 = webcam.getImage();
+                   hora =calendario.get(Calendar.HOUR_OF_DAY);
+                   minutos = calendario.get(Calendar.MINUTE);
+                   segundos = calendario.get(Calendar.SECOND);
+                   ImageIO.write(image2, "jpg", new File("./"+store+"/"+System.currentTimeMillis()+".jpg"));
                    pantalla.setIcon(new ImageIcon(image2));
                    converter = ConverterFactory.createConverter(image, IPixelFormat.Type.YUV420P);
                    frame = converter.toPicture(image, (System.currentTimeMillis() - start) * 1000);
@@ -162,11 +186,13 @@ public class Grabando extends javax.swing.JFrame {
 			writer.encodeVideo(0, frame);
 
 			// 10 FPS
-			Thread.sleep(10);
+			Thread.sleep(600);
                         
                 } catch (InterruptedException ex) {
                     //Logger.getLogger(CameraTest.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                }  catch (IOException ex) {
+                       Logger.getLogger(Grabando.class.getName()).log(Level.SEVERE, null, ex);
+                   }
                 i=i+1;
             }
             writer.close();

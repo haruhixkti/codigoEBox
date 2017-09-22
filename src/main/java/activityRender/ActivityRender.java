@@ -9,13 +9,7 @@ package activityRender;
  *
  * @author Katherine
  */
-import static activityRender.Recorder.captureInterval;
-import static activityRender.Recorder.makeVideo;
-import static activityRender.Recorder.record;
-import static activityRender.Recorder.screenHeight;
-import static activityRender.Recorder.screenWidth;
-import static activityRender.Recorder.startRecord;
-import static activityRender.Recorder.store;
+
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Robot;

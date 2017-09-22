@@ -6,6 +6,8 @@
 package principal;
 
 import activityRender.ActivityRender;
+import audioRecorder.Audio;
+import faceRecorder.FaceRecorder;
 import java.net.MalformedURLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,11 +23,13 @@ public class Pestanas extends javax.swing.JFrame {
     public static boolean iPerspectivaActivityRender = false;
     public static boolean dPerspectivaActivityRender = false;
     //captura de audio
-    boolean perspectivaAudioRecorder = false;
+    Audio audio;
+    
     public static boolean iPerspectivaAudioRecorder = false;
     public static boolean dPerspectivaAudioRecorder = false;
     //captura con videocam
-    boolean perspectivaFaceRecorder = false;
+    FaceRecorder faceRecorder;
+    boolean perspectivaFaceRecorder = true;
     public static boolean iFaceRecorder = false;
     public static boolean dFaceRecorder = false;
     
@@ -88,7 +92,7 @@ public class Pestanas extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(189, Short.MAX_VALUE)
+                .addContainerGap(180, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(btnDetener, javax.swing.GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE)
                     .addComponent(btnIniciar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -126,10 +130,16 @@ public class Pestanas extends javax.swing.JFrame {
         //captura webcam y audio
         if(perspectivaFaceRecorder){
         //iniciarPerspectiva
+        
+        faceRecorder = new FaceRecorder();
+        audio = new Audio();
+        faceRecorder.inicializar();
+        audio.inicializar();
+        
         }
-        while(perspectivaFaceRecorder == true && iFaceRecorder == false && iPerspectivaAudioRecorder == false){
+        /*while(perspectivaFaceRecorder == true && iFaceRecorder == false && iPerspectivaAudioRecorder == false){
             System.out.println("Esperando a iniciar Face Recorder y audio");
-        }
+        }*/
         
         
         
@@ -162,10 +172,12 @@ public class Pestanas extends javax.swing.JFrame {
         //captura webcam y audio
         if(perspectivaFaceRecorder){
         //iniciarPerspectiva
+        faceRecorder.detener();
+        audio.detener();
         }
-        while(perspectivaFaceRecorder == true && dFaceRecorder == false && iPerspectivaAudioRecorder == false){
+        /*while(perspectivaFaceRecorder == true && dFaceRecorder == false && iPerspectivaAudioRecorder == false){
             System.out.println("Esperando a detener Face Recorder y audio");
-        }
+        }*/
         
         
             System.out.println("Captura detenida");
