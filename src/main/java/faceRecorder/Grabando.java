@@ -118,7 +118,7 @@ public class Grabando extends javax.swing.JFrame {
 			f.mkdir();
                         System.out.println("Se creo directorio");
 		}
-             Calendar calendario = new GregorianCalendar();
+           
             new VideoFeedTaker().start();
         }
         else{
@@ -128,11 +128,7 @@ public class Grabando extends javax.swing.JFrame {
                   } catch (MalformedURLException ex) {
                       Logger.getLogger(Grabando.class.getName()).log(Level.SEVERE, null, ex);
                   }
-            hora2 =calendario.get(Calendar.HOUR_OF_DAY);
-            minutos2 = calendario.get(Calendar.MINUTE);
-                segundos2 = calendario.get(Calendar.SECOND);
-                  System.out.println(hora + ":" + minutos + ":" + segundos);
-                  System.out.println(hora2 + ":" + minutos2 + ":" + segundos2);
+    
         }
     }//GEN-LAST:event_btnInicioActionPerformed
         	public static void makeVideo(String movFile) throws MalformedURLException {
