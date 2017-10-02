@@ -5,10 +5,13 @@
  */
 package player;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.Timer;
 
 /**
  *
@@ -17,7 +20,8 @@ import javax.swing.JLabel;
 public class TestVideo extends javax.swing.JFrame {
 public static String store = "FaceRecorderTemporal";
  boolean isRunning = false;
- public static int captureInterval = 100;
+ public static int captureInterval = 40;
+ int time = 0;
     /**
      * Creates new form TestVideo
      */
@@ -37,6 +41,7 @@ public static String store = "FaceRecorderTemporal";
         canvas1 = new java.awt.Canvas();
         video = new javax.swing.JLabel();
         btnIniciar = new javax.swing.JButton();
+        player = new javax.swing.JProgressBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -52,33 +57,42 @@ public static String store = "FaceRecorderTemporal";
             }
         });
 
+        player.setMaximum(10);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(958, Short.MAX_VALUE)
                 .addComponent(canvas1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(41, 41, 41))
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(video, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(118, 118, 118)
-                .addComponent(btnIniciar)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(241, 241, 241)
+                        .addComponent(video, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(418, 418, 418)
+                        .addComponent(btnIniciar)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(player, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(video, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(canvas1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(canvas1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(12, 12, 12)
+                .addComponent(player, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(27, 27, 27)
                 .addComponent(btnIniciar)
-                .addGap(54, 54, 54))
+                .addContainerGap())
         );
 
         pack();
@@ -89,8 +103,34 @@ public static String store = "FaceRecorderTemporal";
     }//GEN-LAST:event_btnIniciarActionPerformed
 
     private void btnIniciarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnIniciarMouseClicked
+        if(player.getValue()!=0){
+         player.setValue(0);
+         time=0;
+        }
+        
         isRunning = true;
-        new VideoFeedTaker().start();
+       new VideoFeedTaker().start();
+       //getCurrent
+      
+       player.setMinimum(0);
+      // player.setMaximum(10);
+       //player.setStringPainted(true);
+       player.setIndeterminate(true);
+         final Timer t = new Timer(1000, new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          
+            if (isRunning == false) {
+            //    if (time == 10) {
+              ((Timer) e.getSource()).stop();
+              player.setIndeterminate(false);
+             
+            }
+             time+=1;
+          player.setValue(player.getValue() + 1);
+            System.out.println("timpo: "+player.getValue() );
+        }
+    });
+    t.start();
     }//GEN-LAST:event_btnIniciarMouseClicked
 
     /**
@@ -139,10 +179,10 @@ public static String store = "FaceRecorderTemporal";
                 while(isRunning){
                                 
                    try {
-                       System.out.println("i: "+i);
-                       System.out.println("path: "+fileLst[i].getAbsolutePath());
-                        icon = new ImageIcon(fileLst[i].getAbsolutePath());
-                        video.setIcon(icon);
+                       //System.out.println("i: "+i);
+                     //  System.out.println("path: "+fileLst[i].getAbsolutePath());
+                       icon = new ImageIcon(fileLst[i].getAbsolutePath());
+                       video.setIcon(icon);
                        if(i==fileLst.length-1){
                        isRunning=false;
                        }
@@ -164,6 +204,7 @@ public static String store = "FaceRecorderTemporal";
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnIniciar;
     private java.awt.Canvas canvas1;
+    private javax.swing.JProgressBar player;
     private javax.swing.JLabel video;
     // End of variables declaration//GEN-END:variables
 }

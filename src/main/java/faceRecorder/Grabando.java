@@ -45,18 +45,19 @@ public class Grabando extends javax.swing.JFrame {
     IConverter converter;
     IVideoPicture frame;
     Calendar calendario = Calendar.getInstance();
-    int hora, minutos, segundos;
-     int hora2, minutos2, segundos2;
-      public static String store = "FaceRecorderTemporal";
+    int cantidadFrame = 0;
+    public static String store = "FaceRecorderTemporal";
+      // 10 FPS Thread.sleep(100);
+      // 20 FPS -> (50)
+      // 25 FPS -> (40)
+    public static int captureInterval = 40;
       
-      public static int captureInterval = 100;
-      
-      public static int screenWidth = 320;
+    public static int screenWidth = 320;
 
 	/**
 	 * Screen Height.
 	 */
-	public static int screenHeight = 240;
+    public static int screenHeight = 240;
     
     /**
      * Creates new form Grabando
@@ -198,22 +199,23 @@ public class Grabando extends javax.swing.JFrame {
             
 
             webcam = Webcam.getDefault();
+            
               webcam.setViewSize(new Dimension(320,240));
 //webcam.setViewSize(size);
             webcam.open(true);
             System.out.println("Se debio haber abierto la camara");
             start = System.currentTimeMillis();
             int i=0;
-             hora =calendario.get(Calendar.HOUR_OF_DAY);
-                   minutos = calendario.get(Calendar.MINUTE);
-                   segundos = calendario.get(Calendar.SECOND);
+            
             while(isRunning){
           
                 try {
                    image = ConverterFactory.convertToType(webcam.getImage(), BufferedImage.TYPE_3BYTE_BGR);
                    image2 = webcam.getImage();
-                  
+                   cantidadFrame+=1;
                    ImageIO.write(image2, "jpg", new File("./"+store+"/"+System.currentTimeMillis()+".jpg"));
+                   //ImageIO.write(image2, "jpg", new File("./"+store+"/"+cantidadFrame+".jpg"));
+                   
                    pantalla.setIcon(new ImageIcon(image2));
                    converter = ConverterFactory.createConverter(image, IPixelFormat.Type.YUV420P);
                    frame = converter.toPicture(image, (System.currentTimeMillis() - start) * 1000);
@@ -222,7 +224,7 @@ public class Grabando extends javax.swing.JFrame {
 
 			writer.encodeVideo(0, frame);
 
-			// 10 FPS Thread.sleep(100);
+			
 			Thread.sleep(captureInterval);
                         
                 } catch (InterruptedException ex) {
@@ -235,6 +237,9 @@ public class Grabando extends javax.swing.JFrame {
             writer.close();
 
 		System.out.println("Video recorded in file: " + file.getAbsolutePath());
+                System.out.println("Cantidad de frames: "+ cantidadFrame);
+                int tiempo = cantidadFrame/25;
+                System.out.println("Segundos que deberia durar: "+tiempo+ " segundos");
         }
     
     }
