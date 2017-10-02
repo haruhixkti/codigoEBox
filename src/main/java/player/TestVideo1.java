@@ -20,14 +20,39 @@ import javax.swing.Timer;
  * @author Katherine
  */
 public class TestVideo1 extends javax.swing.JFrame {
+//path de las perspectivas    
 public static String store = "FaceRecorderTemporal";
+//variable que permite detener o iniciar la reproducción de las perspectivas
 boolean isRunning = false;
+//FPS
 public static int captureInterval = 40;
-public int time = 0;
+public static int fPS = 25;
+
+public int tiempoVideoTranscurrido = 0;
+//variable que permite habilitar o deshabilitar el jslider
 public boolean enable = true;
-public int i =0;
+//frames que han sido mostrados
+public int frameSegundo =0;
+//variable que permite setear los valores iniciales
 public boolean primerInicio = true;
-public boolean pause = false;
+//variable que permite detener el video
+public boolean detener = false;
+//tiempo de duración de la muestra
+public int tiempoDuracionMuestra = 12;
+
+public int contadorFrameSegundo;
+
+public File f;   
+public File[] fileLst;
+public ImageIcon icon; 
+
+//frame x segundo
+public Hashtable<Integer, Integer> FPS = new Hashtable<Integer, Integer>();
+
+//tags
+public Hashtable<Integer, JLabel> tag = new Hashtable<Integer, JLabel>();
+
+public int posTagManual;
       /**
      * Creates new form TestVideo
      */
@@ -51,10 +76,8 @@ public boolean pause = false;
         player = new javax.swing.JSlider();
         tagManual = new javax.swing.JSlider();
         btnDetener = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        retrocederSegundo = new javax.swing.JButton();
+        avanzarSegundo = new javax.swing.JButton();
         btnPausa = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -129,19 +152,15 @@ public boolean pause = false;
         });
 
         btnDetener.setText("detener");
-
-        jButton1.setText("<<");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+        btnDetener.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnDetenerMouseClicked(evt);
             }
         });
 
-        jButton2.setText("<");
+        retrocederSegundo.setText("<");
 
-        jButton3.setText(">");
-
-        jButton4.setText(">>");
+        avanzarSegundo.setText(">");
 
         btnPausa.setText("pausar");
         btnPausa.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -155,10 +174,8 @@ public boolean pause = false;
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(170, 170, 170)
-                .addComponent(jButton1)
-                .addGap(49, 49, 49)
-                .addComponent(jButton2)
+                .addGap(268, 268, 268)
+                .addComponent(retrocederSegundo)
                 .addGap(85, 85, 85)
                 .addComponent(btnIniciar)
                 .addGap(32, 32, 32)
@@ -166,9 +183,7 @@ public boolean pause = false;
                 .addGap(29, 29, 29)
                 .addComponent(btnDetener)
                 .addGap(48, 48, 48)
-                .addComponent(jButton3)
-                .addGap(55, 55, 55)
-                .addComponent(jButton4)
+                .addComponent(avanzarSegundo)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(29, Short.MAX_VALUE)
@@ -209,10 +224,8 @@ public boolean pause = false;
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnIniciar)
                     .addComponent(btnDetener)
-                    .addComponent(jButton2)
-                    .addComponent(jButton1)
-                    .addComponent(jButton3)
-                    .addComponent(jButton4)
+                    .addComponent(retrocederSegundo)
+                    .addComponent(avanzarSegundo)
                     .addComponent(btnPausa))
                 .addContainerGap())
         );
@@ -230,19 +243,25 @@ public boolean pause = false;
 	labels.put(5, new JLabel("Media"));
 	labels.put(6, new JLabel("Rápida"));
 	tagsAutomatico.setLabelTable(labels);*/
-        pause = false;
-        if(primerInicio){player.setMaximum(11);
-        tagsAutomatico.setMaximum(11);
-        tagManual.setMaximum(11);
-        //primerInicio= false;
+        
+        detener = false;
+        //Se determina si es el primer inicio para determinar el largo y la división de las lineas de tiempoDuracionMuestra
+        if(primerInicio){
+            
+            player.setMaximum(tiempoDuracionMuestra);
+            tagsAutomatico.setMaximum(tiempoDuracionMuestra);
+            tagManual.setMaximum(tiempoDuracionMuestra);
+            primerInicio= false;
+        
         }
         
         if(enable){
+            
             isRunning= true;
-        enable = false;
-        player.setEnabled(false);
-        tagsAutomatico.setEnabled(false);
-        tagManual.setEnabled(false);
+            enable = false;
+            player.setEnabled(false);
+            tagsAutomatico.setEnabled(false);
+            tagManual.setEnabled(false);
         
         }
         else
@@ -253,28 +272,42 @@ public boolean pause = false;
             tagsAutomatico.setEnabled(true);
             tagManual.setEnabled(true);
         }
-        if(primerInicio){new VideoFeedTaker().start();}
-        
+        ///SE INICIA LA REPRODUCCIÓN DE MUESTRAS
+        new VideoFeedTaker().start();
+        ///1000-> 1 acción cada 1 segundo
         final Timer t = new Timer(1000, new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-            time=time+1;
-            if(time == 12 || pause == true){
-            ((Timer) e.getSource()).stop();
-          }
-            player.setValue(time);
-            tagsAutomatico.setValue(time);
-            tagManual.setValue(time);
             
+            if(tiempoVideoTranscurrido == tiempoDuracionMuestra || detener == true){
+                    //se detiene linea de tiempo
+                    ((Timer) e.getSource()).stop();
+          } else{
+                tiempoVideoTranscurrido=tiempoVideoTranscurrido+1;
+                player.setValue(tiempoVideoTranscurrido);
+                tagsAutomatico.setValue(tiempoVideoTranscurrido);
+                tagManual.setValue(tiempoVideoTranscurrido);
+                FPS.put(tiempoVideoTranscurrido, frameSegundo);
+                
+                System.out.println("Al segundo: "+ tiempoVideoTranscurrido + " han pasado "+ frameSegundo+ " frames");
+            }
             
-        
-        }
+            }
     });
     t.start();
     }//GEN-LAST:event_btnIniciarMouseClicked
 
     private void tagsAutomaticoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tagsAutomaticoStateChanged
-        // TODO add your handling code here:
-        System.out.println("valor: "+ tagsAutomatico.getValue());
+        //CAPTURA   LINEA DE TIEMPO AUTOMATICA
+        if(detener){
+            System.out.println("[Linea automatica] valor: "+ tagsAutomatico.getValue());
+            System.out.println("frame: "+FPS.get(tiempoVideoTranscurrido));
+            //asignar valores
+            tiempoVideoTranscurrido =  tagsAutomatico.getValue();
+            frameSegundo = tiempoVideoTranscurrido * fPS;
+            
+        }
+        
+        
     }//GEN-LAST:event_tagsAutomaticoStateChanged
 
     private void tagsAutomaticoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tagsAutomaticoMouseClicked
@@ -287,7 +320,9 @@ public boolean pause = false;
     }//GEN-LAST:event_tagsAutomaticoMouseClicked
 
     private void playerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_playerStateChanged
-        // TODO add your handling code here:
+            //CAPTURA   LINEA DE TIEMPO 
+       if(detener){ System.out.println("[Linea tiempo] valor: "+ player.getValue());}
+        
     }//GEN-LAST:event_playerStateChanged
 
     private void playerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_playerMouseClicked
@@ -295,28 +330,78 @@ public boolean pause = false;
     }//GEN-LAST:event_playerMouseClicked
 
     private void tagManualStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tagManualStateChanged
-        // TODO add your handling code here:
+        //CAPTURA   LINEA DE TIEMPO MANUAL
+   
+        if(detener)
+        {System.out.println("[Linea manual] valor: "+ tagManual.getValue());
+        posTagManual = tagManual.getValue();
+        
+        }
     }//GEN-LAST:event_tagManualStateChanged
 
     private void tagManualMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tagManualMouseClicked
-        // TODO add your handling code here:
+        // TAG MANUAL
+       for (int i = 0; i < tiempoDuracionMuestra; i++) {
+            if(i!=posTagManual){
+            tag.put(i,  new JLabel(String.valueOf(i)));
+            
+            }
+            
+        }
+       if(detener){
+        if(SwingUtilities.isRightMouseButton(evt)){
+        
+                tag.put(posTagManual,  new JLabel("Tag"));
+	        System.out.println("Hice clik con el derecho");
+                tagManual.setLabelTable(tag);
+        }
+       
+       }
+        
+        
+        
     }//GEN-LAST:event_tagManualMouseClicked
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
-
     private void btnPausaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPausaMouseClicked
-        // TODO add your handling code here:
+        //PAUSA
         
+        //detener proyección de frames
         isRunning= false;
+        //habilitar lineas de tiempo
         player.setEnabled(true);
         tagsAutomatico.setEnabled(true);
         tagManual.setEnabled(true);
-        pause = true;
+        //detener avance linea de tiempo
+        detener = true;
+        
         enable=true;
          
     }//GEN-LAST:event_btnPausaMouseClicked
+
+    private void btnDetenerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDetenerMouseClicked
+          //DETENER
+          //detener
+          //detener proyección de frames
+        isRunning= false;
+        //habilitar lineas de tiempo
+        player.setEnabled(true);
+        tagsAutomatico.setEnabled(true);
+        tagManual.setEnabled(true);
+        //detener avance linea de tiempo
+        detener = true;
+        
+        enable=true;
+        
+        //reiniciar valores
+        tiempoVideoTranscurrido = 0;
+        frameSegundo = 0;
+        player.setValue(tiempoVideoTranscurrido);
+        tagsAutomatico.setValue(tiempoVideoTranscurrido);
+        tagManual.setValue(tiempoVideoTranscurrido);
+        icon = new ImageIcon(fileLst[frameSegundo].getAbsolutePath());
+        video.setIcon(icon);
+        
+    }//GEN-LAST:event_btnDetenerMouseClicked
 
     /**
      * @param args the command line arguments
@@ -356,23 +441,23 @@ public boolean pause = false;
         class VideoFeedTaker extends Thread{
            @Override
         public void run() {
-               System.out.println("Entre al hilo");
-               File f = new File(store);
-		File[] fileLst = f.listFiles();
-                System.out.println("cantidad de imagenes: "+ fileLst.length);
-               
-                ImageIcon icon;
-                while(isRunning){
+            System.out.println("Entre al hilo");
+            f = new File(store);
+            fileLst = f.listFiles();
+            
+            System.out.println("cantidad de imagenes: "+ fileLst.length);
+            while(isRunning){
                                 
                    try {
-                       //System.out.println("i: "+i);
-                     //  System.out.println("path: "+fileLst[i].getAbsolutePath());
-                       icon = new ImageIcon(fileLst[i].getAbsolutePath());
+                       //System.out.println("frameSegundo: "+frameSegundo);
+                     //  System.out.println("path: "+fileLst[frameSegundo].getAbsolutePath());
+                       icon = new ImageIcon(fileLst[frameSegundo].getAbsolutePath());
                        video.setIcon(icon);
-                       if(i==fileLst.length-1){
+                       if(frameSegundo==fileLst.length-1){
                        isRunning=false;
+                       //detener = true;
                        }
-                       i+=1;
+                       frameSegundo+=1;
                 
                    
 			// 10 FPS Thread.sleep(100);
@@ -389,15 +474,13 @@ public boolean pause = false;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton avanzarSegundo;
     private javax.swing.JButton btnDetener;
     private javax.swing.JButton btnIniciar;
     private javax.swing.JButton btnPausa;
     private java.awt.Canvas canvas1;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JSlider player;
+    private javax.swing.JButton retrocederSegundo;
     private javax.swing.JSlider tagManual;
     private javax.swing.JSlider tagsAutomatico;
     private javax.swing.JLabel video;
