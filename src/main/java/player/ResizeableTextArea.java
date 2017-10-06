@@ -44,10 +44,15 @@ public class ResizeableTextArea extends JPanel  {
        System.out.println("CUARTO EVENTO: paintComponent");
        //el cuadrado que se muestra antes de que aparezca el jtext
       super.paintComponent(g);
+     // 
       if (drawRect) {
           System.out.println(" iF paintComponent IF");
          g.setColor(RECT_COLOR);
          g.drawRect(x, y, width, height);         
+      }
+      else{
+          System.out.println("Creando textArea");
+          
       }
    }
      @Override
@@ -63,6 +68,7 @@ public class ResizeableTextArea extends JPanel  {
       public void mousePressed(MouseEvent e) {
            System.out.println("PRIMER EVENTO: mousePressed");
          //SE CONSIGUE LA POSICIÓN DEL MOUSE (ACA PODRIA LIMITAR EL ESPACIO)
+         
          x = e.getX();
          y = e.getY();
          innerX = x;
@@ -89,6 +95,10 @@ public class ResizeableTextArea extends JPanel  {
          calcBounds(e);
         //cuando el mouse se suelta
          drawRect = false;
+          System.out.println("x: "+ x);
+          System.out.println("y: "+ y);
+          System.out.println("widtg: "+ width);
+          System.out.println("height: "+ height);
          
          scrollPane.setBounds(x, y, width, height);
          
@@ -96,11 +106,9 @@ public class ResizeableTextArea extends JPanel  {
          ResizeableTextArea.this.repaint();
          textArea.setText("tag");
          textArea.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-         //textArea.setEditable(false);
          textArea.setBackground(new java.awt.Color(204,204,255));
          textArea.setOpaque(true);
-         //textArea.setLineWrap(true);
-         //textArea.setWrapStyleWord(true);
+       
          
          
           System.out.println("TEXTO: "+ textArea.getText());
@@ -109,60 +117,41 @@ public class ResizeableTextArea extends JPanel  {
 
       private void calcBounds(MouseEvent e) {
           System.out.println("SEGUNDO EVENTO: calcBounds");
-       //ancho
-       
-       
-       //largo
-       
+           
           
           
-         //largo del cuadro
-         if(Math.min(innerY, e.getY()) + width > PREF_WIDTH){
-         height = 49;
-         y= PREF_WIDTH-49;
-         }
-         else{
-          height = 49;
-         }
          
-         //height = Math.abs(innerY - e.getY());
-          //  PREF_WIDTH = 700; ancho (eje y)
-         //PREF_HEIGHT = 500; largo ( eje x)
+          //eje x
+           if (Math.min(innerX, e.getX()) < 0){
+            x = 0;
+            width = Math.abs(innerX - e.getX());
          
-         if (Math.min(innerX, e.getX()) < 0){
-         x = 0;
          }
-         else if(Math.min(innerX, e.getX())>PREF_HEIGHT){
-         x = PREF_HEIGHT;
+         else if(Math.min(innerX, e.getX()) + width > PREF_WIDTH ){
+
+            x = PREF_WIDTH - width;
+            width = Math.abs(innerX - e.getX());
          }
-         else{
-         x = Math.min(innerX, e.getX()); 
+         else {
+            x = Math.min(innerX, e.getX()); 
+            width = Math.abs(innerX - e.getX());
          }
-         
-            //ancho del cuadro
-        if( Math.min(innerX, e.getX()) + width >PREF_WIDTH){
-        width=PREF_WIDTH-x;
-        }
-        else{ width = Math.abs(innerX - e.getX());}
-        
-        
+
+
+         //eje y
         if(Math.min(innerY, e.getY())<0){
-            y = 0;
+             y = 0;
+             height = 49;
+         }
+        else if(Math.min(innerY, e.getY()) + height > PREF_HEIGHT ){
+            y = PREF_HEIGHT - 53;
+            height = 49;
+         }
+        else{
+            y = Math.min(innerY, e.getY());
+            height = 49;
+            
         }
-        else if (Math.min(innerY, e.getY()) + width > PREF_WIDTH){
-            y = PREF_WIDTH;
-        }
-        else {
-        y = Math.min(innerY, e.getY());
-        }
-         
-         
-   
-          /*System.out.println("width: "+ width);
-          System.out.println("height: "+ height);
-          
-          System.out.println("x:"+x);
-          System.out.println("y: "+ y);*/
       }
 
    }
