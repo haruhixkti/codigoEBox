@@ -19,7 +19,7 @@ import javax.swing.Timer;
  *
  * @author Katherine
  */
-public class TestVideo1 extends javax.swing.JFrame {
+public class TestVideo11 extends javax.swing.JFrame {
 //path de las perspectivas    
 public static String store = "FaceRecorderTemporal";
 //variable que permite detener o iniciar la reproducción de las perspectivas
@@ -56,7 +56,7 @@ public int posTagManual;
       /**
      * Creates new form TestVideo
      */
-    public TestVideo1() {
+    public TestVideo11() {
         initComponents();
     }
 
@@ -82,7 +82,6 @@ public int posTagManual;
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(4, 0), new java.awt.Dimension(4, 0), new java.awt.Dimension(4, 32767));
         filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
         jTextField1 = new javax.swing.JTextField();
-        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -119,10 +118,10 @@ public int posTagManual;
 
         player.setBackground(new java.awt.Color(204, 204, 204));
         player.setForeground(new java.awt.Color(0, 0, 0));
-        player.setMajorTickSpacing(10);
+        player.setMajorTickSpacing(1);
         player.setMaximum(12);
-        player.setMinorTickSpacing(1);
         player.setPaintLabels(true);
+        player.setPaintTicks(true);
         player.setSnapToTicks(true);
         player.setValue(0);
         player.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -173,9 +172,13 @@ public int posTagManual;
             }
         });
 
+        jTextField1.setEditable(false);
         jTextField1.setText("jTextField1");
-
-        jLabel1.setText("jLabel1");
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -203,16 +206,13 @@ public int posTagManual;
                         .addComponent(tagsAutomatico, javax.swing.GroupLayout.PREFERRED_SIZE, 1316, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(tagManual, javax.swing.GroupLayout.PREFERRED_SIZE, 1316, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(canvas1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(41, 41, 41))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(video, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGap(16, 16, 16)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(filler2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(98, 98, 98))
                             .addGroup(layout.createSequentialGroup()
@@ -221,11 +221,12 @@ public int posTagManual;
                                         .addGap(96, 96, 96)
                                         .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGap(137, 137, 137)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                .addGap(74, 74, 74))))))
+                                        .addGap(49, 49, 49)
+                                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(184, 184, 184))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(tagManual, javax.swing.GroupLayout.PREFERRED_SIZE, 1316, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -234,27 +235,22 @@ public int posTagManual;
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(filler2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(20, 20, 20)
-                                .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(56, 56, 56)
-                                .addComponent(canvas1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(42, 42, 42)
-                                .addComponent(jLabel1)))
-                        .addGap(12, 12, 12)
+                        .addGap(20, 20, 20)
+                        .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(27, 27, 27)
                         .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(64, 64, 64))
+                        .addGap(9, 9, 9)
+                        .addComponent(canvas1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(96, 96, 96))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(video, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 116, Short.MAX_VALUE)))
                 .addComponent(player, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(tagsAutomatico, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(tagManual, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(36, 36, 36)
+                .addGap(41, 41, 41)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnIniciar)
                     .addComponent(btnDetener)
@@ -330,29 +326,6 @@ public int posTagManual;
     t.start();
     }//GEN-LAST:event_btnIniciarMouseClicked
 
-    private void tagsAutomaticoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tagsAutomaticoStateChanged
-        //CAPTURA   LINEA DE TIEMPO AUTOMATICA
-        if(detener){
-            System.out.println("[Linea automatica] valor: "+ tagsAutomatico.getValue());
-            System.out.println("frame: "+FPS.get(tiempoVideoTranscurrido));
-            //asignar valores
-            tiempoVideoTranscurrido =  tagsAutomatico.getValue();
-            frameSegundo = tiempoVideoTranscurrido * fPS;
-            
-        }
-        
-        
-    }//GEN-LAST:event_tagsAutomaticoStateChanged
-
-    private void tagsAutomaticoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tagsAutomaticoMouseClicked
-        // TODO add your handling code here:
-        
-        if(SwingUtilities.isRightMouseButton(evt)){
-            System.out.println("Hice clik con el derecho");
-        }
-        
-    }//GEN-LAST:event_tagsAutomaticoMouseClicked
-
     private void playerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_playerStateChanged
             //CAPTURA   LINEA DE TIEMPO 
        if(detener){ System.out.println("[Linea tiempo] valor: "+ player.getValue());}
@@ -362,39 +335,6 @@ public int posTagManual;
     private void playerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_playerMouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_playerMouseClicked
-
-    private void tagManualStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tagManualStateChanged
-        //CAPTURA   LINEA DE TIEMPO MANUAL
-   
-        if(detener)
-        {System.out.println("[Linea manual] valor: "+ tagManual.getValue());
-        posTagManual = tagManual.getValue();
-        
-        }
-    }//GEN-LAST:event_tagManualStateChanged
-
-    private void tagManualMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tagManualMouseClicked
-        // TAG MANUAL
-       for (int i = 0; i < tiempoDuracionMuestra; i++) {
-            if(i!=posTagManual){
-            tag.put(i,  new JLabel(String.valueOf(i)));
-            
-            }
-            
-        }
-       if(detener){
-        if(SwingUtilities.isRightMouseButton(evt)){
-        
-                tag.put(posTagManual,  new JLabel("Tag"));
-	        System.out.println("Hice clik con el derecho");
-                tagManual.setLabelTable(tag);
-        }
-       
-       }
-        
-        
-        
-    }//GEN-LAST:event_tagManualMouseClicked
 
     private void btnPausaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPausaMouseClicked
         //PAUSA
@@ -437,6 +377,63 @@ public int posTagManual;
         
     }//GEN-LAST:event_btnDetenerMouseClicked
 
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void tagsAutomaticoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tagsAutomaticoMouseClicked
+        // TODO add your handling code here:
+
+        if(SwingUtilities.isRightMouseButton(evt)){
+            System.out.println("Hice clik con el derecho");
+        }
+
+    }//GEN-LAST:event_tagsAutomaticoMouseClicked
+
+    private void tagsAutomaticoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tagsAutomaticoStateChanged
+        //CAPTURA   LINEA DE TIEMPO AUTOMATICA
+        if(detener){
+            System.out.println("[Linea automatica] valor: "+ tagsAutomatico.getValue());
+            System.out.println("frame: "+FPS.get(tiempoVideoTranscurrido));
+            //asignar valores
+            tiempoVideoTranscurrido =  tagsAutomatico.getValue();
+            frameSegundo = tiempoVideoTranscurrido * fPS;
+
+        }
+
+    }//GEN-LAST:event_tagsAutomaticoStateChanged
+
+    private void tagManualMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tagManualMouseClicked
+        // TAG MANUAL
+        for (int i = 0; i < tiempoDuracionMuestra; i++) {
+            if(i!=posTagManual){
+                tag.put(i,  new JLabel(String.valueOf(i)));
+
+            }
+
+        }
+        if(detener){
+            if(SwingUtilities.isRightMouseButton(evt)){
+
+                tag.put(posTagManual,  new JLabel("Tag"));
+                System.out.println("Hice clik con el derecho");
+                tagManual.setLabelTable(tag);
+            }
+
+        }
+
+    }//GEN-LAST:event_tagManualMouseClicked
+
+    private void tagManualStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tagManualStateChanged
+        //CAPTURA   LINEA DE TIEMPO MANUAL
+
+        if(detener)
+        {System.out.println("[Linea manual] valor: "+ tagManual.getValue());
+            posTagManual = tagManual.getValue();
+
+        }
+    }//GEN-LAST:event_tagManualStateChanged
+
     /**
      * @param args the command line arguments
      */
@@ -454,21 +451,23 @@ public int posTagManual;
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(TestVideo1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TestVideo11.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(TestVideo1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TestVideo11.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(TestVideo1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TestVideo11.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(TestVideo1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TestVideo11.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new TestVideo1().setVisible(true);
+                new TestVideo11().setVisible(true);
             }
         });
     }
@@ -515,7 +514,6 @@ public int posTagManual;
     private java.awt.Canvas canvas1;
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler2;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JSlider player;
     private javax.swing.JButton retrocederSegundo;

@@ -11,35 +11,77 @@ package player;
  */
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
 @SuppressWarnings("serial")
+
 public class ResizeableTextArea extends JPanel  {
    //tamaño de la pantalla inicial
-    private static final int PREF_WIDTH = 700;
-   private static final int PREF_HEIGHT = 500;
+    private static final int PREF_WIDTH = 800;
+   private static final int PREF_HEIGHT = 800;
    
    private static final int ROWS = 60;
    private static final int COLS = 80;
    //color del borde del cuadrado (antes de soltar el click)
    private static final Color RECT_COLOR = new Color(102,255,255);
    private JLabel textArea = new JLabel();
+   private JLabel textArea2 = new JLabel();
+   int contador = 0;
    //private JTextArea textArea = new JTextArea("tag",ROWS, COLS);
   
-   private JScrollPane scrollPane = new JScrollPane(textArea);
+   private JScrollPane scrollPane = new JScrollPane();
+   private JScrollPane scrollPane2 = new JScrollPane();
+   ArrayList<JScrollPane> arreglo = new ArrayList<>();
+   //private JScrollPane scrollPane = new JScrollPane(textArea);
+   //private JScrollPane scrollPane2 = new JScrollPane(textArea);
    private int x, y, width, height;
    private boolean drawRect = false;
 
    public ResizeableTextArea() {
        System.out.println("ResizeableTextArea()");
-      setLayout(null);
-      add(scrollPane);
+     // setLayout(null);
+     /*for (Car car : cars) {
+        car.drawCar(g);
+    }*/
+    if(contador == 0){
+     crearAgregar();
+         for (int i = 0; i < arreglo.size(); i++) {
+             add(arreglo.get(i));
+         }
+ 
+     }
+     //if(contador == 2){add(scrollPane);}
+     //if(contador == 4){ add(scrollPane2);}
+     
+     /*if(contador == 0){
+     add(scrollPane);
+     add(scrollPane2);
+     }*/
+     
+     
+     
+    
+     
+     
+      
 
       MyMouseAdapter myMouseAdapter = new MyMouseAdapter(); 
       addMouseListener(myMouseAdapter);
       addMouseMotionListener(myMouseAdapter);
    }
-   @Override
+   public void crearAgregar(){
+       System.out.println("Entre a crearAgregar");
+       for (int i = 0; i < 10; i++) {
+           //JScrollPane tag = 
+           arreglo.add(new JScrollPane());
+       }
+   //String nombre = "tag"+ String.valueOf(contador);
+   
+   
+   }
+   
+  @Override
    protected void paintComponent(Graphics g) {
        System.out.println("CUARTO EVENTO: paintComponent");
        //el cuadrado que se muestra antes de que aparezca el jtext
@@ -95,20 +137,20 @@ public class ResizeableTextArea extends JPanel  {
          calcBounds(e);
         //cuando el mouse se suelta
          drawRect = false;
+         
+               
           System.out.println("x: "+ x);
           System.out.println("y: "+ y);
           System.out.println("widtg: "+ width);
           System.out.println("height: "+ height);
+          //crearAgregar();
+          arreglo.get(contador).setBounds(x, y, width, height);
+          arreglo.get(contador).setBackground(new java.awt.Color(204,204,255));
+ 
+         contador = contador+1;
          
-         scrollPane.setBounds(x, y, width, height);
+         //ResizeableTextArea.this.repaint();
          
-         scrollPane.getViewport().revalidate();
-         ResizeableTextArea.this.repaint();
-         textArea.setText("tag");
-         textArea.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-         textArea.setBackground(new java.awt.Color(204,204,255));
-         textArea.setOpaque(true);
-       
          
          
           System.out.println("TEXTO: "+ textArea.getText());
@@ -157,9 +199,12 @@ public class ResizeableTextArea extends JPanel  {
    }
 
    private static void createAndShowUI() {
-       System.out.println("createAndShowUI");
-      JFrame frame = new JFrame("ResizeableTextArea");
-      frame.getContentPane().add(new ResizeableTextArea());
+              System.out.println("createAndShowUI");
+        JFrame frame = new JFrame("ResizeableTextArea");
+        frame.setSize(new Dimension(800, 800));
+        ResizeableTextArea tag = new ResizeableTextArea();
+        frame.getContentPane().add(tag);
+      //frame.getContentPane().add(new ResizeableTextArea());
       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       frame.pack();
       frame.setLocationRelativeTo(null);
