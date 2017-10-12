@@ -13,7 +13,9 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.border.Border;
 /**
  *
  * @author Katherine
@@ -23,11 +25,15 @@ public class moviendo extends javax.swing.JFrame {
   static  final int PREF_WIDTH = 638;
    static   final int PREF_HEIGHT = 193;
    private static final Color RECT_COLOR = new Color(102,255,255);
+   ArrayList<JLabel> arregloTexto = new ArrayList<>();
    ArrayList<JScrollPane> arreglo = new ArrayList<>();
    static private int x, y, width, height;
    static boolean drawRect = false;
     int contador = 0;
    static public javax.swing.JPanel test;
+   static public Color colorTag = new Color(70,121,61,64);
+   static public Color colorReproductor = new Color(38,38,38,1);
+   
     /**
      * Creates new form moviendo
      */
@@ -59,9 +65,12 @@ public class moviendo extends javax.swing.JFrame {
                           };
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+       // setBackground(colorReproductor);
         setBackground(new java.awt.Color(51, 51, 51));
 
         tagPanel.setBackground(new java.awt.Color(204, 255, 153));
+        //tagPanel.setBackground(colorReproductor);
+        
 
         javax.swing.GroupLayout tagPanelLayout = new javax.swing.GroupLayout(tagPanel);
         tagPanel.setLayout(tagPanelLayout);
@@ -106,10 +115,18 @@ public class moviendo extends javax.swing.JFrame {
 ///____________________________________________
         if(contador == 0){
             crearAgregar();
-            for (int i = 0; i < arreglo.size(); i++) {
+            //arregloTexto
+            
+            for (int i = 0; i < arregloTexto.size(); i++) {
+                
+                
+                tagPanel.add(arregloTexto.get(i));
+                
+            }
+            /*for (int i = 0; i < arreglo.size(); i++) {
                 tagPanel.add(arreglo.get(i));
                 //PANEL.add(arreglo.get(i));
-            }
+            }*/
  
      }
         MyMouseAdapter myMouseAdapter = new MyMouseAdapter(); 
@@ -131,9 +148,21 @@ public class moviendo extends javax.swing.JFrame {
     }
    public void crearAgregar(){
        System.out.println("Entre a crearAgregar");
+       Border border = BorderFactory.createLineBorder(Color.BLACK, 1);
+ 
        for (int i = 0; i < 10; i++) {
            //JScrollPane tag = 
-           arreglo.add(new JScrollPane());
+          JLabel txt = new JLabel();
+           txt.setText("tag");
+           txt.setOpaque(true);
+           
+           txt.setBackground(colorTag);
+           txt.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+           txt.setBorder(border);
+
+               
+           arregloTexto.add(txt);
+           //arreglo.add(new JScrollPane());
        }
    
      }
@@ -149,6 +178,7 @@ public class moviendo extends javax.swing.JFrame {
 
         tagPanel = new javax.swing.JPanel();
         PANEL = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(51, 51, 51));
@@ -168,15 +198,26 @@ public class moviendo extends javax.swing.JFrame {
 
         PANEL.setBackground(new java.awt.Color(255, 204, 255));
 
+        jLabel1.setBackground(new java.awt.Color(204, 102, 0));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("jLabel1");
+        jLabel1.setOpaque(true);
+
         javax.swing.GroupLayout PANELLayout = new javax.swing.GroupLayout(PANEL);
         PANEL.setLayout(PANELLayout);
         PANELLayout.setHorizontalGroup(
             PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PANELLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(191, 191, 191))
         );
         PANELLayout.setVerticalGroup(
             PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 208, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PANELLayout.createSequentialGroup()
+                .addContainerGap(100, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addGap(94, 94, 94))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -281,8 +322,10 @@ public class moviendo extends javax.swing.JFrame {
           System.out.println("widtg: "+ width);
           System.out.println("height: "+ height);
           //crearAgregar();
-          arreglo.get(contador).setBounds(x, y, width, height);
-          arreglo.get(contador).setBackground(new java.awt.Color(204,204,255));
+          arregloTexto.get(contador).setBounds(x, y, width, height);
+          //arregloTexto.get(contador).setBackground(new java.awt.Color(204,204,255));
+          //arreglo.get(contador).setBounds(x, y, width, height);
+          //arreglo.get(contador).setBackground(new java.awt.Color(204,204,255));
     
          contador = contador+1;
          
@@ -336,6 +379,7 @@ public class moviendo extends javax.swing.JFrame {
    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel PANEL;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel tagPanel;
     // End of variables declaration//GEN-END:variables
 
