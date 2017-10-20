@@ -272,12 +272,7 @@ public int posTagManual;
     }//GEN-LAST:event_btnIniciarActionPerformed
 
     private void btnIniciarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnIniciarMouseClicked
-        /*Hashtable<Integer, JLabel> labels = new Hashtable<Integer, JLabel>();
-	labels.put(0, new JLabel("Lenta"));
-	labels.put(5, new JLabel("Media"));
-	labels.put(6, new JLabel("Rápida"));
-	tagsAutomatico.setLabelTable(labels);*/
-        
+
         detener = false;
         //Se determina si es el primer inicio para determinar el largo y la división de las lineas de tiempoDuracionMuestra
         if(primerInicio){

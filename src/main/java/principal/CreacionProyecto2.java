@@ -108,7 +108,7 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
         jLabel3.setForeground(new java.awt.Color(117, 117, 117));
         jLabel3.setText("computador");
 
-        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/Imagen1.png"))); // NOI18N
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/Imagen1.png"))); // NOI18N
 
         jButton1.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
         jButton1.setText("Crear proyecto");

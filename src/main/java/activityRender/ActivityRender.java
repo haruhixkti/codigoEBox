@@ -39,50 +39,52 @@ public class ActivityRender {
 	/**
 	 * Interval between which the image needs to be captured.
 	 */
-	public static int captureInterval = 100;
+	public static int captureInterval = 10;
 
 	/**
 	 * Temporary folder to store the screenshot.
 	 */
-	public static String store = "tmp";
+	//public static String store = "imgActivityRender";
 
 	/**
 	 * Status of the recorder.
 	 */
 	public static boolean record = false;
+        boolean isRunning = true;
 
 	/**
 	 * 
 	 */
-        	public static void startRecord() {
-		Thread recordThread = new Thread() {
-			@Override
-			public void run() {
-				Robot rt;
-				int cnt = 0;
-				try {
-					rt = new Robot();
-					while (cnt == 0 || record) {
-						BufferedImage img = rt
-								.createScreenCapture(new Rectangle(screenWidth,
-										screenHeight));
-						ImageIO.write(img, "jpeg", new File("./"+store+"/"
-								+ System.currentTimeMillis() + ".jpeg"));
-						if (cnt == 0) {
-							record = true;
-							cnt = 1;
-						}
-						// System.out.println(record);
-						Thread.sleep(captureInterval);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		};
-		recordThread.start();
-	}
-    	public static void makeVideo(String movFile) throws MalformedURLException {
+        public void startRecord(String store) {
+            Thread recordThread = new Thread() {
+                    @Override
+                    public void run() {
+                        System.out.println("Se comenzo a capturar la pantalla...");
+                            Robot rt;
+                            int cnt = 0;
+                            try {
+                                    rt = new Robot();
+                                    while (isRunning) {
+                                            BufferedImage img = rt
+                                                            .createScreenCapture(new Rectangle(screenWidth,
+                                                                            screenHeight));
+                                            ImageIO.write(img, "jpeg", new File("./"+store+"/"
+                                                            + System.currentTimeMillis() + ".jpeg"));
+                                          
+                                            // System.out.println(record);
+                                            Thread.sleep(captureInterval);
+                                    }
+                            } catch (Exception e) {
+                                    e.printStackTrace();
+                            }
+                    }
+            };
+            recordThread.start();
+    }
+        
+        
+        
+    	public static void makeVideo(String movFile, String store) throws MalformedURLException {
 		System.out
 				.println("#### Easy Capture making video, please wait!!! ####");
 		JpegImagesToMovie imageToMovie = new JpegImagesToMovie();
@@ -102,11 +104,9 @@ public class ActivityRender {
 				imgLst, oml);
 
 	}
-        public void test(){
-            System.out.println("entre");
-        }
+      
         
-        public void inicializar (String path, int numeroMuestra ) throws Exception{
+        public void inicializar (String path, int numeroMuestra, String store ) throws Exception{
         System.out.println("######### Starting Easy Capture Recorder #######");
         	Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 		System.out.println("Your Screen [Width,Height]:" + "["
@@ -120,7 +120,7 @@ public class ActivityRender {
 		if(!f.exists()){
 			f.mkdir();
 		}
-                startRecord();
+                //startRecord();
                 Pestanas.iPerspectivaActivityRender= true;
                 System.out.println("Grabando");
         }
@@ -128,7 +128,7 @@ public class ActivityRender {
         
         record = false;
 		System.out.println("Easy Capture has stopped.");
-		makeVideo(System.currentTimeMillis()+".mov");
+		//makeVideo(System.currentTimeMillis()+".mov");
         Pestanas.dPerspectivaActivityRender = true;
         }
 }

@@ -314,6 +314,8 @@ public int posTagManual;
           } else{
                 tiempoVideoTranscurrido=tiempoVideoTranscurrido+1;
                 player.setValue(tiempoVideoTranscurrido);
+                //player.createStandardLabels(10,2);
+//               System.out.println("BaselineResizeBehavior: "+ player.);
                 tagsAutomatico.setValue(tiempoVideoTranscurrido);
                 tagManual.setValue(tiempoVideoTranscurrido);
                 FPS.put(tiempoVideoTranscurrido, frameSegundo);

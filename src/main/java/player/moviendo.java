@@ -31,16 +31,27 @@ public class moviendo extends javax.swing.JFrame {
    static boolean drawRect = false;
     int contador = 0;
    static public javax.swing.JPanel test;
-   static public Color colorTag = new Color(70,121,61,64);
-   static public Color colorReproductor = new Color(38,38,38,1);
+   static public Color colorTag = new Color(200,230,201);
+   static public Color lineTag = new Color(121,85,72);
+   static public Color colorReproductor = new Color(56,142,60);
    
     /**
      * Creates new form moviendo
      */
     public moviendo() {
        //initComponents(); 
-   PANEL = new javax.swing.JPanel();
-        tagPanel = new javax.swing.JPanel(new BorderLayout()){
+       iniciarComponentes();
+        
+        
+        
+        
+        
+       
+        
+    }
+    private void iniciarComponentes(){
+    PANEL = new javax.swing.JPanel();
+   tagPanel = new javax.swing.JPanel(new BorderLayout()){
                @Override
                 protected void paintComponent(Graphics g) {
                     System.out.println("CUARTO EVENTO: paintComponent");
@@ -49,7 +60,7 @@ public class moviendo extends javax.swing.JFrame {
                   // 
                    if (drawRect) {
                        System.out.println(" iF paintComponent IF");
-                      g.setColor(RECT_COLOR);
+                      g.setColor(lineTag);
                       g.drawRect(x, y, width, height);         
                    }
                    else{
@@ -66,9 +77,9 @@ public class moviendo extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
        // setBackground(colorReproductor);
-        setBackground(new java.awt.Color(51, 51, 51));
+        setBackground(colorReproductor);
 
-        tagPanel.setBackground(new java.awt.Color(204, 255, 153));
+        tagPanel.setBackground(colorReproductor);
         //tagPanel.setBackground(colorReproductor);
         
 
@@ -137,18 +148,14 @@ public class moviendo extends javax.swing.JFrame {
         //PANEL.addMouseMotionListener(myMouseAdapter2);
      
              
-        
-        
-        
-        
-        
-        
-       
-        
+    
+    
     }
+    
    public void crearAgregar(){
        System.out.println("Entre a crearAgregar");
-       Border border = BorderFactory.createLineBorder(Color.BLACK, 1);
+    Color borderTag = new Color(189,189,189);       
+       Border border = BorderFactory.createLineBorder(borderTag, 1);
  
        for (int i = 0; i < 10; i++) {
            //JScrollPane tag = 
@@ -159,6 +166,7 @@ public class moviendo extends javax.swing.JFrame {
            txt.setBackground(colorTag);
            txt.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
            txt.setBorder(border);
+
 
                
            arregloTexto.add(txt);
@@ -183,7 +191,7 @@ public class moviendo extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(51, 51, 51));
 
-        tagPanel.setBackground(new java.awt.Color(204, 255, 153));
+        tagPanel.setBackground(new java.awt.Color(51, 51, 51));
 
         javax.swing.GroupLayout tagPanelLayout = new javax.swing.GroupLayout(tagPanel);
         tagPanel.setLayout(tagPanelLayout);
@@ -232,7 +240,7 @@ public class moviendo extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(PANEL, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tagPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(tagPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();

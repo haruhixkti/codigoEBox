@@ -8,9 +8,11 @@ package principal;
 import com.github.sarxos.webcam.Webcam;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -22,11 +24,18 @@ import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import javax.imageio.ImageIO;
 import java.awt.Robot;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
-
+import javax.swing.ImageIcon;
+import static jmapps.ui.ImageArea.loadImage;
+import org.apache.commons.io.FileUtils;
 /**
  *
  * @author Katherine
@@ -37,20 +46,29 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     public static String storeMuestra = "muestra";
     public static String storeActivityRender = "activityRender";
     public static String storeFaceRecorder = "faceRecorder";
+    public static String storeExternalPerspective = "ExternalPerspective";
     public boolean carpetaPrincipalCreada = false;
     public int cantidadMuestras = 0 ;
-    Webcam webcam;
+    Webcam webcamPC, webcamCelu;
     boolean isRunning = false;
+    boolean repr = true;
     public boolean activityRender = true;
     public boolean faceRecorder = true;
-    BufferedImage image2;
-    Thread t1,t2;
+    public boolean externalPerspective = true;
+    BufferedImage image2, image3;
+    Thread t1,t2,t3;
    int cantidadFrame = 0;
-    final CyclicBarrier gate = new CyclicBarrier(3);
+    final CyclicBarrier gate = new CyclicBarrier(4);
     final CyclicBarrier gate2 = new CyclicBarrier(3);
     long tiempoFaceRecorderi, tiempoActivityRenderi, tiempoFaceRecorderf, tiempoActivityRenderf;
     String codigoMuestra,tiempoTotal;
     
+    public File fA,fF;   
+    public File[] fileLstA, fileLstF;
+    public ImageIcon icon; 
+        //frames que han sido mostrados
+    public int frameSegundoA =0;
+    public int frameSegundoF =0;
            /**
 	 * Screen Width.
 	 */
@@ -62,7 +80,10 @@ public class ObtencionMuestras extends javax.swing.JFrame {
 	 */
 	public static int screenHeight = (int) Toolkit.getDefaultToolkit()
 			.getScreenSize().getHeight();
-
+            //Ancho máximo
+          public static int MAX_WIDTH=320;
+            //Alto máximo
+          public static int MAX_HEIGHT=300;
 	/**
 	 * Interval between which the image needs to be captured.
 	 */
@@ -71,7 +92,8 @@ public class ObtencionMuestras extends javax.swing.JFrame {
       // 25 FPS -> (40)
 	public static int captureInterval = 100;
         public static int fps = 10;
-
+        String nombreCarpeta, nombreMuestraActual;
+        
     
     /**
      * Creates new form VentanaPrincipal
@@ -102,7 +124,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     
     
     */
-     String nombreCarpeta = nombreProyecto+"Muestras";
+     nombreCarpeta = nombreProyecto+"Muestras";
     if(carpetaPrincipalCreada == false){
     //creacion de carpetas desde 0
 
@@ -114,7 +136,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     }
     else{
     //creacion de carpetas de muestra
-        String nombreMuestraActual = nombreCarpeta+"/Muestra"+String.valueOf(cantidadMuestras);
+        nombreMuestraActual = nombreCarpeta+"/Muestra"+String.valueOf(cantidadMuestras);
         File f2 = new File(nombreMuestraActual);
         f2.mkdir();
         System.out.println("se creo el directorio de muestras: "+ nombreMuestraActual);
@@ -130,6 +152,12 @@ public class ObtencionMuestras extends javax.swing.JFrame {
               f3.mkdir();
               System.out.println("se creo el directorio de muestras: "+ nombreMuestraActual+"/"+"storeFaceRecorder");
               storeFaceRecorder = nombreMuestraActual+"/"+"storeFaceRecorder"+"/";
+          }
+          if(externalPerspective){
+              File f3 = new File(nombreMuestraActual+"/"+"storeExternalPerspective");
+              f3.mkdir();
+              System.out.println("se creo el directorio de muestras: "+ nombreMuestraActual+"/"+"storeExternalPerspective");
+              storeExternalPerspective = nombreMuestraActual+"/"+"storeExternalPerspective"+"/";
           }
     
     }
@@ -148,10 +176,16 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         jButtonDetenerMin = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
         jFrameMin1 = new javax.swing.JFrame();
         jPanel7 = new javax.swing.JPanel();
+        Face = new javax.swing.JLabel();
+        Activity = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
+        jLabel22 = new javax.swing.JLabel();
+        jLabel23 = new javax.swing.JLabel();
+        jLabel21 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
@@ -208,46 +242,68 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         jLabel8.setForeground(new java.awt.Color(200, 230, 201));
         jLabel8.setText("00:00:000");
 
+        jLabel20.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        jLabel20.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel20.setText("GRABANDO");
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGap(47, 47, 47)
-                .addComponent(jLabel8)
-                .addContainerGap(48, Short.MAX_VALUE))
-            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel6Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jButtonDetenerMin)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(jButton7)
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButtonDetenerMin)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton7))
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addGap(48, 48, 48)
+                        .addComponent(jLabel8)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(61, 61, 61)
+                .addComponent(jLabel20)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel20)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel8)
-                .addContainerGap(41, Short.MAX_VALUE))
-            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel6Layout.createSequentialGroup()
-                    .addGap(47, 47, 47)
-                    .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButtonDetenerMin)
-                        .addComponent(jButton7))
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonDetenerMin)
+                    .addComponent(jButton7))
+                .addContainerGap())
         );
+
+        jLabel18.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        jLabel18.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel18.setText("Visualización de muestras");
 
         javax.swing.GroupLayout jFrameMinLayout = new javax.swing.GroupLayout(jFrameMin.getContentPane());
         jFrameMin.getContentPane().setLayout(jFrameMinLayout);
         jFrameMinLayout.setHorizontalGroup(
             jFrameMinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jFrameMinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jFrameMinLayout.createSequentialGroup()
+                    .addGap(18, 18, 18)
+                    .addComponent(jLabel18)
+                    .addContainerGap(18, Short.MAX_VALUE)))
         );
         jFrameMinLayout.setVerticalGroup(
             jFrameMinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jFrameMinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jFrameMinLayout.createSequentialGroup()
+                    .addGap(42, 42, 42)
+                    .addComponent(jLabel18)
+                    .addContainerGap(51, Short.MAX_VALUE)))
         );
 
         jFrameMin1.setAlwaysOnTop(true);
@@ -257,26 +313,76 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         jPanel7.setBackground(new java.awt.Color(56, 142, 60));
         jPanel7.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(200, 230, 201)));
 
+        Face.setBackground(new java.awt.Color(255, 153, 51));
+        Face.setOpaque(true);
+
+        Activity.setBackground(new java.awt.Color(255, 204, 204));
+        Activity.setForeground(new java.awt.Color(255, 204, 255));
+        Activity.setOpaque(true);
+
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/icons8-Delete_1.png"))); // NOI18N
+        jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel3MouseClicked(evt);
+            }
+        });
+
+        jLabel22.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
+        jLabel22.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel22.setText("ActivityRender");
+
+        jLabel23.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
+        jLabel23.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel23.setText("FaceRecorder");
+
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel7Layout.createSequentialGroup()
-                .addGap(132, 132, 132)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 344, Short.MAX_VALUE)
-                .addComponent(jLabel4)
-                .addGap(145, 145, 145))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                .addContainerGap(32, Short.MAX_VALUE)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addComponent(Face, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(83, 83, 83)
+                        .addComponent(Activity, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(44, 44, 44))
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addComponent(jLabel22)
+                        .addGap(76, 76, 76)
+                        .addComponent(jLabel3)))
+                .addGap(22, 22, 22))
+            .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel7Layout.createSequentialGroup()
+                    .addGap(100, 100, 100)
+                    .addComponent(jLabel23)
+                    .addContainerGap(571, Short.MAX_VALUE)))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel7Layout.createSequentialGroup()
-                .addGap(105, 105, 105)
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel4))
-                .addContainerGap(247, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel3)
+                        .addGap(18, 18, 18)
+                        .addComponent(Face, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addGap(56, 56, 56)
+                        .addComponent(jLabel22)
+                        .addGap(18, 18, 18)
+                        .addComponent(Activity, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(69, Short.MAX_VALUE))
+            .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel7Layout.createSequentialGroup()
+                    .addGap(42, 42, 42)
+                    .addComponent(jLabel23)
+                    .addContainerGap(318, Short.MAX_VALUE)))
         );
+
+        jLabel21.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
+        jLabel21.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel21.setText("Nombre de la muestra");
 
         javax.swing.GroupLayout jFrameMin1Layout = new javax.swing.GroupLayout(jFrameMin1.getContentPane());
         jFrameMin1.getContentPane().setLayout(jFrameMin1Layout);
@@ -285,12 +391,22 @@ public class ObtencionMuestras extends javax.swing.JFrame {
             .addGroup(jFrameMin1Layout.createSequentialGroup()
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(jFrameMin1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jFrameMin1Layout.createSequentialGroup()
+                    .addGap(238, 238, 238)
+                    .addComponent(jLabel21)
+                    .addContainerGap(347, Short.MAX_VALUE)))
         );
         jFrameMin1Layout.setVerticalGroup(
             jFrameMin1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jFrameMin1Layout.createSequentialGroup()
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(jFrameMin1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jFrameMin1Layout.createSequentialGroup()
+                    .addGap(161, 161, 161)
+                    .addComponent(jLabel21)
+                    .addContainerGap(201, Short.MAX_VALUE)))
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -353,6 +469,11 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         jButton4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
         jButton4.setContentAreaFilled(false);
         jButton4.setOpaque(true);
+        jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton4MouseClicked(evt);
+            }
+        });
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton4ActionPerformed(evt);
@@ -373,6 +494,11 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         jButton5.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
         jButton5.setContentAreaFilled(false);
         jButton5.setFocusPainted(false);
+        jButton5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton5MouseClicked(evt);
+            }
+        });
         jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton5ActionPerformed(evt);
@@ -691,20 +817,56 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         System.out.println("Carpetas creadas");
         
         System.out.println("Se iniciaran los thread");
-        //FACERECORDER
+        //FACERECORDEMSMARTPHONE
+     t3 = new Thread(){
+         @Override
+         public void run(){
+        
+             try {
+                 gate.await();
+                 System.out.println("****** Inicio captura de muestras face Celular ******");
+                 System.out.println("Se debio haber abierto la camara");
+                 long timeFRC = 0;
+                        
+                 
+                
+                while(isRunning){
+                       try {
+                         
+                         
+                         image3 = webcamCelu.getImage();
+                         timeFRC = System.currentTimeMillis();
+                         ImageIO.write(image3, "jpg", new File(storeExternalPerspective+timeFRC+".jpg"));
+                         
+                         Thread.sleep(captureInterval);
+                         
+                         
+                     } catch (InterruptedException ex) {
+                         //Logger.getLogger(CameraTest.class.getName()).log(Level.SEVERE, null, ex);
+                     }  catch (IOException ex) {
+                        // Logger.getLogger(FaceRecorder.class.getName()).log(Level.SEVERE, null, ex);
+                     }
+                     
+                 }
+                 System.out.println("Captura de cara finalizada");
+                 
+             } catch (InterruptedException ex) {
+                 Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
+             } catch (BrokenBarrierException ex) {
+                 Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
+             }
+                 }};
+        //FACERECORDERWEBCAM
          t1 = new Thread(){
          @Override
          public void run(){
         
              try {
                  gate.await();
-                 System.out.println("****** Inicio captura de muestras face ******");
+                 System.out.println("****** Inicio captura de muestras face PC ******");
                  System.out.println("Se debio haber abierto la camara");
                  long timeAR = 0;
-                 tiempoFaceRecorderi = System.currentTimeMillis();
-                
-                 
-                jFrameMin.setSize(198, 83);
+                jFrameMin.setSize(198, 110);
                 GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
                 GraphicsDevice defaultScreen = ge.getDefaultScreenDevice();
                 Rectangle rect = defaultScreen.getDefaultConfiguration().getBounds();
@@ -720,11 +882,12 @@ public class ObtencionMuestras extends javax.swing.JFrame {
                        try {
                          
                          cantidadFrame+=1;
-                         image2 = webcam.getImage();
+                         image2 = webcamPC.getImage();
                          timeAR = System.currentTimeMillis();
                          ImageIO.write(image2, "jpg", new File(storeFaceRecorder+timeAR+".jpg"));
-                         Thread.sleep(captureInterval);
                          calculoTiempo(cantidadFrame);
+                         Thread.sleep(captureInterval);
+                         
                          
                      } catch (InterruptedException ex) {
                          //Logger.getLogger(CameraTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -755,12 +918,13 @@ public class ObtencionMuestras extends javax.swing.JFrame {
                             try {
                                rt = new Robot();
                                     while (isRunning) {
-                                        BufferedImage img = rt
-                                                            .createScreenCapture(new Rectangle(screenWidth,
-                                                                            screenHeight));
-                                            timeAR = System.currentTimeMillis();
-                                            ImageIO.write(img, "jpeg", new File(storeActivityRender
-                                                            + String.valueOf(timeAR) + ".jpeg"));
+                       BufferedImage img = rt.createScreenCapture(new Rectangle(screenWidth,screenHeight));
+                       
+                            timeAR = System.currentTimeMillis();
+                            String name = storeActivityRender + String.valueOf(timeAR) + ".jpeg";
+                            ImageIO.write(img, "jpeg", new File(name));
+                                       
+                            copyImage(name, name);
                                             
                                           
                                             // System.out.println(record);
@@ -780,16 +944,26 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         
     System.out.println("Antes de abrir la camara");
    
-    webcam = Webcam.getDefault();
-    webcam.setViewSize(new Dimension(320,240));
-    webcam.open(true);
-    ;
     
-    if( webcam.isOpen()){
+//webcam = Webcam.getDefault();
+    webcamPC = Webcam.getWebcamByName("HP Truevision HD 0");
+    
+    webcamCelu = Webcam.getWebcamByName("DroidCam Source 3 1");
+    
+    webcamPC.setViewSize(new Dimension(320,240));
+    webcamCelu.setViewSize(new Dimension(320,240));
+    
+    webcamPC.open(true);
+    webcamCelu.open(true);
+    
+    
+    
+    if( webcamPC.isOpen() && webcamCelu.isOpen()){
     System.out.println("Despues de abrir la camara");
     cargando.setText("Grabando");
     t1.start();
     t2.start();
+    t3.start();
     }
     
     
@@ -822,19 +996,21 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         isRunning= false;
         System.out.println("Deteniendo capturas");
          
-         webcam.open(false);
-         webcam.close();
+         webcamPC.open(false);
+         webcamPC.close();
+         webcamCelu.open(false);
+         webcamCelu.close();
         //gate.wait();
         t1.interrupt();
         t2.interrupt();
+        t3.interrupt();
         
         calculoTiempo(cantidadFrame);
         int tiempo = cantidadFrame/10;
                 System.out.println("Segundos que deberia durar: "+tiempo+ " segundos");
                // jLabel6.setText(String.valueOf(tiempo)+" segundos");
         cargando.setText(String.valueOf(tiempo));
-       DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-       model.addRow(new Object[]{codigoMuestra, tiempoTotal});
+       
           
     }//GEN-LAST:event_jButton6ActionPerformed
 
@@ -854,11 +1030,216 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
         // TODO add your handling code here:
         //vista previa
+                jFrameMin1.setSize(823, 391);
+                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                GraphicsDevice defaultScreen = ge.getDefaultScreenDevice();
+                Rectangle rect = defaultScreen.getDefaultConfiguration().getBounds();
+                int x = (int) rect.getMaxX() - jFrameMin1.getWidth();
+                int y = (int) rect.getMaxY() - jFrameMin1.getHeight();
+                //jFrameMin1.setLocation(x, y);
+                jFrameMin1.setVisible(true);
+                setVisible(false);
+                repr = true;
         
+            Thread ta = new Thread(){
+             public void run(){
+                 try {
+                     gate2.await();
+                     //do stuff 
+                        System.out.println("Entre al hilo Vista previa activyty");
+                        fA = new File(storeActivityRender);
+                        fileLstA = fA.listFiles();
+            
+            System.out.println("cantidad de imagenes: "+ fileLstA.length);
+            while(repr){
+                System.out.println("Entre al while");
+                                
+                   try {
+                    
+                       icon = new ImageIcon(fileLstA[frameSegundoA].getAbsolutePath());
+                       Activity.setIcon(icon);
+                       if(frameSegundoA==fileLstA.length-1){
+                       repr=false;
+                       //detener = true;
+                       }
+                       frameSegundoA+=1;
+                
+                   
+			// 10 FPS Thread.sleep(100);
+			Thread.sleep(captureInterval);
+                        
+                } catch (InterruptedException ex) {
+                    //Logger.getLogger(CameraTest.class.getName()).log(Level.SEVERE, null, ex);
+                } 
+                
+                }
+                    setVisible(true);
+                    jFrameMin1.setVisible(false);
+                 } catch (InterruptedException ex) {
+                     Logger.getLogger(ObtencionMuestras.class.getName()).log(Level.SEVERE, null, ex);
+                 } catch (BrokenBarrierException ex) {
+                     Logger.getLogger(ObtencionMuestras.class.getName()).log(Level.SEVERE, null, ex);
+                 }
+    }};
+        Thread tb = new Thread(){
+            public void run(){
+                try {
+                    gate2.await();
+                    //do stuff   
+                        System.out.println("Entre al hilo");
+                        fF = new File(storeFaceRecorder);
+                        fileLstF = fF.listFiles();
+            
+            System.out.println("cantidad de imagenes: "+ fileLstF.length);
+            while(repr){
+                       System.out.println("Entre al while2");         
+                   try {
+                    
+                       icon = new ImageIcon(fileLstF[frameSegundoF].getAbsolutePath());
+                       Face.setIcon(icon);
+                       if(frameSegundoF==fileLstF.length-1){
+                       repr=false;
+                       //detener = true;
+                       }
+                       frameSegundoF+=1;
+                
+                   
+			// 10 FPS Thread.sleep(100);
+			Thread.sleep(captureInterval);
+                        
+                } catch (InterruptedException ex) {
+                    //Logger.getLogger(CameraTest.class.getName()).log(Level.SEVERE, null, ex);
+                } 
+                
+                }
+                    setVisible(true);
+                    jFrameMin1.setVisible(false);
+                    
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(ObtencionMuestras.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (BrokenBarrierException ex) {
+                    Logger.getLogger(ObtencionMuestras.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }};
+
+            ta.start();
+            tb.start();
+
+        try {
+            // At this point, t1 and t2 are blocking on the gate.
+// Since we gave "3" as the argument, gate is not opened yet.
+// Now if we block on the gate from the main thread, it will open
+// and all threads will start to do stuff!
+
+        gate2.await();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(ObtencionMuestras.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (BrokenBarrierException ex) {
+            Logger.getLogger(ObtencionMuestras.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println("all threads started");
         
         
         
     }//GEN-LAST:event_jButton3MouseClicked
+
+    private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
+        // TODO add your handling code here:
+        setVisible(true);
+        jFrameMin1.setVisible(false);
+        repr = true;
+        frameSegundoA =0;
+        frameSegundoF =0;
+        
+        
+    }//GEN-LAST:event_jLabel3MouseClicked
+
+    private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
+        // TODO add your handling code here:
+        
+        
+       DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+       model.addRow(new Object[]{codigoMuestra, tiempoTotal});
+       
+    }//GEN-LAST:event_jButton4MouseClicked
+
+    private void jButton5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseClicked
+        // TODO add your handling code here:
+        System.out.println("nombreCarpeta: "+ nombreMuestraActual);
+        Path path = Paths.get(nombreMuestraActual);
+                try {
+            //Files.delete(path);
+            
+            FileUtils.deleteDirectory(new File(nombreMuestraActual));
+            if(cantidadMuestras-1!=0){
+            cantidadMuestras = cantidadMuestras-1;}
+            else{
+            cantidadMuestras = 0;
+            }
+        } catch (NoSuchFileException x) {
+            System.err.format("%s: no such" + " file or directory%n", path);
+        } catch (DirectoryNotEmptyException x) {
+            System.err.format("%s not empty%n", path);
+        } catch (IOException x) {
+            // File permission problems are caught here.
+            System.err.println(x);
+        }
+    }//GEN-LAST:event_jButton5MouseClicked
+public static void copyImage(String filePath, String copyPath) {
+        BufferedImage bimage = loadImage(filePath);
+        if(bimage.getHeight()>bimage.getWidth()){
+            int heigt = (bimage.getHeight() * MAX_WIDTH) / bimage.getWidth();
+            bimage = resize(bimage, MAX_WIDTH, heigt);
+            int width = (bimage.getWidth() * MAX_HEIGHT) / bimage.getHeight();
+            bimage = resize(bimage, width, MAX_HEIGHT);
+        }else{
+            int width = (bimage.getWidth() * MAX_HEIGHT) / bimage.getHeight();
+            bimage = resize(bimage, width, MAX_HEIGHT);
+            int heigt = (bimage.getHeight() * MAX_WIDTH) / bimage.getWidth();
+            bimage = resize(bimage, MAX_WIDTH, heigt);
+        }
+        saveImage(bimage, copyPath);
+    }
+    /*
+    Este método se utiliza para cargar la imagen de disco
+    */
+    public static BufferedImage loadImage(String pathName) {
+        BufferedImage bimage = null;
+        try {
+            bimage = ImageIO.read(new File(pathName));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return bimage;
+    }
+ 
+    /*
+    Este método se utiliza para almacenar la imagen en disco
+    */
+    public static void saveImage(BufferedImage bufferedImage, String pathName) {
+        try {
+            String format = (pathName.endsWith(".png")) ? "png" : "jpg";
+            File file =new File(pathName);
+            file.getParentFile().mkdirs();
+            ImageIO.write(bufferedImage, format, file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+     
+    /*
+    Este método se utiliza para redimensionar la imagen
+    */
+    public static BufferedImage resize(BufferedImage bufferedImage, int newW, int newH) {
+        int w = bufferedImage.getWidth();
+        int h = bufferedImage.getHeight();
+        BufferedImage bufim = new BufferedImage(newW, newH, bufferedImage.getType());
+        Graphics2D g = bufim.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g.drawImage(bufferedImage, 0, 0, newW, newH, 0, 0, w, h, null);
+        g.dispose();
+        return bufim;
+    }
 
     public String calculoTiempo(int frameSegundo){
     
@@ -1008,6 +1389,8 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel Activity;
+    private javax.swing.JLabel Face;
     private javax.swing.JLabel cargando;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
@@ -1026,10 +1409,14 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;

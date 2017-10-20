@@ -23,16 +23,26 @@ import java.awt.event.MouseAdapter;
 import javax.swing.JSlider;
 import javax.swing.Painter;
 import javax.swing.UIDefaults;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.Hashtable;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+
 
 /**
  *
  * @author Katherine
  */
 public class Reproductor extends javax.swing.JFrame {
-
+    
     /**
      * Creates new form Reproductor
      */
+    
    //CONSTANTES DE COLOR
    
    //TAG
@@ -54,7 +64,43 @@ public class Reproductor extends javax.swing.JFrame {
     static  final int PREF_WIDTH = 1290;
     static   final int PREF_HEIGHT = 49;
     static   final int tamanoTag = 52;
+  
     
+    //REPRODUCTOR
+   
+    //path de las perspectivas    
+    public static String store = "FaceRecorderTemporal";
+    //variable que permite detener o iniciar la reproducción de las perspectivas
+    boolean isRunning = false;
+    //FPS
+    public static int captureInterval = 40;
+    public static int fPS = 25;
+
+    public int tiempoVideoTranscurrido = 0;
+    //variable que permite habilitar o deshabilitar el jslider
+    public boolean enable = true;
+    //frames que han sido mostrados
+    public int frameSegundo =0;
+    //variable que permite setear los valores iniciales
+    public boolean primerInicio = true;
+    //variable que permite detener el video
+    public boolean detener = false;
+    //tiempo de duración de la muestra
+    public int tiempoDuracionMuestra = 12;
+
+    public int contadorFrameSegundo;
+
+    public File f;   
+    public File[] fileLst;
+    public ImageIcon icon; 
+
+    //frame x segundo
+    public Hashtable<Integer, Integer> FPS = new Hashtable<Integer, Integer>();
+
+    //tags
+    public Hashtable<Integer, JLabel> tag = new Hashtable<Integer, JLabel>();
+
+    public int posTagManual;    
     public Reproductor() {
         //initComponents();
         iniciarComponentes();
@@ -64,6 +110,7 @@ public class Reproductor extends javax.swing.JFrame {
         
         principal = new javax.swing.JPanel();
         vistaPerspectivaCara = new javax.swing.JPanel();
+        videoCara = new javax.swing.JLabel();
         vistaTagAutomatico = new javax.swing.JPanel();
         vistaConfTagAutomatico = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
@@ -82,7 +129,8 @@ public class Reproductor extends javax.swing.JFrame {
         //_____________________________________//
        
         sliderTiempo = new SliderSkinDemo2().makeUI();
-        sliderTiempo.setMajorTickSpacing(5);
+        sliderTiempo.setMaximum(tiempoDuracionMuestra);
+        sliderTiempo.setMajorTickSpacing(1);
         sliderTiempo.setMinorTickSpacing(1);
         sliderTiempo.setPaintTicks(true);
         sliderTiempo.setPaintLabels(true);
@@ -93,7 +141,12 @@ public class Reproductor extends javax.swing.JFrame {
         
         //_____________________________________//
 
-
+        btnPlay.setText("iniciar");
+        btnPlay.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+             btnPlayMouseClicked(evt);
+            }
+        });
 
 
     //_____________________________________//
@@ -123,7 +176,7 @@ public class Reproductor extends javax.swing.JFrame {
         
         
         //_____________________________________//
-   setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+    setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setExtendedState(6);
 
         principal.setBackground(new java.awt.Color(51, 255, 204));
@@ -136,11 +189,16 @@ public class Reproductor extends javax.swing.JFrame {
         vistaPerspectivaCara.setLayout(vistaPerspectivaCaraLayout);
         vistaPerspectivaCaraLayout.setHorizontalGroup(
             vistaPerspectivaCaraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, vistaPerspectivaCaraLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(videoCara, javax.swing.GroupLayout.PREFERRED_SIZE, 433, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         vistaPerspectivaCaraLayout.setVerticalGroup(
             vistaPerspectivaCaraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(vistaPerspectivaCaraLayout.createSequentialGroup()
+                .addComponent(videoCara, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         principal.add(vistaPerspectivaCara, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 455, 370));
@@ -267,6 +325,8 @@ public class Reproductor extends javax.swing.JFrame {
 
         vistaTiempo.setBackground(new java.awt.Color(153, 153, 0));
         vistaTiempo.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        sliderTiempo.setMaximum(12);
         vistaTiempo.add(sliderTiempo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1290, 40));
 
         principal.add(vistaTiempo, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 370, 1290, 60));
@@ -302,7 +362,54 @@ public class Reproductor extends javax.swing.JFrame {
         
         
     }
+    private void btnPlayMouseClicked(java.awt.event.MouseEvent evt) {                                        
 
+        detener = false;
+        //Se determina si es el primer inicio para determinar el largo y la división de las lineas de tiempoDuracionMuestra
+        if(primerInicio){
+            
+            sliderTiempo.setMaximum(tiempoDuracionMuestra);
+            primerInicio= false;
+        
+        }
+        
+        if(enable){
+            
+            isRunning= true;
+            enable = false;
+            sliderTiempo.setEnabled(false);
+            
+        
+        }
+        else
+        {
+            isRunning= false;
+            enable = true;
+            sliderTiempo.setEnabled(true);
+            
+        }
+        ///SE INICIA LA REPRODUCCIÓN DE MUESTRAS
+        new VideoFeedTaker().start();
+        ///1000-> 1 acción cada 1 segundo
+        final Timer t = new Timer(1000, new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            
+            if(tiempoVideoTranscurrido == tiempoDuracionMuestra || detener == true){
+                    //se detiene linea de tiempo
+                    ((Timer) e.getSource()).stop();
+          } else{
+                tiempoVideoTranscurrido=tiempoVideoTranscurrido+1;
+                sliderTiempo.setValue(tiempoVideoTranscurrido);
+                
+                FPS.put(tiempoVideoTranscurrido, frameSegundo);
+                
+                System.out.println("Al segundo: "+ tiempoVideoTranscurrido + " han pasado "+ frameSegundo+ " frames");
+            }
+            
+            }
+    });
+    t.start();
+    }  
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -314,6 +421,7 @@ public class Reproductor extends javax.swing.JFrame {
 
         principal = new javax.swing.JPanel();
         vistaPerspectivaCara = new javax.swing.JPanel();
+        videoCara = new javax.swing.JLabel();
         vistaTagAutomatico = new javax.swing.JPanel();
         vistaTagManual = new javax.swing.JPanel();
         vistaConfTagAutomatico = new javax.swing.JPanel();
@@ -344,11 +452,16 @@ public class Reproductor extends javax.swing.JFrame {
         vistaPerspectivaCara.setLayout(vistaPerspectivaCaraLayout);
         vistaPerspectivaCaraLayout.setHorizontalGroup(
             vistaPerspectivaCaraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, vistaPerspectivaCaraLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(videoCara, javax.swing.GroupLayout.PREFERRED_SIZE, 433, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         vistaPerspectivaCaraLayout.setVerticalGroup(
             vistaPerspectivaCaraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(vistaPerspectivaCaraLayout.createSequentialGroup()
+                .addComponent(videoCara, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         principal.add(vistaPerspectivaCara, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 455, 370));
@@ -475,6 +588,8 @@ public class Reproductor extends javax.swing.JFrame {
 
         vistaTiempo.setBackground(new java.awt.Color(153, 153, 0));
         vistaTiempo.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        sliderTiempo.setMaximum(12);
         vistaTiempo.add(sliderTiempo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1290, 40));
 
         principal.add(vistaTiempo, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 370, 1290, 60));
@@ -546,6 +661,40 @@ public class Reproductor extends javax.swing.JFrame {
                 
             }
         });
+    }
+          class VideoFeedTaker extends Thread{
+           @Override
+        public void run() {
+            System.out.println("Entre al hilo");
+            f = new File(store);
+            fileLst = f.listFiles();
+            
+            System.out.println("cantidad de imagenes: "+ fileLst.length);
+            while(isRunning){
+                                
+                   try {
+                       //System.out.println("frameSegundo: "+frameSegundo);
+                     //  System.out.println("path: "+fileLst[frameSegundo].getAbsolutePath());
+                       icon = new ImageIcon(fileLst[frameSegundo].getAbsolutePath());
+                       videoCara.setIcon(icon);
+                       if(frameSegundo==fileLst.length-1){
+                       isRunning=false;
+                       //detener = true;
+                       }
+                       frameSegundo+=1;
+                
+                   
+			// 10 FPS Thread.sleep(100);
+			Thread.sleep(captureInterval);
+                        
+                } catch (InterruptedException ex) {
+                    //Logger.getLogger(CameraTest.class.getName()).log(Level.SEVERE, null, ex);
+                } 
+                
+                }
+      
+        }
+    
     }
   class MyMouseAdapter extends MouseAdapter {
         
@@ -706,6 +855,7 @@ public class Reproductor extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel principal;
     private javax.swing.JSlider sliderTiempo;
+    private javax.swing.JLabel videoCara;
     private javax.swing.JPanel vistaConfTagAutomatico;
     private javax.swing.JPanel vistaConfTagManual;
     private javax.swing.JPanel vistaPanelPerspectiva;

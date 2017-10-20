@@ -7,10 +7,24 @@ package principal;
 
 import activityRender.ActivityRender;
 import audioRecorder.Audio;
+import com.github.sarxos.webcam.Webcam;
+import com.xuggle.mediatool.IMediaWriter;
+import com.xuggle.xuggler.IVideoPicture;
+import com.xuggle.xuggler.video.IConverter;
 import faceRecorder.FaceRecorder;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import java.awt.Robot;
 
 /**
  *
@@ -19,16 +33,56 @@ import java.util.logging.Logger;
 public class Pestanas extends javax.swing.JFrame {
     //captura de pantalla
     ActivityRender activityRender;
-    boolean perspectivaActivityRender = true;
+    boolean perspectivaActivityRender = false;
     public static boolean iPerspectivaActivityRender = false;
     public static boolean dPerspectivaActivityRender = false;
+        /**
+	 * Screen Width.
+	 */
+	public static int screenWidth = (int) Toolkit.getDefaultToolkit()
+			.getScreenSize().getWidth();
+
+	/**
+	 * Screen Height.
+	 */
+	public static int screenHeight = (int) Toolkit.getDefaultToolkit()
+			.getScreenSize().getHeight();
+
+	/**
+	 * Interval between which the image needs to be captured.
+	 */
+	public static int captureInterval = 10;
+
+	/**
+	 * Temporary folder to store the screenshot.
+	 */
+	//public static String store = "imgActivityRender";
+
+	/**
+	 * Status of the recorder.
+	 */
+	public static boolean record = false;
+    Thread t1,t2;
+    
+    
+    
     //captura de audio
     Audio audio;
+    
     
     public static boolean iPerspectivaAudioRecorder = false;
     public static boolean dPerspectivaAudioRecorder = false;
     //captura con videocam
     FaceRecorder faceRecorder;
+    Webcam webcam;
+    boolean isRunning = true;
+    File file;
+    IMediaWriter writer;
+    Dimension size;
+    long start;
+    BufferedImage image, image2;
+    IConverter converter;
+    IVideoPicture frame; 
     boolean perspectivaFaceRecorder = true;
     public static boolean iFaceRecorder = false;
     public static boolean dFaceRecorder = false;
@@ -36,6 +90,7 @@ public class Pestanas extends javax.swing.JFrame {
     String codigoProyecto = "cod1";
     int cantidadMuestra = 0;
     String path = "C:\\Users\\Katherine\\Documents\\MEMORIA\\MemoriacodigoEbox\\muestras";
+    final CyclicBarrier gate = new CyclicBarrier(3);
     //
     
     
@@ -106,84 +161,167 @@ public class Pestanas extends javax.swing.JFrame {
         // TODO add your handling code here:
         //definir nombre para muestra
         cantidadMuestra = cantidadMuestra +1;
-        new Thread(new Runnable(){
+        //creacion de directorios
+        //ActivityRender
+        String storeAR = "imgActivityRender";
+        
+        File fAR = new File(storeAR);
+        
+        if(!fAR.exists()){
+            System.out.println("Creacion de directorio para ActivityRender");
+                fAR.mkdir();
+        }
+         
+        //FaceRecorder
+        String storeFR = "imgFaceRecorder";
+        File fFR= new File(storeFR);
+        if(!fFR.exists()){
+                    System.out.println("Creacion de directorio para FaceRecorder");
+			fFR.mkdir();
+        }
+        
+          
+        
+        
+        //FACERECORDER
+         t1 = new Thread(){
+         @Override
+         public void run(){
+        
+             try {
+                 gate.await();
+                 
+                 System.out.println("****** Inicio captura de muestras face ******");
+                 
+                 /*faceRecorder = new FaceRecorder();
+                 //audio = new Audio();
+                 faceRecorder.startRecord(storeFR);
+                 //audio.inicializar();*/
+                 
+                 System.out.println("Se debio haber abierto la camara");
+                
+                 
+                 while(isRunning){
+                     
+                     
+                     
+                     try {
+                         image2 = webcam.getImage();
+                         ImageIO.write(image2, "jpg", new File("./"+storeFR+"/"+System.currentTimeMillis()+".jpg"));
+                         Thread.sleep(10);
+                         
+                     } catch (InterruptedException ex) {
+                         //Logger.getLogger(CameraTest.class.getName()).log(Level.SEVERE, null, ex);
+                     }  catch (IOException ex) {
+                         Logger.getLogger(FaceRecorder.class.getName()).log(Level.SEVERE, null, ex);
+                     }
+                     
+                 }
+                 
+                  
+                 System.out.println("Captura de cara finalizada");
+             } catch (InterruptedException ex) {
+                 Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
+             } catch (BrokenBarrierException ex) {
+                 Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
+             }
+            
+                      
+     
+       
+    }};
+        //ACTIVIY RENDER
+         t2 = new Thread(){
         @Override
         public void run(){
-            System.out.println("****** Inicio captura de muestras ******");
+          
+             
+                System.out.println("****** Inicio captura de muestras activity ******");        
             
-            
-            //captura pantalla
-        if(perspectivaActivityRender){
                 try {
-                    activityRender = new ActivityRender();
-                    //iniciar perspectiva
-                    activityRender.inicializar(path, cantidadMuestra);
-                   // activityRender.test();
+                   /* activityRender = new ActivityRender();
+                    activityRender.startRecord(storeAR);*/
+                   gate.await();
+                            Robot rt;
+                            
+                            try {
+                                    rt = new Robot();
+                                    while (isRunning) {
+                                        
+                                        
+                                            BufferedImage img = rt
+                                                            .createScreenCapture(new Rectangle(screenWidth,
+                                                                            screenHeight));
+                                            ImageIO.write(img, "jpeg", new File("./"+storeAR+"/"
+                                                            + System.currentTimeMillis() + ".jpeg"));
+                                          
+                                            // System.out.println(record);
+                                            Thread.sleep(captureInterval);
+                                    }
+                                    System.out.println("Captura de pantalla finalizada");
+                                    
+                            } catch (Exception e) {
+                                    e.printStackTrace();
+                            }
+                   
                 } catch (Exception ex) {
                     Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
                 }
+        
+                        
+          
+        }};
+    System.out.println("Antes de abrir la camara");
+    webcam = Webcam.getDefault();
+    
+    
+        
+    webcam.setViewSize(new Dimension(320,240));
+    webcam.open(true);
+    
+    if( webcam.isOpen()){
+    System.out.println("Despues de abrir la camara");
+    t1.start();
+    
+    t2.start();
+    }
+    
+    
+        try {
+            gate.await();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (BrokenBarrierException ex) {
+            Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        while(perspectivaActivityRender == true && iPerspectivaActivityRender == false ){
-            System.out.println("Esperando a iniciar Activity Render");
-        }
-        //captura webcam y audio
-        if(perspectivaFaceRecorder){
-        //iniciarPerspectiva
-        
-        faceRecorder = new FaceRecorder();
-        audio = new Audio();
-        faceRecorder.inicializar();
-        audio.inicializar();
-        
-        }
-        /*while(perspectivaFaceRecorder == true && iFaceRecorder == false && iPerspectivaAudioRecorder == false){
-            System.out.println("Esperando a iniciar Face Recorder y audio");
+    System.out.println("all threads started");
+     start = System.currentTimeMillis();
+                 System.out.println("TIEMPO INICIO: "+ start/0.001);
+        /*try {
+          t1.join();
+            t2.join();
+            System.out.println("Se hizo el join");
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
         }*/
+    
         
-        
-        
-        }
-        
-        }).start();
     }//GEN-LAST:event_btnIniciarMouseClicked
 
     private void btnDetenerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDetenerMouseClicked
         // TODO add your handling code here:
         
-           new Thread(new Runnable(){
-        @Override
-        public void run(){
-            System.out.println("****** deteniendo captura de muestras ******");
-            
-            
-            //captura pantalla
-        if(perspectivaActivityRender){
-                try {
-                    activityRender.detener();
-                } catch (MalformedURLException ex) {
-                    Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
-                }
-        }
-        
-        while(perspectivaActivityRender == true && dPerspectivaActivityRender == false ){
-            System.out.println("Esperando a detener Activity Render");
-        }
-        //captura webcam y audio
-        if(perspectivaFaceRecorder){
-        //iniciarPerspectiva
-        faceRecorder.detener();
-        audio.detener();
-        }
-        /*while(perspectivaFaceRecorder == true && dFaceRecorder == false && iPerspectivaAudioRecorder == false){
-            System.out.println("Esperando a detener Face Recorder y audio");
-        }*/
-        
-        
-            System.out.println("Captura detenida");
-        }
-        
-        }).start();
+        isRunning= false;
+        System.out.println("Deteniendo capturas");
+         start = System.currentTimeMillis();
+                 System.out.println("TIEMPO TERMINO: "+ start/0.001);
+         webcam.open(false);
+         webcam.close();
+        //gate.wait();
+        t1.interrupt();
+        t2.interrupt();
+          
            
     }//GEN-LAST:event_btnDetenerMouseClicked
 

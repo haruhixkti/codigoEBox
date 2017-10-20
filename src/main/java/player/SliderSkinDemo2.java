@@ -59,11 +59,17 @@ public class SliderSkinDemo2 {
         return xPosition;
       }
     });
-
-    JSlider slider = new JSlider();
+ int FPS_MIN = 0;
+   int FPS_MAX = 30;
+     int FPS_INIT = 15;
+    JSlider slider = new JSlider(JSlider.HORIZONTAL,
+                                              FPS_MIN, FPS_MAX, FPS_INIT);
     
     slider.putClientProperty("Nimbus.Overrides", d);
-
+        slider.setMajorTickSpacing(10);
+        slider.setMinorTickSpacing(1);
+        slider.setPaintTicks(true);
+        slider.setPaintLabels(true);
     JPanel p = new JPanel();
     p.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
     p.setBackground(Color.DARK_GRAY);
@@ -99,7 +105,7 @@ public class SliderSkinDemo2 {
     p.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
     p.setBackground(Color.DARK_GRAY);
     p.add(new SliderSkinDemo2().makeUI());
-     p.add(new SliderSkinDemo2().makeUI());
+    
                 f.getContentPane().add(p);
                
                 f.setSize(720, 480);
