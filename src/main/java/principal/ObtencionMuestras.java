@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import javax.imageio.ImageIO;
 import java.awt.Robot;
+import java.io.FileWriter;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -31,11 +32,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 import javax.swing.ImageIcon;
 import static jmapps.ui.ImageArea.loadImage;
 import org.apache.commons.io.FileUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 /**
  *
  * @author Katherine
@@ -59,16 +63,21 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     Thread t1,t2,t3;
    int cantidadFrame = 0;
     final CyclicBarrier gate = new CyclicBarrier(4);
-    final CyclicBarrier gate2 = new CyclicBarrier(3);
+    final CyclicBarrier gate2 = new CyclicBarrier(4);
     long tiempoFaceRecorderi, tiempoActivityRenderi, tiempoFaceRecorderf, tiempoActivityRenderf;
     String codigoMuestra,tiempoTotal;
     
-    public File fA,fF;   
-    public File[] fileLstA, fileLstF;
-    public ImageIcon icon; 
+    public File fA,fF,fE;   
+    public File[] fileLstA, fileLstF,fileLstE;
+    public ImageIcon icon, icon2; 
         //frames que han sido mostrados
     public int frameSegundoA =0;
     public int frameSegundoF =0;
+    public int frameSegundoE =0;
+    public ArrayList<String> rutasMuestras = new ArrayList<>();
+    public ArrayList<String> nombreMuestras = new ArrayList<>();
+    public ArrayList<String> duracionMuestras = new ArrayList<>();
+
            /**
 	 * Screen Width.
 	 */
@@ -98,7 +107,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     /**
      * Creates new form VentanaPrincipal
      */
-    
+
     public ObtencionMuestras() {
         initComponents();
         creacionCarpetas();
@@ -185,14 +194,14 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel22 = new javax.swing.JLabel();
         jLabel23 = new javax.swing.JLabel();
-        jLabel21 = new javax.swing.JLabel();
+        Externa = new javax.swing.JLabel();
+        jLabel24 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
         jLabel19 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jButton5 = new javax.swing.JButton();
@@ -200,6 +209,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         jSeparator2 = new javax.swing.JSeparator();
         jButton6 = new javax.swing.JButton();
         cargando = new javax.swing.JLabel();
+        jButton4 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
@@ -207,6 +217,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
+        jButton8 = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         jLabel15 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
@@ -335,78 +346,74 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         jLabel23.setForeground(new java.awt.Color(255, 255, 255));
         jLabel23.setText("FaceRecorder");
 
+        Externa.setBackground(new java.awt.Color(255, 153, 51));
+        Externa.setOpaque(true);
+
+        jLabel24.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
+        jLabel24.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel24.setText("Perspectiva Externa");
+
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addGap(26, 26, 26)
+                .addComponent(Face, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(43, 43, 43)
+                .addComponent(Activity, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(37, 37, 37)
+                .addComponent(Externa, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(18, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                .addContainerGap(32, Short.MAX_VALUE)
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addComponent(Face, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(83, 83, 83)
-                        .addComponent(Activity, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(44, 44, 44))
-                    .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addComponent(jLabel22)
-                        .addGap(76, 76, 76)
-                        .addComponent(jLabel3)))
-                .addGap(22, 22, 22))
-            .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel7Layout.createSequentialGroup()
-                    .addGap(100, 100, 100)
-                    .addComponent(jLabel23)
-                    .addContainerGap(571, Short.MAX_VALUE)))
+                .addGap(92, 92, 92)
+                .addComponent(jLabel23)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel22)
+                .addGap(249, 249, 249)
+                .addComponent(jLabel24)
+                .addGap(45, 45, 45))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel3)
+                .addGap(31, 31, 31))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                .addGap(6, 6, 6)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel24)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                .addGap(0, 65, Short.MAX_VALUE)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel22)
+                    .addComponent(jLabel23))
+                .addGap(24, 24, 24)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel3)
-                        .addGap(18, 18, 18)
-                        .addComponent(Face, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addGap(56, 56, 56)
-                        .addComponent(jLabel22)
-                        .addGap(18, 18, 18)
-                        .addComponent(Activity, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(69, Short.MAX_VALUE))
-            .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel7Layout.createSequentialGroup()
-                    .addGap(42, 42, 42)
-                    .addComponent(jLabel23)
-                    .addContainerGap(318, Short.MAX_VALUE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                        .addComponent(Activity, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(72, 72, 72))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(Externa, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Face, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(30, 30, 30))))
         );
-
-        jLabel21.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
-        jLabel21.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel21.setText("Nombre de la muestra");
 
         javax.swing.GroupLayout jFrameMin1Layout = new javax.swing.GroupLayout(jFrameMin1.getContentPane());
         jFrameMin1.getContentPane().setLayout(jFrameMin1Layout);
         jFrameMin1Layout.setHorizontalGroup(
             jFrameMin1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jFrameMin1Layout.createSequentialGroup()
-                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(jFrameMin1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jFrameMin1Layout.createSequentialGroup()
-                    .addGap(238, 238, 238)
-                    .addComponent(jLabel21)
-                    .addContainerGap(347, Short.MAX_VALUE)))
+            .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jFrameMin1Layout.setVerticalGroup(
             jFrameMin1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jFrameMin1Layout.createSequentialGroup()
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(jFrameMin1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jFrameMin1Layout.createSequentialGroup()
-                    .addGap(161, 161, 161)
-                    .addComponent(jLabel21)
-                    .addContainerGap(201, Short.MAX_VALUE)))
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -462,24 +469,6 @@ public class ObtencionMuestras extends javax.swing.JFrame {
             }
         });
 
-        jButton4.setBackground(new java.awt.Color(121, 85, 72));
-        jButton4.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
-        jButton4.setForeground(new java.awt.Color(255, 255, 255));
-        jButton4.setText("Guardar captura");
-        jButton4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
-        jButton4.setContentAreaFilled(false);
-        jButton4.setOpaque(true);
-        jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton4MouseClicked(evt);
-            }
-        });
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
-            }
-        });
-
         jLabel19.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
         jLabel19.setForeground(new java.awt.Color(255, 255, 255));
         jLabel19.setText("Duración de la muestra");
@@ -531,6 +520,24 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         cargando.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
         cargando.setForeground(new java.awt.Color(255, 255, 255));
 
+        jButton4.setBackground(new java.awt.Color(121, 85, 72));
+        jButton4.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
+        jButton4.setForeground(new java.awt.Color(255, 255, 255));
+        jButton4.setText("Analizar muestras");
+        jButton4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+        jButton4.setContentAreaFilled(false);
+        jButton4.setOpaque(true);
+        jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton4MouseClicked(evt);
+            }
+        });
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -542,15 +549,14 @@ public class ObtencionMuestras extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jLabel6)
                         .addComponent(jLabel19)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(51, 51, 51))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(74, 74, 74)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGap(47, 47, 47))))
             .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
             .addComponent(jSeparator2)
             .addGroup(jPanel2Layout.createSequentialGroup()
@@ -663,12 +669,32 @@ public class ObtencionMuestras extends javax.swing.JFrame {
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/Imagen1.png"))); // NOI18N
 
+        jButton8.setBackground(new java.awt.Color(121, 85, 72));
+        jButton8.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
+        jButton8.setForeground(new java.awt.Color(255, 255, 255));
+        jButton8.setText("Guardar captura");
+        jButton8.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+        jButton8.setContentAreaFilled(false);
+        jButton8.setOpaque(true);
+        jButton8.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton8MouseClicked(evt);
+            }
+        });
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(330, Short.MAX_VALUE)
+                .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(224, 224, 224)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(51, 51, 51))
             .addGroup(jPanel4Layout.createSequentialGroup()
@@ -682,7 +708,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 627, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(418, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -693,9 +719,15 @@ public class ObtencionMuestras extends javax.swing.JFrame {
                 .addComponent(jLabel7)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 106, Short.MAX_VALUE)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(78, 78, 78))
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(78, 78, 78))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(74, 74, 74)
+                        .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(110, Short.MAX_VALUE))))
         );
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -836,8 +868,9 @@ public class ObtencionMuestras extends javax.swing.JFrame {
                          
                          image3 = webcamCelu.getImage();
                          timeFRC = System.currentTimeMillis();
-                         ImageIO.write(image3, "jpg", new File(storeExternalPerspective+timeFRC+".jpg"));
-                         
+                         String ruta = storeExternalPerspective+timeFRC+".jpg";
+                         ImageIO.write(image3, "jpg", new File(ruta));
+                         copyImage(ruta, ruta);
                          Thread.sleep(captureInterval);
                          
                          
@@ -947,11 +980,12 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     
 //webcam = Webcam.getDefault();
     webcamPC = Webcam.getWebcamByName("HP Truevision HD 0");
+       // System.out.println("TAMAÑOS CELULAR"+webcamCelu.getCustomViewSizes());
     
     webcamCelu = Webcam.getWebcamByName("DroidCam Source 3 1");
     
     webcamPC.setViewSize(new Dimension(320,240));
-    webcamCelu.setViewSize(new Dimension(320,240));
+    //webcamCelu.setViewSize(new Dimension(320,240));
     
     webcamPC.open(true);
     webcamCelu.open(true);
@@ -1030,7 +1064,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
         // TODO add your handling code here:
         //vista previa
-                jFrameMin1.setSize(823, 391);
+                jFrameMin1.setSize(1086, 391);
                 GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
                 GraphicsDevice defaultScreen = ge.getDefaultScreenDevice();
                 Rectangle rect = defaultScreen.getDefaultConfiguration().getBounds();
@@ -1121,9 +1155,50 @@ public class ObtencionMuestras extends javax.swing.JFrame {
                     Logger.getLogger(ObtencionMuestras.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }};
+                    Thread tc = new Thread(){
+            public void run(){
+                try {
+                    gate2.await();
+                    //do stuff   
+                        System.out.println("Entre al hilo");
+                        fE = new File(storeExternalPerspective);
+                        fileLstE = fE.listFiles();
+            
+            System.out.println("cantidad de imagenes: "+ fileLstE.length);
+            while(repr){
+                       System.out.println("Entre al while2");         
+                   try {
+                    
+                       icon = new ImageIcon(fileLstE[frameSegundoE].getAbsolutePath());
+                       Externa.setIcon(icon);
+                       if(frameSegundoE==fileLstF.length-1){
+                       repr=false;
+                       //detener = true;
+                       }
+                       frameSegundoE+=1;
+                
+                   
+			// 10 FPS Thread.sleep(100);
+			Thread.sleep(captureInterval);
+                        
+                } catch (InterruptedException ex) {
+                    //Logger.getLogger(CameraTest.class.getName()).log(Level.SEVERE, null, ex);
+                } 
+                
+                }
+                    setVisible(true);
+                    jFrameMin1.setVisible(false);
+                    
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(ObtencionMuestras.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (BrokenBarrierException ex) {
+                    Logger.getLogger(ObtencionMuestras.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }};
 
             ta.start();
             tb.start();
+            tc.start();
 
         try {
             // At this point, t1 and t2 are blocking on the gate.
@@ -1150,6 +1225,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         repr = true;
         frameSegundoA =0;
         frameSegundoF =0;
+        frameSegundoE = 0;
         
         
     }//GEN-LAST:event_jLabel3MouseClicked
@@ -1160,6 +1236,16 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         
        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
        model.addRow(new Object[]{codigoMuestra, tiempoTotal});
+        rutasMuestras.add(nombreMuestraActual); 
+        duracionMuestras.add(tiempoTotal);
+        nombreMuestras.add("Muestra"+String.valueOf(cantidadMuestras));
+        
+       
+  
+   
+   
+       
+       
        
     }//GEN-LAST:event_jButton4MouseClicked
 
@@ -1185,6 +1271,41 @@ public class ObtencionMuestras extends javax.swing.JFrame {
             System.err.println(x);
         }
     }//GEN-LAST:event_jButton5MouseClicked
+
+    private void jButton8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton8MouseClicked
+        // TODO add your handling code here:
+           JSONArray employeeList = new JSONArray();
+        
+         for (int i = 0; i < cantidadMuestras; i++) {
+            JSONObject employeeDetails = new JSONObject();
+        employeeDetails.put("ruta", rutasMuestras.get(i));
+        employeeDetails.put("tiempo", duracionMuestras.get(i));
+        employeeDetails.put("nombre", nombreMuestras.get(i));
+         
+        JSONObject employeeObject = new JSONObject();
+        employeeObject.put("directorio", employeeDetails);
+        employeeList.add(employeeObject);
+        }
+
+        try (FileWriter file = new FileWriter("informacion.json")) {
+ 
+            file.write(employeeList.toJSONString());
+            file.flush();
+ 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+       VisualizacionMuestras visualizacionMuestras = new VisualizacionMuestras();
+       visualizacionMuestras.setVisible(true);
+       this.setVisible(false);
+    }//GEN-LAST:event_jButton8MouseClicked
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton8ActionPerformed
+
+ 
 public static void copyImage(String filePath, String copyPath) {
         BufferedImage bimage = loadImage(filePath);
         if(bimage.getHeight()>bimage.getWidth()){
@@ -1338,6 +1459,12 @@ public static void copyImage(String filePath, String copyPath) {
         }
     tgt.append(val);
     }
+  
+
+
+
+    
+ 
     /**
      * @param args the command line arguments
      */
@@ -1390,6 +1517,7 @@ public static void copyImage(String filePath, String copyPath) {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel Activity;
+    private javax.swing.JLabel Externa;
     private javax.swing.JLabel Face;
     private javax.swing.JLabel cargando;
     private javax.swing.JButton jButton1;
@@ -1399,6 +1527,7 @@ public static void copyImage(String filePath, String copyPath) {
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
+    private javax.swing.JButton jButton8;
     private javax.swing.JButton jButtonDetenerMin;
     private javax.swing.JFrame jFrameMin;
     private javax.swing.JFrame jFrameMin1;
@@ -1413,9 +1542,9 @@ public static void copyImage(String filePath, String copyPath) {
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
-    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;

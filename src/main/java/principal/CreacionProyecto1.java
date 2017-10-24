@@ -10,7 +10,7 @@ package principal;
  * @author Katherine
  */
 public class CreacionProyecto1 extends javax.swing.JFrame {
-
+    boolean edit = false;
     /**
      * Creates new form VentanaPrincipal
      */
@@ -41,7 +41,7 @@ public class CreacionProyecto1 extends javax.swing.JFrame {
         jLabel20 = new javax.swing.JLabel();
         btnSeleccionarDestino = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        txtDescripcionProyecto = new javax.swing.JTextArea();
+        txtDescripcionMuestra = new javax.swing.JTextArea();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
@@ -145,11 +145,12 @@ public class CreacionProyecto1 extends javax.swing.JFrame {
             }
         });
 
-        txtDescripcionProyecto.setColumns(20);
-        txtDescripcionProyecto.setFont(new java.awt.Font("Roboto Light", 0, 24)); // NOI18N
-        txtDescripcionProyecto.setForeground(new java.awt.Color(117, 117, 117));
-        txtDescripcionProyecto.setRows(5);
-        jScrollPane1.setViewportView(txtDescripcionProyecto);
+        txtDescripcionMuestra.setEditable(false);
+        txtDescripcionMuestra.setColumns(20);
+        txtDescripcionMuestra.setFont(new java.awt.Font("Roboto Light", 0, 24)); // NOI18N
+        txtDescripcionMuestra.setForeground(new java.awt.Color(117, 117, 117));
+        txtDescripcionMuestra.setRows(5);
+        jScrollPane1.setViewportView(txtDescripcionMuestra);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -408,6 +409,11 @@ public class CreacionProyecto1 extends javax.swing.JFrame {
 
     private void btnSeleccionarDestinoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSeleccionarDestinoMouseClicked
         // TODO add your handling code here:
+        if(edit == false){
+            txtDescripcionMuestra.setEditable(true);
+            
+        }
+        
         
     }//GEN-LAST:event_btnSeleccionarDestinoMouseClicked
 
@@ -477,7 +483,7 @@ public class CreacionProyecto1 extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator6;
     private javax.swing.JLabel path;
     private javax.swing.JTextField txtCodigoProyecto;
-    private javax.swing.JTextArea txtDescripcionProyecto;
+    private javax.swing.JTextArea txtDescripcionMuestra;
     private javax.swing.JTextField txtNombreProyecto;
     // End of variables declaration//GEN-END:variables
 }

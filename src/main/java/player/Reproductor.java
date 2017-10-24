@@ -26,11 +26,18 @@ import javax.swing.UIDefaults;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Hashtable;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 
 /**
@@ -101,10 +108,51 @@ public class Reproductor extends javax.swing.JFrame {
     public Hashtable<Integer, JLabel> tag = new Hashtable<Integer, JLabel>();
 
     public int posTagManual;    
+    String ruta, tiempo, nombre;
     public Reproductor() {
         //initComponents();
         iniciarComponentes();
+            JSONParser jsonParser = new JSONParser();
+         
+        try (FileReader reader = new FileReader("muestraSelecionada.json"))
+        {
+            //Read JSON file
+            Object obj = jsonParser.parse(reader);
+ 
+            JSONArray employeeList = (JSONArray) obj;
+            System.out.println(employeeList);
+             
+            //Iterate over employee array
+            employeeList.forEach( emp -> parseEmployeeObject( (JSONObject) emp ) );
+            
+ 
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     
+    }
+       public void parseEmployeeObject(JSONObject employee)
+    {
+            //Get employee object within list
+        JSONObject employeeObject = (JSONObject) employee.get("directorio");
+         
+        //Get employee first name
+        String firstName = (String) employeeObject.get("ruta");   
+        ruta=firstName;
+        System.out.println(firstName);
+        
+        String secondName = (String) employeeObject.get("tiempo");   
+        tiempo = secondName;
+        System.out.println(secondName);
+         
+        String tresName = (String) employeeObject.get("nombre");   
+        nombre = tresName;
+        System.out.println(tresName);
+         
     }
     private void iniciarComponentes(){
         
@@ -391,7 +439,7 @@ public class Reproductor extends javax.swing.JFrame {
         ///SE INICIA LA REPRODUCCIÓN DE MUESTRAS
         new VideoFeedTaker().start();
         ///1000-> 1 acción cada 1 segundo
-        final Timer t = new Timer(1000, new ActionListener() {
+    /*    final Timer t = new Timer(1000, new ActionListener() {
         public void actionPerformed(ActionEvent e) {
             
             if(tiempoVideoTranscurrido == tiempoDuracionMuestra || detener == true){
@@ -408,7 +456,8 @@ public class Reproductor extends javax.swing.JFrame {
             
             }
     });
-    t.start();
+    t.start();*/
+    
     }  
     /**
      * This method is called from within the constructor to initialize the form.
