@@ -30,6 +30,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Hashtable;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
@@ -80,8 +84,8 @@ public class Reproductor extends javax.swing.JFrame {
     //variable que permite detener o iniciar la reproducción de las perspectivas
     boolean isRunning = false;
     //FPS
-    public static int captureInterval = 40;
-    public static int fPS = 25;
+    public static int captureInterval = 100;
+    public static int fPS = 10;
 
     public int tiempoVideoTranscurrido = 0;
     //variable que permite habilitar o deshabilitar el jslider
@@ -109,6 +113,16 @@ public class Reproductor extends javax.swing.JFrame {
 
     public int posTagManual;    
     String ruta, tiempo, nombre;
+    
+    final CyclicBarrier gate = new CyclicBarrier(4);
+    public File fA,fF,fE;   
+    public File[] fileLstA, fileLstF,fileLstE;
+    ImageIcon icon1, icon2, icon3; 
+    public int frameSegundoA =0;
+    public int frameSegundoF =0;
+    public int frameSegundoE =0;
+    String tiempoTotal;
+    
     public Reproductor() {
         //initComponents();
         iniciarComponentes();
@@ -173,15 +187,15 @@ public class Reproductor extends javax.swing.JFrame {
         vistaPerspectivaActividad = new javax.swing.JPanel();
         vistaPerspectivaActividad1 = new javax.swing.JPanel();
         vistaTiempo = new javax.swing.JPanel();
+        videoActividad = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+          videoExterno = new javax.swing.JLabel();
         
         //_____________________________________//
        
         sliderTiempo = new SliderSkinDemo2().makeUI();
-        sliderTiempo.setMaximum(tiempoDuracionMuestra);
-        sliderTiempo.setMajorTickSpacing(1);
-        sliderTiempo.setMinorTickSpacing(1);
-        sliderTiempo.setPaintTicks(true);
-        sliderTiempo.setPaintLabels(true);
+       
+      
         
         
         
@@ -189,7 +203,7 @@ public class Reproductor extends javax.swing.JFrame {
         
         //_____________________________________//
 
-        btnPlay.setText("iniciar");
+        
         btnPlay.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
              btnPlayMouseClicked(evt);
@@ -224,7 +238,7 @@ public class Reproductor extends javax.swing.JFrame {
         
         
         //_____________________________________//
-    setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setExtendedState(6);
 
         principal.setBackground(new java.awt.Color(51, 255, 204));
@@ -324,6 +338,11 @@ public class Reproductor extends javax.swing.JFrame {
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/icons8-begin.png"))); // NOI18N
         vistaPanelPlayer.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 90, -1, -1));
 
+        jLabel8.setFont(new java.awt.Font("Roboto Light", 0, 36)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel8.setText("00:00:000");
+        vistaPanelPlayer.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 20, -1, -1));
+
         principal.add(vistaPanelPlayer, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 530, 425, 240));
 
         vistaPanelPerspectiva.setBackground(new java.awt.Color(255, 255, 102));
@@ -347,11 +366,11 @@ public class Reproductor extends javax.swing.JFrame {
         vistaPerspectivaActividad.setLayout(vistaPerspectivaActividadLayout);
         vistaPerspectivaActividadLayout.setHorizontalGroup(
             vistaPerspectivaActividadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(videoActividad, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
         );
         vistaPerspectivaActividadLayout.setVerticalGroup(
             vistaPerspectivaActividadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(videoActividad, javax.swing.GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE)
         );
 
         principal.add(vistaPerspectivaActividad, new org.netbeans.lib.awtextra.AbsoluteConstraints(455, 0, 450, 370));
@@ -362,11 +381,11 @@ public class Reproductor extends javax.swing.JFrame {
         vistaPerspectivaActividad1.setLayout(vistaPerspectivaActividad1Layout);
         vistaPerspectivaActividad1Layout.setHorizontalGroup(
             vistaPerspectivaActividad1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(videoExterno, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
         );
         vistaPerspectivaActividad1Layout.setVerticalGroup(
             vistaPerspectivaActividad1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(videoExterno, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE)
         );
 
         principal.add(vistaPerspectivaActividad1, new org.netbeans.lib.awtextra.AbsoluteConstraints(905, 0, 460, 370));
@@ -374,7 +393,10 @@ public class Reproductor extends javax.swing.JFrame {
         vistaTiempo.setBackground(new java.awt.Color(153, 153, 0));
         vistaTiempo.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        sliderTiempo.setMaximum(12);
+        sliderTiempo.setMaximum(1000);
+        sliderTiempo.setMinorTickSpacing(500);
+        sliderTiempo.setPaintLabels(true);
+        sliderTiempo.setPaintTicks(true);
         vistaTiempo.add(sliderTiempo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1290, 40));
 
         principal.add(vistaTiempo, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 370, 1290, 60));
@@ -412,7 +434,7 @@ public class Reproductor extends javax.swing.JFrame {
     }
     private void btnPlayMouseClicked(java.awt.event.MouseEvent evt) {                                        
 
-        detener = false;
+    /*    detener = false;
         //Se determina si es el primer inicio para determinar el largo y la división de las lineas de tiempoDuracionMuestra
         if(primerInicio){
             
@@ -439,7 +461,7 @@ public class Reproductor extends javax.swing.JFrame {
         ///SE INICIA LA REPRODUCCIÓN DE MUESTRAS
         new VideoFeedTaker().start();
         ///1000-> 1 acción cada 1 segundo
-    /*    final Timer t = new Timer(1000, new ActionListener() {
+       final Timer t = new Timer(1000, new ActionListener() {
         public void actionPerformed(ActionEvent e) {
             
             if(tiempoVideoTranscurrido == tiempoDuracionMuestra || detener == true){
@@ -458,7 +480,183 @@ public class Reproductor extends javax.swing.JFrame {
     });
     t.start();*/
     
+    
+    //REPRODUCIR PERSPECTIVA 1 FACE
+    isRunning = true;
+        //AUMENTAR TIEMPO
+    Thread face = new Thread(){
+        public void run(){
+            try {
+                gate.await();
+                System.out.println("--Comienzo grabaciones <FaceRecorder> --");
+                fF = new File(ruta+"/storeFaceRecorder/");
+                fileLstF = fF.listFiles();
+                while(isRunning){
+                
+                icon1 = new ImageIcon(fileLstF[frameSegundoF].getAbsolutePath());
+                videoCara.setIcon(icon1);
+                if(frameSegundoF == fileLstF.length-1 ){
+                    isRunning = false;
+                }
+                frameSegundoF+=1;
+                 calculoTiempo(frameSegundoF);
+                sliderTiempo.setValue(frameSegundoF);
+                Thread.sleep(captureInterval);
+                }
+                
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Reproductor.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (BrokenBarrierException ex) {
+                Logger.getLogger(Reproductor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            
+        }
+        
+    
+    };
+     //REPRODUCIR PERSPECTIVA 2 ACTIVITY
+    Thread activity = new Thread(){
+        public void run(){
+            try {
+                gate.await();
+                System.out.println("--Comienzo grabaciones <ActivityRender> --");
+                fA = new File(ruta+"/storeActivityRender/");
+                fileLstA = fA.listFiles();
+                while(isRunning){
+                
+                icon2 = new ImageIcon(fileLstA[frameSegundoA].getAbsolutePath());
+                videoActividad.setIcon(icon2);
+                
+                frameSegundoA+=1;
+                Thread.sleep(captureInterval);
+                }
+                
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Reproductor.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (BrokenBarrierException ex) {
+                Logger.getLogger(Reproductor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+    }};
+    
+        
+   
+    //REPRODUCIR PERSPECTIVA 3 EXTERNA
+        Thread externa = new Thread(){
+        public void run(){
+            try {
+                gate.await();
+                System.out.println("--Comienzo grabaciones <Perspectiva external> --");
+                fE = new File(ruta+"/storeExternalPerspective");
+                fileLstE = fE.listFiles();
+                while(isRunning){
+                
+                icon3 = new ImageIcon(fileLstE[frameSegundoE].getAbsolutePath());
+                videoExterno.setIcon(icon3);
+                
+                frameSegundoE+=1;
+                Thread.sleep(captureInterval);
+                }
+                
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Reproductor.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (BrokenBarrierException ex) {
+                Logger.getLogger(Reproductor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+    }};
+    
+   
+            face.start();
+            activity.start();
+            externa.start();
+           try {
+            // At this point, t1 and t2 are blocking on the gate.
+// Since we gave "3" as the argument, gate is not opened yet.
+// Now if we block on the gate from the main thread, it will open
+// and all threads will start to do stuff!
+
+        gate.await();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Reproductor.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (BrokenBarrierException ex) {
+            Logger.getLogger(Reproductor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println("all threads started");
+    
     }  
+   public String calculoTiempo(int frameSegundo){
+    
+    String tiempoFinal= "";
+    int minutos = 0;
+    int restoMinutos = 0;
+    int segundos = 0;
+    int restoSegundos = 0;
+    int millesimas = 0;
+    
+    //para 10FPS
+    if(fPS == 10){
+        //minutos
+        
+        //hay minutos
+        minutos = frameSegundo/600;
+        restoMinutos = frameSegundo - (minutos*600);
+
+        //hay segundos
+        segundos = restoMinutos/10;
+        restoSegundos = restoMinutos-(segundos*10);
+
+            //hay millesimas
+        millesimas = (restoSegundos*1000)/10;
+                
+        String minutosStr, segundosStr, millesimasStr;
+        int cantidadMinutos = Integer.toString(minutos).length();
+        int cantidadSegundos = Integer.toString(segundos).length();
+        int cantidadMillesimas = Integer.toString(millesimas).length();
+        
+        if(cantidadMinutos==1){
+            minutosStr = "0"+String.valueOf(minutos);
+        }
+        else{
+            minutosStr = String.valueOf(minutos);
+        }
+        
+        if(cantidadSegundos == 1){
+            segundosStr = "0"+String.valueOf(segundos);
+        }
+        else{
+            segundosStr = String.valueOf(segundos);
+        }
+        if(cantidadMillesimas==1){
+            millesimasStr = "00"+String.valueOf(millesimas);
+        }
+        else if (cantidadMillesimas ==2){
+            millesimasStr = "0"+String.valueOf(millesimas);
+        }
+        else{
+            millesimasStr = String.valueOf(millesimas);
+        }
+        
+      tiempoTotal = minutosStr+":"+segundosStr+":"+millesimasStr;
+      
+      jLabel8.setText(tiempoTotal);
+        
+    }
+    //para 20FPS
+    if(fPS == 20){
+        //minutos
+        //segundos
+        //millisegundos
+    }
+    //para 25FPS
+    if(fPS == 25){
+        //minutos
+        //segundos
+        //millisegundos
+    }
+    
+    
+    return tiempoFinal;
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -482,9 +680,12 @@ public class Reproductor extends javax.swing.JFrame {
         btnPlay = new javax.swing.JLabel();
         btnFinal = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
         vistaPanelPerspectiva = new javax.swing.JPanel();
         vistaPerspectivaActividad = new javax.swing.JPanel();
+        videoActividad = new javax.swing.JLabel();
         vistaPerspectivaActividad1 = new javax.swing.JPanel();
+        videoExterno = new javax.swing.JLabel();
         vistaTiempo = new javax.swing.JPanel();
         sliderTiempo = new javax.swing.JSlider();
 
@@ -588,6 +789,11 @@ public class Reproductor extends javax.swing.JFrame {
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/icons8-begin.png"))); // NOI18N
         vistaPanelPlayer.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 90, -1, -1));
 
+        jLabel8.setFont(new java.awt.Font("Roboto Light", 0, 36)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel8.setText("00:00:000");
+        vistaPanelPlayer.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 20, -1, -1));
+
         principal.add(vistaPanelPlayer, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 530, 425, 240));
 
         vistaPanelPerspectiva.setBackground(new java.awt.Color(255, 255, 102));
@@ -611,11 +817,11 @@ public class Reproductor extends javax.swing.JFrame {
         vistaPerspectivaActividad.setLayout(vistaPerspectivaActividadLayout);
         vistaPerspectivaActividadLayout.setHorizontalGroup(
             vistaPerspectivaActividadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(videoActividad, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
         );
         vistaPerspectivaActividadLayout.setVerticalGroup(
             vistaPerspectivaActividadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(videoActividad, javax.swing.GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE)
         );
 
         principal.add(vistaPerspectivaActividad, new org.netbeans.lib.awtextra.AbsoluteConstraints(455, 0, 450, 370));
@@ -626,11 +832,11 @@ public class Reproductor extends javax.swing.JFrame {
         vistaPerspectivaActividad1.setLayout(vistaPerspectivaActividad1Layout);
         vistaPerspectivaActividad1Layout.setHorizontalGroup(
             vistaPerspectivaActividad1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(videoExterno, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
         );
         vistaPerspectivaActividad1Layout.setVerticalGroup(
             vistaPerspectivaActividad1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(videoExterno, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE)
         );
 
         principal.add(vistaPerspectivaActividad1, new org.netbeans.lib.awtextra.AbsoluteConstraints(905, 0, 460, 370));
@@ -638,7 +844,10 @@ public class Reproductor extends javax.swing.JFrame {
         vistaTiempo.setBackground(new java.awt.Color(153, 153, 0));
         vistaTiempo.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        sliderTiempo.setMaximum(12);
+        sliderTiempo.setMaximum(1000);
+        sliderTiempo.setMinorTickSpacing(500);
+        sliderTiempo.setPaintLabels(true);
+        sliderTiempo.setPaintTicks(true);
         vistaTiempo.add(sliderTiempo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1290, 40));
 
         principal.add(vistaTiempo, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 370, 1290, 60));
@@ -866,6 +1075,7 @@ public class Reproductor extends javax.swing.JFrame {
       }
       //@see javax/swing/plaf/basic/BasicSliderUI#xPositionForValue(int value)
       protected int xPositionForValue(int value, JSlider slider, Rectangle trackRect) {
+           
         int min = slider.getMinimum();
         int max = slider.getMaximum();
         int trackLength = trackRect.width;
@@ -885,11 +1095,15 @@ public class Reproductor extends javax.swing.JFrame {
       }
     });
  int FPS_MIN = 0;
-   int FPS_MAX = 100;
+   int FPS_MAX = 1000;
      int FPS_INIT = 0;
-    JSlider slider = new JSlider(JSlider.HORIZONTAL,
-                                              FPS_MIN, FPS_MAX, FPS_INIT);
-    
+     
+     
+    //JSlider slider = new JSlider(JSlider.HORIZONTAL,FPS_MIN, FPS_MAX, FPS_INIT);
+     
+    JSlider slider = new JSlider(JSlider.HORIZONTAL);
+     
+       
     slider.putClientProperty("Nimbus.Overrides", d);
       
     return slider;
@@ -902,9 +1116,12 @@ public class Reproductor extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel principal;
     private javax.swing.JSlider sliderTiempo;
+    private javax.swing.JLabel videoActividad;
     private javax.swing.JLabel videoCara;
+    private javax.swing.JLabel videoExterno;
     private javax.swing.JPanel vistaConfTagAutomatico;
     private javax.swing.JPanel vistaConfTagManual;
     private javax.swing.JPanel vistaPanelPerspectiva;

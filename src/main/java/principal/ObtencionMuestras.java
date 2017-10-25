@@ -183,10 +183,8 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         jFrameMin = new javax.swing.JFrame();
         jPanel6 = new javax.swing.JPanel();
         jButtonDetenerMin = new javax.swing.JButton();
-        jButton7 = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
         jLabel20 = new javax.swing.JLabel();
-        jLabel18 = new javax.swing.JLabel();
         jFrameMin1 = new javax.swing.JFrame();
         jPanel7 = new javax.swing.JPanel();
         Face = new javax.swing.JLabel();
@@ -241,14 +239,6 @@ public class ObtencionMuestras extends javax.swing.JFrame {
             }
         });
 
-        jButton7.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jButton7.setText("Maximizar");
-        jButton7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton7ActionPerformed(evt);
-            }
-        });
-
         jLabel8.setFont(new java.awt.Font("Roboto Light", 0, 24)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(200, 230, 201));
         jLabel8.setText("00:00:000");
@@ -263,20 +253,17 @@ public class ObtencionMuestras extends javax.swing.JFrame {
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButtonDetenerMin)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton7))
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addGap(61, 61, 61)
+                        .addComponent(jLabel20))
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addGap(48, 48, 48)
-                        .addComponent(jLabel8)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGap(61, 61, 61)
-                .addComponent(jLabel20)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel6Layout.createSequentialGroup()
+                                .addGap(10, 10, 10)
+                                .addComponent(jButtonDetenerMin))
+                            .addComponent(jLabel8))))
+                .addContainerGap(47, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -286,35 +273,19 @@ public class ObtencionMuestras extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButtonDetenerMin)
-                    .addComponent(jButton7))
+                .addComponent(jButtonDetenerMin)
                 .addContainerGap())
         );
-
-        jLabel18.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
-        jLabel18.setForeground(new java.awt.Color(200, 230, 201));
-        jLabel18.setText("Visualización de muestras");
 
         javax.swing.GroupLayout jFrameMinLayout = new javax.swing.GroupLayout(jFrameMin.getContentPane());
         jFrameMin.getContentPane().setLayout(jFrameMinLayout);
         jFrameMinLayout.setHorizontalGroup(
             jFrameMinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(jFrameMinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jFrameMinLayout.createSequentialGroup()
-                    .addGap(18, 18, 18)
-                    .addComponent(jLabel18)
-                    .addContainerGap(18, Short.MAX_VALUE)))
         );
         jFrameMinLayout.setVerticalGroup(
             jFrameMinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(jFrameMinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jFrameMinLayout.createSequentialGroup()
-                    .addGap(42, 42, 42)
-                    .addComponent(jLabel18)
-                    .addContainerGap(51, Short.MAX_VALUE)))
         );
 
         jFrameMin1.setAlwaysOnTop(true);
@@ -523,7 +494,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         jButton4.setBackground(new java.awt.Color(121, 85, 72));
         jButton4.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
         jButton4.setForeground(new java.awt.Color(255, 255, 255));
-        jButton4.setText("Analizar muestras");
+        jButton4.setText("Guardar captura");
         jButton4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
         jButton4.setContentAreaFilled(false);
         jButton4.setOpaque(true);
@@ -672,7 +643,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         jButton8.setBackground(new java.awt.Color(121, 85, 72));
         jButton8.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
         jButton8.setForeground(new java.awt.Color(255, 255, 255));
-        jButton8.setText("Guardar captura");
+        jButton8.setText("Análizar muestra");
         jButton8.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
         jButton8.setContentAreaFilled(false);
         jButton8.setOpaque(true);
@@ -1054,12 +1025,6 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         jFrameMin.setVisible(false);
         jButton6ActionPerformed(evt);
     }//GEN-LAST:event_jButtonDetenerMinActionPerformed
-
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        // TODO add your handling code here:
-        setVisible(true);
-        jFrameMin.setVisible(false);
-    }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
         // TODO add your handling code here:
@@ -1526,7 +1491,6 @@ public static void copyImage(String filePath, String copyPath) {
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButtonDetenerMin;
     private javax.swing.JFrame jFrameMin;
@@ -1538,7 +1502,6 @@ public static void copyImage(String filePath, String copyPath) {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
