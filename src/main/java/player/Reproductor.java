@@ -25,6 +25,10 @@ import javax.swing.Painter;
 import javax.swing.UIDefaults;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -122,6 +126,8 @@ public class Reproductor extends javax.swing.JFrame {
     public int frameSegundoF =0;
     public int frameSegundoE =0;
     String tiempoTotal;
+    int posicionfinal = 0;
+    public boolean mouseDown, flechaArriba, flechaAbajo, flechaIzq, flechaDer;
     
     public Reproductor() {
         //initComponents();
@@ -192,11 +198,44 @@ public class Reproductor extends javax.swing.JFrame {
           videoExterno = new javax.swing.JLabel();
         
         //_____________________________________//
-       
+        ;
         sliderTiempo = new SliderSkinDemo2().makeUI();
-       
+         sliderTiempo.setValue(0);
+         sliderTiempo.setFocusTraversalKeysEnabled(false);
       
-        
+  
+         
+        sliderTiempo.addKeyListener(new KeyAdapter(){
+            @Override
+            public void keyPressed(KeyEvent e){
+                
+                System.out.println("teclado");
+                int keyCode = e.getKeyCode();
+            switch( keyCode ) { 
+                case KeyEvent.VK_UP:
+                    // handle up 
+                    System.out.println("up");
+                    flechaArriba = true;
+                    break;
+                case KeyEvent.VK_DOWN:
+                    // handle down 
+                    flechaAbajo = true;
+                    System.out.println("down");
+                    break;
+                case KeyEvent.VK_LEFT:
+                    // handle left
+                    flechaIzq = true;
+                    System.out.println("left");
+                    break;
+                case KeyEvent.VK_RIGHT :
+                    // handle right
+                    flechaDer = true;
+                    System.out.println("right");
+                    break;
+             }
+  }
+});
+
         
         
         
@@ -480,10 +519,19 @@ public class Reproductor extends javax.swing.JFrame {
     });
     t.start();*/
     
+    //PLAY
+    if(isRunning ==  false){
+        isRunning = true;
+        btnPlay.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/icons8-Pause-50.png")));
+    }
+    else{
+        isRunning = false;
+        btnPlay.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/icons8-Play-50.png")));
+        
+    }
+    //PAUSA
     
     //REPRODUCIR PERSPECTIVA 1 FACE
-    isRunning = true;
-        //AUMENTAR TIEMPO
     Thread face = new Thread(){
         public void run(){
             try {
@@ -491,6 +539,7 @@ public class Reproductor extends javax.swing.JFrame {
                 System.out.println("--Comienzo grabaciones <FaceRecorder> --");
                 fF = new File(ruta+"/storeFaceRecorder/");
                 fileLstF = fF.listFiles();
+                
                 while(isRunning){
                 
                 icon1 = new ImageIcon(fileLstF[frameSegundoF].getAbsolutePath());
@@ -565,25 +614,24 @@ public class Reproductor extends javax.swing.JFrame {
             }
     }};
     
-   
+        if(isRunning == true){
             face.start();
             activity.start();
             externa.start();
            try {
-            // At this point, t1 and t2 are blocking on the gate.
-// Since we gave "3" as the argument, gate is not opened yet.
-// Now if we block on the gate from the main thread, it will open
-// and all threads will start to do stuff!
-
-        gate.await();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(Reproductor.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (BrokenBarrierException ex) {
-            Logger.getLogger(Reproductor.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        System.out.println("all threads started");
+                gate.await();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Reproductor.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (BrokenBarrierException ex) {
+                Logger.getLogger(Reproductor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            System.out.println("all threads started");
+            }
+        
     
     }  
+    
+    
    public String calculoTiempo(int frameSegundo){
     
     String tiempoFinal= "";
@@ -657,6 +705,7 @@ public class Reproductor extends javax.swing.JFrame {
     
     return tiempoFinal;
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -702,10 +751,7 @@ public class Reproductor extends javax.swing.JFrame {
         vistaPerspectivaCara.setLayout(vistaPerspectivaCaraLayout);
         vistaPerspectivaCaraLayout.setHorizontalGroup(
             vistaPerspectivaCaraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, vistaPerspectivaCaraLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(videoCara, javax.swing.GroupLayout.PREFERRED_SIZE, 433, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+            .addComponent(videoCara, javax.swing.GroupLayout.DEFAULT_SIZE, 455, Short.MAX_VALUE)
         );
         vistaPerspectivaCaraLayout.setVerticalGroup(
             vistaPerspectivaCaraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -848,6 +894,7 @@ public class Reproductor extends javax.swing.JFrame {
         sliderTiempo.setMinorTickSpacing(500);
         sliderTiempo.setPaintLabels(true);
         sliderTiempo.setPaintTicks(true);
+        sliderTiempo.setValue(0);
         vistaTiempo.add(sliderTiempo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1290, 40));
 
         principal.add(vistaTiempo, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 370, 1290, 60));
@@ -1048,7 +1095,10 @@ public class Reproductor extends javax.swing.JFrame {
        public JSlider makeUI() {
     UIDefaults d = new UIDefaults();
     d.put("Slider:SliderTrack[Enabled].backgroundPainter", new Painter<JSlider>() {
-      @Override public void paint(Graphics2D g, JSlider c, int w, int h) {
+      @Override 
+      public void paint(Graphics2D g, JSlider c, int w, int h) {
+         if(mouseDown == false){
+          
           System.out.println("w: "+ w);
         int arc         = 10;
         int trackHeight = 8;
@@ -1073,9 +1123,10 @@ public class Reproductor extends javax.swing.JFrame {
        g.setColor(Color.WHITE);
         g.drawRoundRect(fillLeft, fillTop, trackWidth, trackHeight, arc, arc);
       }
+      }
       //@see javax/swing/plaf/basic/BasicSliderUI#xPositionForValue(int value)
       protected int xPositionForValue(int value, JSlider slider, Rectangle trackRect) {
-           
+        int posicionAnterior = posicionfinal;
         int min = slider.getMinimum();
         int max = slider.getMaximum();
         int trackLength = trackRect.width;
@@ -1090,18 +1141,112 @@ public class Reproductor extends javax.swing.JFrame {
 
         xPosition = Math.max(trackLeft, xPosition);
         xPosition = Math.min(trackRight, xPosition);
-          System.out.println("posición en x: "+ xPosition);
+        System.out.println("posición en x: "+ xPosition);
+        int posicionMarcada = xPosition;
+        
+        //play
+        if (isRunning == true ){
+            if (mouseDown == true || flechaArriba == true || flechaAbajo == true || flechaIzq == true || flechaDer == true)
+            {
+                mouseDown = false; 
+                flechaArriba = false; 
+                flechaAbajo = false;
+                flechaIzq = false;
+                flechaDer = false;
+                posicionfinal = posicionAnterior;
+                return posicionfinal;
+            }
+            else
+            
+            {   posicionfinal = posicionMarcada;
+                return posicionfinal;
+            }
+            
+        }
+        
+          
+        //pause  
+          if(isRunning == false){
+              
+              if(mouseDown == true){
+                  mouseDown = false;
+                  posicionfinal = posicionAnterior;
+                  return posicionfinal;
+              
+              }
+              if(flechaArriba == true){
+                  frameSegundoA = frameSegundoA + 1;
+                  frameSegundoF = frameSegundoF + 1;
+                  frameSegundoE = frameSegundoE + 1;
+                  posicionfinal = xPosition;
+                  flechaArriba = false;
+                  
+                  cargaFace(false);
+                  cargaActivity(false);
+                  cargaExterna(false);
+                  
+                  return posicionfinal;
+              }
+              if(flechaAbajo == true){
+                  frameSegundoA = frameSegundoA - 1;
+                  frameSegundoF = frameSegundoF - 1;
+                  frameSegundoE = frameSegundoE - 1;
+                  posicionfinal = xPosition;
+                  flechaAbajo = false;
+                  
+                  cargaFace(true);
+                  cargaActivity(true);
+                  cargaExterna(true);
+                  return posicionfinal;
+              }
+              if(flechaIzq == true){
+                  
+                  frameSegundoA = frameSegundoA - 1;
+                  frameSegundoF = frameSegundoF - 1;
+                  frameSegundoE = frameSegundoE - 1;
+                  posicionfinal = xPosition;
+                  cargaFace(true);
+                  cargaActivity(true);
+                  cargaExterna(true);
+                  flechaIzq = false;
+                  return posicionfinal;
+              }
+              if(flechaDer == true){
+                  frameSegundoA = frameSegundoA + 1;
+                  frameSegundoF = frameSegundoF + 1;
+                  frameSegundoE = frameSegundoE + 1;
+                  posicionfinal = xPosition;
+                  cargaFace(false);
+                  cargaActivity(false);
+                  cargaExterna(false);
+                  flechaDer = false;
+                  return posicionfinal;
+              
+              }
+         
+            
+        
+        }
+          //play
+          
         return xPosition;
+        
       }
     });
- int FPS_MIN = 0;
-   int FPS_MAX = 1000;
-     int FPS_INIT = 0;
+    int FPS_MIN = 0;
+    int FPS_MAX = 1000;
+    int FPS_INIT = 0;
      
      
     //JSlider slider = new JSlider(JSlider.HORIZONTAL,FPS_MIN, FPS_MAX, FPS_INIT);
      
     JSlider slider = new JSlider(JSlider.HORIZONTAL);
+      MouseListener[] a = slider.getMouseListeners();
+         slider.removeMouseListener(slider.getMouseListeners()[0]);
+         slider.removeMouseMotionListener(slider.getMouseMotionListeners()[0]);
+       //  slider.removeMouseWheelListener(slider.getMouseWheelListeners()[0]);
+         
+         System.out.println("TAMAÑO: "+ a.length);
      
        
     slider.putClientProperty("Nimbus.Overrides", d);
@@ -1109,6 +1254,42 @@ public class Reproductor extends javax.swing.JFrame {
     return slider;
     
   }
+       public void cargaFace(boolean rever){
+       
+                System.out.println("--Comienzo grabaciones <FaceRecorder> --");
+                fF = new File(ruta+"/storeFaceRecorder/");
+                fileLstF = fF.listFiles();
+                icon1 = new ImageIcon(fileLstF[frameSegundoF].getAbsolutePath());
+                videoCara.setIcon(icon1);
+                if(rever == true){frameSegundoF-=1;}
+                else { frameSegundoF+=1;}
+                
+                calculoTiempo(frameSegundoF);
+                sliderTiempo.setValue(frameSegundoF);
+       }
+       public void cargaActivity(boolean rever){
+         fA = new File(ruta+"/storeActivityRender/");
+                fileLstA = fA.listFiles();
+                icon2 = new ImageIcon(fileLstA[frameSegundoA].getAbsolutePath());
+                videoActividad.setIcon(icon2);
+                if(rever == true){
+                frameSegundoA-=1;
+                }
+                else {frameSegundoA+=1;}
+                
+       }
+       public void cargaExterna(boolean rever){
+       
+                fE = new File(ruta+"/storeExternalPerspective");
+                fileLstE = fE.listFiles();
+       
+                
+                icon3 = new ImageIcon(fileLstE[frameSegundoE].getAbsolutePath());
+                videoExterno.setIcon(icon3);
+                if(rever == true){frameSegundoE-=1;}
+                else{frameSegundoE+=1;}
+       
+       }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel btnFinal;
