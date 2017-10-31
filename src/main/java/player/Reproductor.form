@@ -389,11 +389,13 @@
                 <Property name="minorTickSpacing" type="int" value="500"/>
                 <Property name="paintLabels" type="boolean" value="true"/>
                 <Property name="paintTicks" type="boolean" value="true"/>
+                <Property name="snapToTicks" type="boolean" value="true"/>
+                <Property name="toolTipText" type="java.lang.String" value="1"/>
                 <Property name="value" type="int" value="0"/>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                  <AbsoluteConstraints x="0" y="0" width="1290" height="40"/>
+                  <AbsoluteConstraints x="0" y="0" width="1280" height="60"/>
                 </Constraint>
               </Constraints>
             </Component>

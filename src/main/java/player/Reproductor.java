@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import static java.lang.Math.toIntExact;
 import java.util.Hashtable;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
@@ -127,12 +128,12 @@ public class Reproductor extends javax.swing.JFrame {
     public int frameSegundoE =0;
     String tiempoTotal;
     int posicionfinal = 0;
-    public boolean mouseDown, flechaArriba, flechaAbajo, flechaIzq, flechaDer;
+    public boolean mouseDown, flechaArriba, flechaAbajo, flechaIzq, flechaDer, espacio;
+    public int frameMas = 0;
     
     public Reproductor() {
         //initComponents();
-        iniciarComponentes();
-            JSONParser jsonParser = new JSONParser();
+                    JSONParser jsonParser = new JSONParser();
          
         try (FileReader reader = new FileReader("muestraSelecionada.json"))
         {
@@ -153,6 +154,8 @@ public class Reproductor extends javax.swing.JFrame {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        iniciarComponentes();
+
     
     }
        public void parseEmployeeObject(JSONObject employee)
@@ -198,18 +201,37 @@ public class Reproductor extends javax.swing.JFrame {
           videoExterno = new javax.swing.JLabel();
         
         //_____________________________________//
-        ;
+        
         sliderTiempo = new SliderSkinDemo2().makeUI();
+        
          sliderTiempo.setValue(0);
          sliderTiempo.setFocusTraversalKeysEnabled(false);
-      
+        //sliderTiempo.setMaximum(100); -> 10 segundos
+         sliderTiempo.setMaximum(50);
+        sliderTiempo.setMinorTickSpacing(1);
+       sliderTiempo.setPaintTicks(true);
+       Hashtable labelTable = new Hashtable();
+       int j = 0;
+        for (int i = 0; i < 51; i++) {
+            
+            if(j == 10){labelTable.put( i, new JLabel(String.valueOf(i)) ); j = 0;}
+            j = j+1;
+        
+        }
+        
+        sliderTiempo.setLabelTable( labelTable );
+
+        sliderTiempo.setPaintLabels(true);
+         
+       
+
   
          
         sliderTiempo.addKeyListener(new KeyAdapter(){
             @Override
             public void keyPressed(KeyEvent e){
                 
-                System.out.println("teclado");
+                
                 int keyCode = e.getKeyCode();
             switch( keyCode ) { 
                 case KeyEvent.VK_UP:
@@ -221,6 +243,11 @@ public class Reproductor extends javax.swing.JFrame {
                     // handle down 
                     flechaAbajo = true;
                     System.out.println("down");
+                    break;
+                case KeyEvent.VK_SPACE:
+                    espacio = true;
+                    btnPlayMouseClicked();
+                    System.out.println("ESPACIOOOOOOO");
                     break;
                 case KeyEvent.VK_LEFT:
                     // handle left
@@ -245,9 +272,30 @@ public class Reproductor extends javax.swing.JFrame {
         
         btnPlay.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-             btnPlayMouseClicked(evt);
+             btnPlayMouseClicked();
             }
         });
+        btnPlay.addKeyListener(new java.awt.event.KeyAdapter() {
+                       @Override
+            public void keyPressed(KeyEvent e){
+                
+                System.out.println("teclado");
+                int keyCode = e.getKeyCode();
+                           System.out.println("keyCode: "+ keyCode);
+            switch( keyCode ) { 
+                
+                case KeyEvent.VK_SPACE:
+                    espacio = true;
+                    btnPlayMouseClicked();
+                    System.out.println("ESPACIO");
+                    break;
+            
+             }
+             }
+        
+        
+        });
+        
 
 
     //_____________________________________//
@@ -432,13 +480,12 @@ public class Reproductor extends javax.swing.JFrame {
         vistaTiempo.setBackground(new java.awt.Color(153, 153, 0));
         vistaTiempo.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        sliderTiempo.setMaximum(1000);
-        sliderTiempo.setMinorTickSpacing(500);
-        sliderTiempo.setPaintLabels(true);
-        sliderTiempo.setPaintTicks(true);
-        vistaTiempo.add(sliderTiempo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1290, 40));
+        
+        
+        vistaTiempo.add(sliderTiempo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1280, 60));
 
         principal.add(vistaTiempo, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 370, 1290, 60));
+
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -471,7 +518,7 @@ public class Reproductor extends javax.swing.JFrame {
         
         
     }
-    private void btnPlayMouseClicked(java.awt.event.MouseEvent evt) {                                        
+    private void btnPlayMouseClicked() {                                        
 
     /*    detener = false;
         //Se determina si es el primer inicio para determinar el largo y la división de las lineas de tiempoDuracionMuestra
@@ -549,7 +596,9 @@ public class Reproductor extends javax.swing.JFrame {
                 }
                 frameSegundoF+=1;
                  calculoTiempo(frameSegundoF);
-                sliderTiempo.setValue(frameSegundoF);
+                 
+                    sliderTiempo.setValue(frameSegundoF);
+                    
                 Thread.sleep(captureInterval);
                 }
                 
@@ -894,8 +943,10 @@ public class Reproductor extends javax.swing.JFrame {
         sliderTiempo.setMinorTickSpacing(500);
         sliderTiempo.setPaintLabels(true);
         sliderTiempo.setPaintTicks(true);
+        sliderTiempo.setSnapToTicks(true);
+        sliderTiempo.setToolTipText("1");
         sliderTiempo.setValue(0);
-        vistaTiempo.add(sliderTiempo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1290, 40));
+        vistaTiempo.add(sliderTiempo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1280, 60));
 
         principal.add(vistaTiempo, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 370, 1290, 60));
 
@@ -1175,9 +1226,22 @@ public class Reproductor extends javax.swing.JFrame {
               
               }
               if(flechaArriba == true){
-                  frameSegundoA = frameSegundoA + 1;
-                  frameSegundoF = frameSegundoF + 1;
-                  frameSegundoE = frameSegundoE + 1;
+                  if(frameMas>=frameSegundoA + 1){frameSegundoA = frameSegundoA + 1;}
+                  else{
+                      frameSegundoA = frameMas;
+                      
+                    
+                  }
+                  
+                  if(frameMas>=frameSegundoF + 1){frameSegundoF = frameSegundoF + 1; calculoTiempo(frameSegundoF);}
+                  else{
+                      frameSegundoF = frameMas;
+                      calculoTiempo(frameSegundoF);
+                  
+                  }
+                  
+                  if(frameMas>=frameSegundoE + 1){frameSegundoE = frameSegundoE + 1;}
+                  else{frameSegundoE = frameMas;}
                   posicionfinal = xPosition;
                   flechaArriba = false;
                   
@@ -1188,9 +1252,14 @@ public class Reproductor extends javax.swing.JFrame {
                   return posicionfinal;
               }
               if(flechaAbajo == true){
-                  frameSegundoA = frameSegundoA - 1;
-                  frameSegundoF = frameSegundoF - 1;
-                  frameSegundoE = frameSegundoE - 1;
+                  if(0<=frameSegundoA - 1){frameSegundoA = frameSegundoA - 1;}
+                  else{frameSegundoA = 0;}
+                  
+                  if(0<=frameSegundoF - 1){frameSegundoF = frameSegundoF - 1; calculoTiempo(frameSegundoF);}
+                  else{frameSegundoF = 0; calculoTiempo(0);}
+                  
+                  if(0<=frameSegundoE - 1){frameSegundoE = frameSegundoE - 1;}
+                  else{frameSegundoE = 0;}
                   posicionfinal = xPosition;
                   flechaAbajo = false;
                   
@@ -1201,10 +1270,16 @@ public class Reproductor extends javax.swing.JFrame {
               }
               if(flechaIzq == true){
                   
-                  frameSegundoA = frameSegundoA - 1;
-                  frameSegundoF = frameSegundoF - 1;
-                  frameSegundoE = frameSegundoE - 1;
+                  if(0<=frameSegundoA - 1){frameSegundoA = frameSegundoA - 1;}
+                  else{frameSegundoA = 0;}
+                  
+                  if(0<=frameSegundoF - 1){frameSegundoF = frameSegundoF - 1; calculoTiempo(frameSegundoF);}
+                  else{frameSegundoF = 0; calculoTiempo(0);}
+                  
+                  if(0<=frameSegundoE - 1){frameSegundoE = frameSegundoE - 1;}
+                  else{frameSegundoE = 0;}
                   posicionfinal = xPosition;
+                  
                   cargaFace(true);
                   cargaActivity(true);
                   cargaExterna(true);
@@ -1212,9 +1287,16 @@ public class Reproductor extends javax.swing.JFrame {
                   return posicionfinal;
               }
               if(flechaDer == true){
-                  frameSegundoA = frameSegundoA + 1;
-                  frameSegundoF = frameSegundoF + 1;
-                  frameSegundoE = frameSegundoE + 1;
+                  if(frameMas>=frameSegundoA + 1){frameSegundoA = frameSegundoA + 1;}
+                  else{frameSegundoA = frameMas;}
+                  
+                  if(frameMas>=frameSegundoF + 1){frameSegundoF = frameSegundoF + 1; calculoTiempo(frameSegundoF);}
+                  else{frameSegundoF = frameMas; calculoTiempo(frameSegundoF);}
+                  
+                  if(frameMas>=frameSegundoE + 1){frameSegundoE = frameSegundoE + 1;}
+                  else{frameSegundoE = frameMas;}
+                  
+                  
                   posicionfinal = xPosition;
                   cargaFace(false);
                   cargaActivity(false);
@@ -1233,14 +1315,12 @@ public class Reproductor extends javax.swing.JFrame {
         
       }
     });
-    int FPS_MIN = 0;
-    int FPS_MAX = 1000;
-    int FPS_INIT = 0;
-     
+
      
     //JSlider slider = new JSlider(JSlider.HORIZONTAL,FPS_MIN, FPS_MAX, FPS_INIT);
      
     JSlider slider = new JSlider(JSlider.HORIZONTAL);
+  
       MouseListener[] a = slider.getMouseListeners();
          slider.removeMouseListener(slider.getMouseListeners()[0]);
          slider.removeMouseMotionListener(slider.getMouseMotionListeners()[0]);
@@ -1250,7 +1330,7 @@ public class Reproductor extends javax.swing.JFrame {
      
        
     slider.putClientProperty("Nimbus.Overrides", d);
-      
+      cantFrames();
     return slider;
     
   }
@@ -1264,7 +1344,7 @@ public class Reproductor extends javax.swing.JFrame {
                 if(rever == true){frameSegundoF-=1;}
                 else { frameSegundoF+=1;}
                 
-                calculoTiempo(frameSegundoF);
+                
                 sliderTiempo.setValue(frameSegundoF);
        }
        public void cargaActivity(boolean rever){
@@ -1288,6 +1368,25 @@ public class Reproductor extends javax.swing.JFrame {
                 videoExterno.setIcon(icon3);
                 if(rever == true){frameSegundoE-=1;}
                 else{frameSegundoE+=1;}
+       
+       }
+       public void cantFrames(){
+           System.out.println("ruta:"+ ruta);
+            fE = new File(ruta+"/storeExternalPerspective");
+            File[] afileLstE = fE.listFiles();
+            int tamanoE = toIntExact(afileLstE.length);
+            
+            fA = new File(ruta+"/storeActivityRender/");
+            File[] afileLstA = fA.listFiles();
+            int tamanoA = toIntExact(afileLstA.length);
+            
+            fF = new File(ruta+"/storeFaceRecorder/");
+            File[] afileLstF = fF.listFiles();
+            int tamanoF = toIntExact(afileLstF.length);
+            
+            frameMas = Math.min(Math.min(tamanoE,tamanoA),tamanoF);
+            System.out.println("CANTIDAD DE ARCHIVOS: "+ frameMas);
+       
        
        }
     }
