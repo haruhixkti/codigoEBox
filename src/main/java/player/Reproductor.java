@@ -179,6 +179,7 @@ public class Reproductor extends javax.swing.JFrame {
     }
     private void iniciarComponentes(){
         
+        
         principal = new javax.swing.JPanel();
         vistaPerspectivaCara = new javax.swing.JPanel();
         videoCara = new javax.swing.JLabel();
@@ -205,16 +206,18 @@ public class Reproductor extends javax.swing.JFrame {
         sliderTiempo = new SliderSkinDemo2().makeUI();
         
          sliderTiempo.setValue(0);
-         sliderTiempo.setFocusTraversalKeysEnabled(false);
+         //sliderTiempo.setFocusTraversalKeysEnabled(false);
         //sliderTiempo.setMaximum(100); -> 10 segundos
-         sliderTiempo.setMaximum(50);
-        sliderTiempo.setMinorTickSpacing(1);
-       sliderTiempo.setPaintTicks(true);
+        int tiempo = 100;
+         sliderTiempo.setMaximum(tiempo);
+         sliderTiempo.setMinorTickSpacing(1);
+         sliderTiempo.setPaintTicks(true);
+       
        Hashtable labelTable = new Hashtable();
        int j = 0;
-        for (int i = 0; i < 51; i++) {
+        for (int i = 0; i <= tiempo; i++) {
             
-            if(j == 10){labelTable.put( i, new JLabel(String.valueOf(i)) ); j = 0;}
+            if(j == 10){labelTable.put( i, new JLabel(String.valueOf(i/10)) ); j = 0;}
             j = j+1;
         
         }
@@ -591,13 +594,13 @@ public class Reproductor extends javax.swing.JFrame {
                 
                 icon1 = new ImageIcon(fileLstF[frameSegundoF].getAbsolutePath());
                 videoCara.setIcon(icon1);
-                if(frameSegundoF == fileLstF.length-1 ){
+                if(frameSegundoF == frameMas ){
                     isRunning = false;
                 }
-                frameSegundoF+=1;
+                 frameSegundoF+=1;
                  calculoTiempo(frameSegundoF);
-                 
-                    sliderTiempo.setValue(frameSegundoF);
+                    System.out.println("frame que se le suma: "+ frameSegundoF);
+                 sliderTiempo.setValue(frameSegundoF);
                     
                 Thread.sleep(captureInterval);
                 }
@@ -625,7 +628,9 @@ public class Reproductor extends javax.swing.JFrame {
                 
                 icon2 = new ImageIcon(fileLstA[frameSegundoA].getAbsolutePath());
                 videoActividad.setIcon(icon2);
-                
+                if(frameSegundoA == frameMas ){
+                    isRunning = false;
+                }
                 frameSegundoA+=1;
                 Thread.sleep(captureInterval);
                 }
@@ -651,7 +656,9 @@ public class Reproductor extends javax.swing.JFrame {
                 
                 icon3 = new ImageIcon(fileLstE[frameSegundoE].getAbsolutePath());
                 videoExterno.setIcon(icon3);
-                
+                 if(frameSegundoE == frameMas ){
+                    isRunning = false;
+                }
                 frameSegundoE+=1;
                 Thread.sleep(captureInterval);
                 }
@@ -734,7 +741,7 @@ public class Reproductor extends javax.swing.JFrame {
         }
         
       tiempoTotal = minutosStr+":"+segundosStr+":"+millesimasStr;
-      
+        System.out.println("TIEMPO TOTAL: "+tiempoTotal );
       jLabel8.setText(tiempoTotal);
         
     }
@@ -1287,13 +1294,19 @@ public class Reproductor extends javax.swing.JFrame {
                   return posicionfinal;
               }
               if(flechaDer == true){
-                  if(frameMas>=frameSegundoA + 1){frameSegundoA = frameSegundoA + 1;}
+                  if(frameMas>=frameSegundoA + 1){
+                      frameSegundoA = frameSegundoA + 1;
+                  }
                   else{frameSegundoA = frameMas;}
                   
-                  if(frameMas>=frameSegundoF + 1){frameSegundoF = frameSegundoF + 1; calculoTiempo(frameSegundoF);}
+                  if(frameMas>=frameSegundoF + 1){
+                      frameSegundoF = frameSegundoF + 1; calculoTiempo(frameSegundoF);
+                  }
                   else{frameSegundoF = frameMas; calculoTiempo(frameSegundoF);}
                   
-                  if(frameMas>=frameSegundoE + 1){frameSegundoE = frameSegundoE + 1;}
+                  if(frameMas>=frameSegundoE + 1){
+                      frameSegundoE = frameSegundoE + 1;
+                  }
                   else{frameSegundoE = frameMas;}
                   
                   
@@ -1341,10 +1354,10 @@ public class Reproductor extends javax.swing.JFrame {
                 fileLstF = fF.listFiles();
                 icon1 = new ImageIcon(fileLstF[frameSegundoF].getAbsolutePath());
                 videoCara.setIcon(icon1);
-                if(rever == true){frameSegundoF-=1;}
-                else { frameSegundoF+=1;}
+              /*  if(rever == true){frameSegundoF-=1;}
+                else { frameSegundoF+=1;}*/
                 
-                
+                System.out.println("FRAME SUMADO: "+ frameSegundoF);
                 sliderTiempo.setValue(frameSegundoF);
        }
        public void cargaActivity(boolean rever){
@@ -1352,10 +1365,10 @@ public class Reproductor extends javax.swing.JFrame {
                 fileLstA = fA.listFiles();
                 icon2 = new ImageIcon(fileLstA[frameSegundoA].getAbsolutePath());
                 videoActividad.setIcon(icon2);
-                if(rever == true){
+               /* if(rever == true){
                 frameSegundoA-=1;
                 }
-                else {frameSegundoA+=1;}
+                else {frameSegundoA+=1;}*/
                 
        }
        public void cargaExterna(boolean rever){
@@ -1366,8 +1379,8 @@ public class Reproductor extends javax.swing.JFrame {
                 
                 icon3 = new ImageIcon(fileLstE[frameSegundoE].getAbsolutePath());
                 videoExterno.setIcon(icon3);
-                if(rever == true){frameSegundoE-=1;}
-                else{frameSegundoE+=1;}
+               /* if(rever == true){frameSegundoE-=1;}
+                else{frameSegundoE+=1;}*/
        
        }
        public void cantFrames(){
