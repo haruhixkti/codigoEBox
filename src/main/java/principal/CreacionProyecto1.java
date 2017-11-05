@@ -5,12 +5,25 @@
  */
 package principal;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.Normalizer;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 /**
  *
  * @author Katherine
  */
 public class CreacionProyecto1 extends javax.swing.JFrame {
+
     boolean edit = false;
+    public String nombreProyecto, codigoProyecto, descripcionProyecto, ruta;
+
     /**
      * Creates new form VentanaPrincipal
      */
@@ -145,7 +158,6 @@ public class CreacionProyecto1 extends javax.swing.JFrame {
             }
         });
 
-        txtDescripcionMuestra.setEditable(false);
         txtDescripcionMuestra.setColumns(20);
         txtDescripcionMuestra.setFont(new java.awt.Font("Roboto Light", 0, 24)); // NOI18N
         txtDescripcionMuestra.setForeground(new java.awt.Color(117, 117, 117));
@@ -231,6 +243,11 @@ public class CreacionProyecto1 extends javax.swing.JFrame {
         jButton1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(33, 33, 33)));
         jButton1.setContentAreaFilled(false);
         jButton1.setFocusPainted(false);
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -372,7 +389,7 @@ public class CreacionProyecto1 extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void txtNombreProyectoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNombreProyectoFocusGained
@@ -409,13 +426,77 @@ public class CreacionProyecto1 extends javax.swing.JFrame {
 
     private void btnSeleccionarDestinoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSeleccionarDestinoMouseClicked
         // TODO add your handling code here:
-        if(edit == false){
+        if (edit == false) {
             txtDescripcionMuestra.setEditable(true);
-            
+
+        }
+
+        seleccionarArchivo(JFileChooser.DIRECTORIES_ONLY, "Guardar", path, "", "C:\\");
+        System.out.println("path: " + path.getText());
+
+
+    }//GEN-LAST:event_btnSeleccionarDestinoMouseClicked
+
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+        // TODO add your handling code here:
+        nombreProyecto = txtNombreProyecto.getText();
+        codigoProyecto = txtCodigoProyecto.getText();
+        descripcionProyecto = txtDescripcionMuestra.getText();
+        ruta = path.getText();
+
+        JSONArray employeeList = new JSONArray();
+
+        JSONObject employeeDetails = new JSONObject();
+        employeeDetails.put("nombre", limpiaTexto(nombreProyecto));
+        employeeDetails.put("destino", limpiaTexto(path.getText()));
+        employeeDetails.put("codigo", limpiaTexto(codigoProyecto));
+        employeeDetails.put("descripcion", descripcionProyecto);
+
+        JSONObject employeeObject = new JSONObject();
+        employeeObject.put("proyecto", employeeDetails);
+        employeeList.add(employeeObject);
+
+        try (FileWriter file = new FileWriter("informacionProyecto.json")) {
+
+            file.write(employeeList.toJSONString());
+            file.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         
-        
-    }//GEN-LAST:event_btnSeleccionarDestinoMouseClicked
+        CreacionProyecto2 creacionProyecto2 = new CreacionProyecto2();
+        creacionProyecto2.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_jButton1MouseClicked
+
+    public String limpiaTexto(String txt) {
+        String nFinal1 = txt.replaceAll("\\s+", "");
+        nFinal1 = Normalizer.normalize(nFinal1, Normalizer.Form.NFD);
+        nFinal1 = nFinal1.replaceAll("[^\\p{ASCII}]", "");
+        nFinal1 = nFinal1.replaceAll("\\p{M}", "");
+        nFinal1 = nFinal1.replaceAll("\\s+", "");
+
+        return nFinal1;
+
+    }
+
+    private void seleccionarArchivo(int fileSelectionMode, String approveButtonText, JLabel field, String fileFilter, String currentDirectory) {
+        System.out.println("entre");
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(fileSelectionMode);
+        if (!"".equals(fileFilter)) {
+            FileNameExtensionFilter filtro = new FileNameExtensionFilter("*." + fileFilter, fileFilter.toLowerCase(), fileFilter.toUpperCase());
+            fileChooser.setFileFilter(filtro);
+        }
+        fileChooser.setCurrentDirectory(new File(currentDirectory));
+        int result = fileChooser.showDialog(this, approveButtonText);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            field.setText(selectedFile.getAbsolutePath());
+        }
+
+    }
 
     /**
      * @param args the command line arguments

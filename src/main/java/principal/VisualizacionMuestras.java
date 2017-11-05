@@ -11,7 +11,6 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -19,7 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 import player.Reproductor;
- 
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -30,88 +29,87 @@ import org.json.simple.parser.ParseException;
  * @author Katherine
  */
 public class VisualizacionMuestras extends javax.swing.JFrame {
+
     public static String nombreProyecto = "eBox";
     public static String storeMuestras = "muestras";
     public static String storeMuestra = "muestra";
     public static String storeActivityRender = "activityRender";
     public static String storeFaceRecorder = "faceRecorder";
     public boolean carpetaPrincipalCreada = false;
-    public int cantidadMuestras = 0 ;
+    public int cantidadMuestras = 0;
     Webcam webcam;
     boolean isRunning = false;
     boolean repr = true;
     public boolean activityRender = true;
     public boolean faceRecorder = true;
     BufferedImage image2;
-    Thread t1,t2;
-   int cantidadFrame = 0;
-   
-    long tiempoFaceRecorderi, tiempoActivityRenderi, tiempoFaceRecorderf, tiempoActivityRenderf;
-    String codigoMuestra,tiempoTotal;
-    
-    public File fA,fF;   
-    public File[] fileLstA, fileLstF;
-  
-        //frames que han sido mostrados
-    public int frameSegundoA =0;
-    public int frameSegundoF =0;
-    
-           /**
-	 * Screen Width.
-	 */
-	public static int screenWidth = (int) Toolkit.getDefaultToolkit()
-			.getScreenSize().getWidth();
+    Thread t1, t2;
+    int cantidadFrame = 0;
 
-	/**
-	 * Screen Height.
-	 */
-	public static int screenHeight = (int) Toolkit.getDefaultToolkit()
-			.getScreenSize().getHeight();
-            //Ancho máximo
-          public static int MAX_WIDTH=320;
-            //Alto máximo
-          public static int MAX_HEIGHT=300;
-	/**
-	 * Interval between which the image needs to be captured.
-	 */
-      // 10 FPS Thread.sleep(100);
-      // 20 FPS -> (50)
-      // 25 FPS -> (40)
-	public static int captureInterval = 100;
-        public static int fps = 10;
-        String nombreCarpeta, nombreMuestraActual;
-        public ArrayList<String> rutasMuestras = new ArrayList<>();
-        public ArrayList<String> duracionMuestras = new ArrayList<>();
-        public ArrayList<String> nombreMuestras = new ArrayList<>();
-        public ArrayList<String> nombreIndividuo = new ArrayList<>();
-        public ArrayList<String> descripcionMuestra = new ArrayList<>();
-        boolean edit = false;
-        int muestraTablaActual;
-    
+    long tiempoFaceRecorderi, tiempoActivityRenderi, tiempoFaceRecorderf, tiempoActivityRenderf;
+    String codigoMuestra, tiempoTotal;
+
+    public File fA, fF;
+    public File[] fileLstA, fileLstF;
+
+    //frames que han sido mostrados
+    public int frameSegundoA = 0;
+    public int frameSegundoF = 0;
+
+    /**
+     * Screen Width.
+     */
+    public static int screenWidth = (int) Toolkit.getDefaultToolkit()
+            .getScreenSize().getWidth();
+
+    /**
+     * Screen Height.
+     */
+    public static int screenHeight = (int) Toolkit.getDefaultToolkit()
+            .getScreenSize().getHeight();
+    //Ancho máximo
+    public static int MAX_WIDTH = 320;
+    //Alto máximo
+    public static int MAX_HEIGHT = 300;
+    /**
+     * Interval between which the image needs to be captured.
+     */
+    // 10 FPS Thread.sleep(100);
+    // 20 FPS -> (50)
+    // 25 FPS -> (40)
+    public static int captureInterval = 100;
+    public static int fps = 10;
+    String nombreCarpeta, nombreMuestraActual;
+    public ArrayList<String> rutasMuestras = new ArrayList<>();
+    public ArrayList<String> duracionMuestras = new ArrayList<>();
+    public ArrayList<String> nombreMuestras = new ArrayList<>();
+    public ArrayList<String> nombreIndividuo = new ArrayList<>();
+    public ArrayList<String> descripcionMuestra = new ArrayList<>();
+    boolean edit = false;
+    int muestraTablaActual;
+
     /**
      * Creates new form VentanaPrincipal
      */
-    
     public VisualizacionMuestras() {
         System.out.println("entre a visualizacion");
         initComponents();
         jPanel2.setVisible(false);
         jPanel8.setVisible(true);
-     //JSON parser object to parse read file
+        
+        //JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();
-         
-        try (FileReader reader = new FileReader("informacion.json"))
-        {
+
+        try (FileReader reader = new FileReader("informacion.json")) {
             //Read JSON file
             Object obj = jsonParser.parse(reader);
- 
+
             JSONArray employeeList = (JSONArray) obj;
             System.out.println(employeeList);
-             
+
             //Iterate over employee array
-            employeeList.forEach( emp -> parseEmployeeObject( (JSONObject) emp ) );
-            
- 
+            employeeList.forEach(emp -> parseEmployeeObject((JSONObject) emp));
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -119,36 +117,36 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        
+
         for (int i = 0; i < rutasMuestras.size(); i++) {
-            System.out.println("finalmente1: "+ rutasMuestras.get(i));
-            System.out.println("finalmente2: "+ duracionMuestras.get(i));
+            System.out.println("finalmente1: " + rutasMuestras.get(i));
+            System.out.println("finalmente2: " + duracionMuestras.get(i));
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
             model.addRow(new Object[]{nombreMuestras.get(i), duracionMuestras.get(i)});
             nombreIndividuo.add("");
             descripcionMuestra.add("");
-            
+
         }
-        
+
     }
-    public void parseEmployeeObject(JSONObject employee)
-    {
-            //Get employee object within list
+
+    public void parseEmployeeObject(JSONObject employee) {
+        //Get employee object within list
         JSONObject employeeObject = (JSONObject) employee.get("directorio");
-         
+
         //Get employee first name
-        String firstName = (String) employeeObject.get("ruta");   
+        String firstName = (String) employeeObject.get("ruta");
         rutasMuestras.add(firstName);
         System.out.println(firstName);
-        
-        String secondName = (String) employeeObject.get("tiempo");   
+
+        String secondName = (String) employeeObject.get("tiempo");
         duracionMuestras.add(secondName);
         System.out.println(secondName);
-         
-        String tresName = (String) employeeObject.get("nombre");   
+
+        String tresName = (String) employeeObject.get("nombre");
         nombreMuestras.add(tresName);
         System.out.println(tresName);
-         
+
     }
 
     /**
@@ -774,69 +772,61 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
 
     private void jButtonDetenerMinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDetenerMinActionPerformed
         // TODO add your handling code here:
-        
+
     }//GEN-LAST:event_jButtonDetenerMinActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
         // TODO add your handling code here:
-        
+
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
         // TODO add your handling code here:
-        
-        
-        
+
+
     }//GEN-LAST:event_jLabel3MouseClicked
 
     private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
         // TODO add your handling code here:
-        
-            // TODO add your handling code here:
-               JSONArray employeeList = new JSONArray();
-        
-         
-            JSONObject employeeDetails = new JSONObject();
+
+        // TODO add your handling code here:
+        JSONArray employeeList = new JSONArray();
+
+        JSONObject employeeDetails = new JSONObject();
         employeeDetails.put("ruta", rutasMuestras.get(muestraTablaActual));
         employeeDetails.put("tiempo", duracionMuestras.get(muestraTablaActual));
         employeeDetails.put("nombre", nombreMuestras.get(muestraTablaActual));
-         
+
         JSONObject employeeObject = new JSONObject();
         employeeObject.put("directorio", employeeDetails);
         employeeList.add(employeeObject);
-        
 
         try (FileWriter file = new FileWriter("muestraSelecionada.json")) {
- 
+
             file.write(employeeList.toJSONString());
             file.flush();
- 
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
-       Reproductor reproductor = new Reproductor();
-       reproductor.setVisible(true);
-       this.setVisible(false);
-        
-        
-        
-   
+
+        Reproductor reproductor = new Reproductor();
+        reproductor.setVisible(true);
+        this.setVisible(false);
+
+
     }//GEN-LAST:event_jButton4MouseClicked
 
     private void jButton5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseClicked
         // TODO add your handling code here:
-        if(edit==false){
+        if (edit == false) {
             txtNombredelIndividuo.setEditable(true);
             txtDescripcionMuestra.setEditable(true);
-            
-            
+
             edit = true;
-            
+
             jButton5.setText("Guardar");
-        }
-        else
-        {
+        } else {
             nombreIndividuo.add(muestraTablaActual, txtNombredelIndividuo.getText());
             descripcionMuestra.add(muestraTablaActual, txtDescripcionMuestra.getText());
             txtNombredelIndividuo.setEditable(false);
@@ -844,37 +834,37 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
             edit = false;
             jButton5.setText("Editar");
         }
-        
+
     }//GEN-LAST:event_jButton5MouseClicked
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // TODO add your handling code here:
-        
-        
+
+
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
         // TODO add your handling code here:
-           int row = jTable1.rowAtPoint(evt.getPoint());
-           int col = jTable1.columnAtPoint(evt.getPoint());
-           if (row >= 0 && col >= 0) {
-               jPanel2.setVisible(true);
-               jPanel8.setVisible(false);
-               if( jButton5.getText() == "Guardar"){
-                   
-                    txtNombredelIndividuo.setEditable(false);
-                    txtDescripcionMuestra.setEditable(false);
-                    edit = false;
-                    jButton5.setText("Editar");
-               }
-               nombreMuestra.setText(nombreMuestras.get(row));
-               txtNombredelIndividuo.setText(nombreIndividuo.get(row));
-               txtDescripcionMuestra.setText(descripcionMuestra.get(row));
-               muestraTablaActual = row;
-               System.out.println("row: "+ row);
-               System.out.println("col: "+ col);
-           }
-        
+        int row = jTable1.rowAtPoint(evt.getPoint());
+        int col = jTable1.columnAtPoint(evt.getPoint());
+        if (row >= 0 && col >= 0) {
+            jPanel2.setVisible(true);
+            jPanel8.setVisible(false);
+            if (jButton5.getText() == "Guardar") {
+
+                txtNombredelIndividuo.setEditable(false);
+                txtDescripcionMuestra.setEditable(false);
+                edit = false;
+                jButton5.setText("Editar");
+            }
+            nombreMuestra.setText(nombreMuestras.get(row));
+            txtNombredelIndividuo.setText(nombreIndividuo.get(row));
+            txtDescripcionMuestra.setText(descripcionMuestra.get(row));
+            muestraTablaActual = row;
+            System.out.println("row: " + row);
+            System.out.println("col: " + col);
+        }
+
     }//GEN-LAST:event_jTable1MouseClicked
 
     /**

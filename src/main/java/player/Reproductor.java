@@ -208,9 +208,11 @@ public class Reproductor extends javax.swing.JFrame {
          sliderTiempo.setValue(0);
          //sliderTiempo.setFocusTraversalKeysEnabled(false);
         //sliderTiempo.setMaximum(100); -> 10 segundos
-        int tiempo = 100;
-         sliderTiempo.setMaximum(tiempo);
-         sliderTiempo.setMinorTickSpacing(1);
+        //600-> 1 minuto (60 segundos)
+        //130->13 segundos 
+        int tiempo = 600;
+         sliderTiempo.setMaximum(frameMas);
+         sliderTiempo.setMinorTickSpacing(10);
          sliderTiempo.setPaintTicks(true);
        
        Hashtable labelTable = new Hashtable();

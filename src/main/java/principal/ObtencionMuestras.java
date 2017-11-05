@@ -24,6 +24,8 @@ import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import javax.imageio.ImageIO;
 import java.awt.Robot;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
@@ -40,19 +42,22 @@ import static jmapps.ui.ImageArea.loadImage;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 /**
  *
  * @author Katherine
  */
 public class ObtencionMuestras extends javax.swing.JFrame {
-    public static String nombreProyecto = "eBox";
+
     public static String storeMuestras = "muestras";
     public static String storeMuestra = "muestra";
     public static String storeActivityRender = "activityRender";
     public static String storeFaceRecorder = "faceRecorder";
     public static String storeExternalPerspective = "ExternalPerspective";
     public boolean carpetaPrincipalCreada = false;
-    public int cantidadMuestras = 0 ;
+    public int cantidadMuestras = 0;
     Webcam webcamPC, webcamCelu;
     boolean isRunning = false;
     boolean repr = true;
@@ -60,60 +65,186 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     public boolean faceRecorder = true;
     public boolean externalPerspective = true;
     BufferedImage image2, image3;
-    Thread t1,t2,t3;
-   int cantidadFrame = 0;
+    Thread t1, t2, t3;
+    int cantidadFrame = 0;
     final CyclicBarrier gate = new CyclicBarrier(4);
     final CyclicBarrier gate2 = new CyclicBarrier(4);
     long tiempoFaceRecorderi, tiempoActivityRenderi, tiempoFaceRecorderf, tiempoActivityRenderf;
-    String codigoMuestra,tiempoTotal;
-    
-    public File fA,fF,fE;   
-    public File[] fileLstA, fileLstF,fileLstE;
-    public ImageIcon icon, icon2; 
-        //frames que han sido mostrados
-    public int frameSegundoA =0;
-    public int frameSegundoF =0;
-    public int frameSegundoE =0;
+    String codigoMuestra, tiempoTotal;
+
+    public File fA, fF, fE;
+    public File[] fileLstA, fileLstF, fileLstE;
+    public ImageIcon icon, icon2;
+    //frames que han sido mostrados
+    public int frameSegundoA = 0;
+    public int frameSegundoF = 0;
+    public int frameSegundoE = 0;
     public ArrayList<String> rutasMuestras = new ArrayList<>();
     public ArrayList<String> nombreMuestras = new ArrayList<>();
     public ArrayList<String> duracionMuestras = new ArrayList<>();
 
-           /**
-	 * Screen Width.
-	 */
-	public static int screenWidth = (int) Toolkit.getDefaultToolkit()
-			.getScreenSize().getWidth();
+    /**
+     * Screen Width.
+     */
+    public static int screenWidth = (int) Toolkit.getDefaultToolkit()
+            .getScreenSize().getWidth();
 
-	/**
-	 * Screen Height.
-	 */
-	public static int screenHeight = (int) Toolkit.getDefaultToolkit()
-			.getScreenSize().getHeight();
-            //Ancho máximo
-          public static int MAX_WIDTH=320;
-            //Alto máximo
-          public static int MAX_HEIGHT=300;
-	/**
-	 * Interval between which the image needs to be captured.
-	 */
-      // 10 FPS Thread.sleep(100);
-      // 20 FPS -> (50)
-      // 25 FPS -> (40)
-	public static int captureInterval = 100;
-        public static int fps = 10;
-        String nombreCarpeta, nombreMuestraActual;
-        
-    
+    /**
+     * Screen Height.
+     */
+    public static int screenHeight = (int) Toolkit.getDefaultToolkit()
+            .getScreenSize().getHeight();
+    //Ancho máximo
+    public static int MAX_WIDTH = 320;
+    //Alto máximo
+    public static int MAX_HEIGHT = 300;
+    /**
+     * Interval between which the image needs to be captured.
+     */
+    // 10 FPS Thread.sleep(100);
+    // 20 FPS -> (50)
+    // 25 FPS -> (40)
+    public static int captureInterval = 100;
+    public static int fps = 10;
+    String nombreCarpeta, nombreMuestraActual;
+    public boolean AR = false;
+    public boolean FR = false;
+    public boolean PE = false;
+    public int objeto = 0;
+
+    public String nombreProyecto, codigoProyecto, descripcionProyecto, ruta;
+
     /**
      * Creates new form VentanaPrincipal
      */
-
     public ObtencionMuestras() {
+        leerJson();
+        
         initComponents();
         creacionCarpetas();
+
     }
-    public void creacionCarpetas(){
-            /*
+
+    public void leerJson() {
+        //JSON parser object to parse read file
+        JSONParser jsonParser = new JSONParser();
+
+        try (FileReader reader = new FileReader("informacionProyecto.json")) {
+            //Read JSON file
+            Object obj = jsonParser.parse(reader);
+
+            JSONArray employeeList = (JSONArray) obj;
+            System.out.println(employeeList);
+
+            //Iterate over employee array
+            employeeList.forEach(emp -> parseEmployeeObject((JSONObject) emp));
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void parseEmployeeObject(JSONObject employee) {
+        //Get employee object within list
+
+        if (objeto == 0) {
+
+            JSONObject employeeObject = (JSONObject) employee.get("proyecto");
+
+            //Get employee first name
+            nombreProyecto = (String) employeeObject.get("nombre");
+            System.out.println(nombreProyecto);
+            ruta = (String) employeeObject.get("destino");
+            System.out.println(ruta);
+            codigoProyecto = (String) employeeObject.get("codigo");
+            System.out.println(codigoProyecto);
+            descripcionProyecto = (String) employeeObject.get("descripcion");
+            System.out.println(descripcionProyecto);
+
+            objeto += 1;
+
+        } else {
+            JSONObject employeeObject = (JSONObject) employee.get("perspectivas");
+
+            //Get employee first name
+            PE = stringToBoolean((String) employeeObject.get("perspectivaExterna"));
+            System.out.println(PE);
+            AR = stringToBoolean((String) employeeObject.get("perspectivaActividad"));
+            System.out.println(AR);
+            FR = stringToBoolean((String) employeeObject.get("perspectivaCara"));
+            System.out.println(FR);
+            
+        }
+
+    }
+
+    public boolean stringToBoolean(String elemento) {
+        if(elemento == "true") {
+            return true;
+
+        }
+        return false;
+
+    }
+
+    public void escribirJson() {
+        JSONArray employeeList = new JSONArray();
+
+        JSONObject employeeDetails1 = new JSONObject();
+        employeeDetails1.put("nombre", nombreProyecto);
+        employeeDetails1.put("destino", ruta);
+        employeeDetails1.put("codigo", codigoProyecto);
+        employeeDetails1.put("descripcion", descripcionProyecto);
+
+        JSONObject employeeObject = new JSONObject();
+        employeeObject.put("proyecto", employeeDetails1);
+        employeeList.add(employeeObject);
+
+        JSONObject employeeDetails2 = new JSONObject();
+        employeeDetails2.put("perspectivaCara", String.valueOf(FR));
+        employeeDetails2.put("perspectivaActividad", String.valueOf(AR));
+        employeeDetails2.put("perspectivaExterna", String.valueOf(PE));
+
+        JSONObject employeeObject2 = new JSONObject();
+        employeeObject2.put("perspectivas", employeeDetails2);
+        employeeList.add(employeeObject2);
+        
+        
+        for (int i = 0; i < cantidadMuestras; i++) {
+            JSONObject employeeDetails3 = new JSONObject();
+            employeeDetails3.put("ruta", rutasMuestras.get(i));
+            employeeDetails3.put("tiempo", duracionMuestras.get(i));
+            employeeDetails3.put("nombre", nombreMuestras.get(i));
+
+            JSONObject employeeObject3 = new JSONObject();
+            employeeObject3.put("muestra", employeeDetails3);
+            employeeList.add(employeeObject3);
+        }
+        try (FileWriter file = new FileWriter("informacionProyecto.json")) {
+
+            file.write(employeeList.toJSONString());
+            file.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        
+         
+
+
+
+   
+
+    }
+
+    public void creacionCarpetas() {
+        /*
     |-muestras(carpeta)
     |--m1(carpeta)
     |---acvtivityRender(carpeta)
@@ -132,45 +263,44 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     |---videoFaceRecorder(archivo)
     
     
-    */
-     nombreCarpeta = nombreProyecto+"Muestras";
-    if(carpetaPrincipalCreada == false){
-    //creacion de carpetas desde 0
+         */
+        nombreCarpeta = nombreProyecto + "Muestras";
+        if (carpetaPrincipalCreada == false) {
+            //creacion de carpetas desde 0
 
-    
-          File f1 = new File(nombreCarpeta);
-          f1.mkdir();
-          System.out.println("se creo el directorio de muestras: "+ nombreCarpeta);
-          carpetaPrincipalCreada = true;
+            File f1 = new File(nombreCarpeta);
+            f1.mkdir();
+            System.out.println("se creo el directorio de muestras: " + nombreCarpeta);
+            carpetaPrincipalCreada = true;
+        } else {
+            //creacion de carpetas de muestra
+            nombreMuestraActual = nombreCarpeta + "/Muestra" + String.valueOf(cantidadMuestras);
+            File f2 = new File(nombreMuestraActual);
+            f2.mkdir();
+            System.out.println("se creo el directorio de muestras: " + nombreMuestraActual);
+
+            if (activityRender) {
+                File f3 = new File(nombreMuestraActual + "/" + "storeActivityRender");
+                f3.mkdir();
+                System.out.println("se creo el directorio de muestras: " + nombreMuestraActual + "/" + "storeActivityRender");
+                storeActivityRender = nombreMuestraActual + "/" + "storeActivityRender" + "/";
+            }
+            if (faceRecorder) {
+                File f3 = new File(nombreMuestraActual + "/" + "storeFaceRecorder");
+                f3.mkdir();
+                System.out.println("se creo el directorio de muestras: " + nombreMuestraActual + "/" + "storeFaceRecorder");
+                storeFaceRecorder = nombreMuestraActual + "/" + "storeFaceRecorder" + "/";
+            }
+            if (externalPerspective) {
+                File f3 = new File(nombreMuestraActual + "/" + "storeExternalPerspective");
+                f3.mkdir();
+                System.out.println("se creo el directorio de muestras: " + nombreMuestraActual + "/" + "storeExternalPerspective");
+                storeExternalPerspective = nombreMuestraActual + "/" + "storeExternalPerspective" + "/";
+            }
+
+        }
     }
-    else{
-    //creacion de carpetas de muestra
-        nombreMuestraActual = nombreCarpeta+"/Muestra"+String.valueOf(cantidadMuestras);
-        File f2 = new File(nombreMuestraActual);
-        f2.mkdir();
-        System.out.println("se creo el directorio de muestras: "+ nombreMuestraActual);
-          
-          if(activityRender){
-              File f3 = new File(nombreMuestraActual+"/"+"storeActivityRender");
-              f3.mkdir();
-              System.out.println("se creo el directorio de muestras: "+ nombreMuestraActual+"/"+"storeActivityRender");
-              storeActivityRender = nombreMuestraActual+"/"+"storeActivityRender"+"/";
-          }
-          if(faceRecorder){
-              File f3 = new File(nombreMuestraActual+"/"+"storeFaceRecorder");
-              f3.mkdir();
-              System.out.println("se creo el directorio de muestras: "+ nombreMuestraActual+"/"+"storeFaceRecorder");
-              storeFaceRecorder = nombreMuestraActual+"/"+"storeFaceRecorder"+"/";
-          }
-          if(externalPerspective){
-              File f3 = new File(nombreMuestraActual+"/"+"storeExternalPerspective");
-              f3.mkdir();
-              System.out.println("se creo el directorio de muestras: "+ nombreMuestraActual+"/"+"storeExternalPerspective");
-              storeExternalPerspective = nombreMuestraActual+"/"+"storeExternalPerspective"+"/";
-          }
-    
-    }
-    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -786,7 +916,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -807,171 +937,162 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
-        
+
         System.out.println("Se iniciaran las grabaciones (se aumento en 1 la cantidad de muestras");
         cargando.setText("Cargando...");
-        cantidadMuestras+=1;
-        codigoMuestra= "cod1Muestra"+String.valueOf(cantidadMuestras);
+        cantidadMuestras += 1;
+        codigoMuestra = "cod1Muestra" + String.valueOf(cantidadMuestras);
         jLabel2.setText(codigoMuestra);
         isRunning = true;
-        cantidadFrame=0;
+        cantidadFrame = 0;
         System.out.println("Se crearan las carpetas");
         creacionCarpetas();
         System.out.println("Carpetas creadas");
-        
+
         System.out.println("Se iniciaran los thread");
         //FACERECORDEMSMARTPHONE
-     t3 = new Thread(){
-         @Override
-         public void run(){
-        
-             try {
-                 gate.await();
-                 System.out.println("****** Inicio captura de muestras face Celular ******");
-                 System.out.println("Se debio haber abierto la camara");
-                 long timeFRC = 0;
-                        
-                 
-                
-                while(isRunning){
-                       try {
-                         
-                         
-                         image3 = webcamCelu.getImage();
-                         timeFRC = System.currentTimeMillis();
-                         String ruta = storeExternalPerspective+timeFRC+".jpg";
-                         ImageIO.write(image3, "jpg", new File(ruta));
-                         copyImage(ruta, ruta);
-                         Thread.sleep(captureInterval);
-                         
-                         
-                     } catch (InterruptedException ex) {
-                         //Logger.getLogger(CameraTest.class.getName()).log(Level.SEVERE, null, ex);
-                     }  catch (IOException ex) {
-                        // Logger.getLogger(FaceRecorder.class.getName()).log(Level.SEVERE, null, ex);
-                     }
-                     
-                 }
-                 System.out.println("Captura de cara finalizada");
-                 
-             } catch (InterruptedException ex) {
-                 Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
-             } catch (BrokenBarrierException ex) {
-                 Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
-             }
-                 }};
-        //FACERECORDERWEBCAM
-         t1 = new Thread(){
-         @Override
-         public void run(){
-        
-             try {
-                 gate.await();
-                 System.out.println("****** Inicio captura de muestras face PC ******");
-                 System.out.println("Se debio haber abierto la camara");
-                 long timeAR = 0;
-                jFrameMin.setSize(198, 110);
-                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-                GraphicsDevice defaultScreen = ge.getDefaultScreenDevice();
-                Rectangle rect = defaultScreen.getDefaultConfiguration().getBounds();
-                int x = (int) rect.getMaxX() - jFrameMin.getWidth();
-                int y = (int) rect.getMaxY() - jFrameMin.getHeight();
-                jFrameMin.setLocation(x, y);
-                jFrameMin.setVisible(true);
-                setVisible(false);
-                
-                 
-                
-                while(isRunning){
-                       try {
-                         
-                         cantidadFrame+=1;
-                         image2 = webcamPC.getImage();
-                         timeAR = System.currentTimeMillis();
-                         ImageIO.write(image2, "jpg", new File(storeFaceRecorder+timeAR+".jpg"));
-                         calculoTiempo(cantidadFrame);
-                         Thread.sleep(captureInterval);
-                         
-                         
-                     } catch (InterruptedException ex) {
-                         //Logger.getLogger(CameraTest.class.getName()).log(Level.SEVERE, null, ex);
-                     }  catch (IOException ex) {
-                        // Logger.getLogger(FaceRecorder.class.getName()).log(Level.SEVERE, null, ex);
-                     }
-                     
-                 }
-                 System.out.println("Captura de cara finalizada");
-                 tiempoFaceRecorderf = System.currentTimeMillis()-tiempoFaceRecorderi;
-             } catch (InterruptedException ex) {
-                 Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
-             } catch (BrokenBarrierException ex) {
-                 Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
-             }
-                 }};
-        //ACTIVIY RENDER
-         t2 = new Thread(){
-        @Override
-        public void run(){
-            System.out.println("****** Inicio captura de muestras activity ******");  
-            long timeAR = 0;
-            tiempoActivityRenderi = System.currentTimeMillis();
-                    
+        t3 = new Thread() {
+            @Override
+            public void run() {
+
                 try {
-                       gate.await();
-                        Robot rt;
-                            try {
-                               rt = new Robot();
-                                    while (isRunning) {
-                       BufferedImage img = rt.createScreenCapture(new Rectangle(screenWidth,screenHeight));
-                       
+                    gate.await();
+                    System.out.println("****** Inicio captura de muestras face Celular ******");
+                    System.out.println("Se debio haber abierto la camara");
+                    long timeFRC = 0;
+
+                    while (isRunning) {
+                        try {
+
+                            image3 = webcamCelu.getImage();
+                            timeFRC = System.currentTimeMillis();
+                            String ruta = storeExternalPerspective + timeFRC + ".jpg";
+                            ImageIO.write(image3, "jpg", new File(ruta));
+                            copyImage(ruta, ruta);
+                            Thread.sleep(captureInterval);
+
+                        } catch (InterruptedException ex) {
+                            //Logger.getLogger(CameraTest.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (IOException ex) {
+                            // Logger.getLogger(FaceRecorder.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+
+                    }
+                    System.out.println("Captura de cara finalizada");
+
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (BrokenBarrierException ex) {
+                    Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        };
+        //FACERECORDERWEBCAM
+        t1 = new Thread() {
+            @Override
+            public void run() {
+
+                try {
+                    gate.await();
+                    System.out.println("****** Inicio captura de muestras face PC ******");
+                    System.out.println("Se debio haber abierto la camara");
+                    long timeAR = 0;
+                    jFrameMin.setSize(198, 110);
+                    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                    GraphicsDevice defaultScreen = ge.getDefaultScreenDevice();
+                    Rectangle rect = defaultScreen.getDefaultConfiguration().getBounds();
+                    int x = (int) rect.getMaxX() - jFrameMin.getWidth();
+                    int y = (int) rect.getMaxY() - jFrameMin.getHeight();
+                    jFrameMin.setLocation(x, y);
+                    jFrameMin.setVisible(true);
+                    setVisible(false);
+
+                    while (isRunning) {
+                        try {
+
+                            cantidadFrame += 1;
+                            image2 = webcamPC.getImage();
+                            timeAR = System.currentTimeMillis();
+                            ImageIO.write(image2, "jpg", new File(storeFaceRecorder + timeAR + ".jpg"));
+                            calculoTiempo(cantidadFrame);
+                            Thread.sleep(captureInterval);
+
+                        } catch (InterruptedException ex) {
+                            //Logger.getLogger(CameraTest.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (IOException ex) {
+                            // Logger.getLogger(FaceRecorder.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+
+                    }
+                    System.out.println("Captura de cara finalizada");
+                    tiempoFaceRecorderf = System.currentTimeMillis() - tiempoFaceRecorderi;
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (BrokenBarrierException ex) {
+                    Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        };
+        //ACTIVIY RENDER
+        t2 = new Thread() {
+            @Override
+            public void run() {
+                System.out.println("****** Inicio captura de muestras activity ******");
+                long timeAR = 0;
+                tiempoActivityRenderi = System.currentTimeMillis();
+
+                try {
+                    gate.await();
+                    Robot rt;
+                    try {
+                        rt = new Robot();
+                        while (isRunning) {
+                            BufferedImage img = rt.createScreenCapture(new Rectangle(screenWidth, screenHeight));
+
                             timeAR = System.currentTimeMillis();
                             String name = storeActivityRender + String.valueOf(timeAR) + ".jpeg";
                             ImageIO.write(img, "jpeg", new File(name));
-                                       
+
                             copyImage(name, name);
-                                            
-                                          
-                                            // System.out.println(record);
-                                            Thread.sleep(captureInterval);
-                                    }
-                                    System.out.println("Captura de pantalla finalizada");
-                                    tiempoActivityRenderf = System.currentTimeMillis()-tiempoActivityRenderi;
-                                    
-                            } catch (Exception e) {
-                                    e.printStackTrace();
-                            }
-                   
+
+                            // System.out.println(record);
+                            Thread.sleep(captureInterval);
+                        }
+                        System.out.println("Captura de pantalla finalizada");
+                        tiempoActivityRenderf = System.currentTimeMillis() - tiempoActivityRenderi;
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                 } catch (Exception ex) {
                     Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
                 }
-    }};
-        
-    System.out.println("Antes de abrir la camara");
-   
-    
+            }
+        };
+
+        System.out.println("Antes de abrir la camara");
+
 //webcam = Webcam.getDefault();
-    webcamPC = Webcam.getWebcamByName("HP Truevision HD 0");
-       // System.out.println("TAMAÑOS CELULAR"+webcamCelu.getCustomViewSizes());
-    
-    webcamCelu = Webcam.getWebcamByName("DroidCam Source 3 1");
-    
-    webcamPC.setViewSize(new Dimension(320,240));
-    //webcamCelu.setViewSize(new Dimension(320,240));
-    
-    webcamPC.open(true);
-    webcamCelu.open(true);
-    
-    
-    
-    if( webcamPC.isOpen() && webcamCelu.isOpen()){
-    System.out.println("Despues de abrir la camara");
-    cargando.setText("Grabando");
-    t1.start();
-    t2.start();
-    t3.start();
-    }
-    
-    
+        webcamPC = Webcam.getWebcamByName("HP Truevision HD 0");
+        // System.out.println("TAMAÑOS CELULAR"+webcamCelu.getCustomViewSizes());
+
+        webcamCelu = Webcam.getWebcamByName("DroidCam Source 3 1");
+
+        webcamPC.setViewSize(new Dimension(320, 240));
+        //webcamCelu.setViewSize(new Dimension(320,240));
+
+        webcamPC.open(true);
+        webcamCelu.open(true);
+
+        if (webcamPC.isOpen() && webcamCelu.isOpen()) {
+            System.out.println("Despues de abrir la camara");
+            cargando.setText("Grabando");
+            t1.start();
+            t2.start();
+            t3.start();
+        }
+
         try {
             gate.await();
         } catch (InterruptedException ex) {
@@ -979,16 +1100,13 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         } catch (BrokenBarrierException ex) {
             Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-    System.out.println("all threads started");
+
+        System.out.println("all threads started");
         System.out.println("CLICK");
-     //   jTable1.addRow(new Object[] { "data1", "data2"});
-       // jTable1.
-      
-   
-   
-        
-        
+        //   jTable1.addRow(new Object[] { "data1", "data2"});
+        // jTable1.
+
+
     }//GEN-LAST:event_jButton2MouseClicked
 
     private void jButton6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton6MouseClicked
@@ -997,26 +1115,26 @@ public class ObtencionMuestras extends javax.swing.JFrame {
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // TODO add your handling code here:
-        
-        isRunning= false;
+
+        isRunning = false;
         System.out.println("Deteniendo capturas");
-         
-         webcamPC.open(false);
-         webcamPC.close();
-         webcamCelu.open(false);
-         webcamCelu.close();
+
+        webcamPC.open(false);
+        webcamPC.close();
+        webcamCelu.open(false);
+        webcamCelu.close();
         //gate.wait();
         t1.interrupt();
         t2.interrupt();
         t3.interrupt();
-        
+
         calculoTiempo(cantidadFrame);
-        int tiempo = cantidadFrame/10;
-                System.out.println("Segundos que deberia durar: "+tiempo+ " segundos");
-               // jLabel6.setText(String.valueOf(tiempo)+" segundos");
+        int tiempo = cantidadFrame / 10;
+        System.out.println("Segundos que deberia durar: " + tiempo + " segundos");
+        // jLabel6.setText(String.valueOf(tiempo)+" segundos");
         cargando.setText(String.valueOf(tiempo));
-       
-          
+
+
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButtonDetenerMinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDetenerMinActionPerformed
@@ -1029,141 +1147,141 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
         // TODO add your handling code here:
         //vista previa
-                jFrameMin1.setSize(1086, 391);
-                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-                GraphicsDevice defaultScreen = ge.getDefaultScreenDevice();
-                Rectangle rect = defaultScreen.getDefaultConfiguration().getBounds();
-                int x = (int) rect.getMaxX() - jFrameMin1.getWidth();
-                int y = (int) rect.getMaxY() - jFrameMin1.getHeight();
-                //jFrameMin1.setLocation(x, y);
-                jFrameMin1.setVisible(true);
-                setVisible(false);
-                repr = true;
-        
-            Thread ta = new Thread(){
-             public void run(){
-                 try {
-                     gate2.await();
-                     //do stuff 
-                        System.out.println("Entre al hilo Vista previa activyty");
-                        fA = new File(storeActivityRender);
-                        fileLstA = fA.listFiles();
-            
-            System.out.println("cantidad de imagenes: "+ fileLstA.length);
-            while(repr){
-                System.out.println("Entre al while");
-                                
-                   try {
-                    
-                       icon = new ImageIcon(fileLstA[frameSegundoA].getAbsolutePath());
-                       Activity.setIcon(icon);
-                       if(frameSegundoA==fileLstA.length-1){
-                       repr=false;
-                       //detener = true;
-                       }
-                       frameSegundoA+=1;
-                
-                   
-			// 10 FPS Thread.sleep(100);
-			Thread.sleep(captureInterval);
-                        
-                } catch (InterruptedException ex) {
-                    //Logger.getLogger(CameraTest.class.getName()).log(Level.SEVERE, null, ex);
-                } 
-                
-                }
-                    setVisible(true);
-                    jFrameMin1.setVisible(false);
-                 } catch (InterruptedException ex) {
-                     Logger.getLogger(ObtencionMuestras.class.getName()).log(Level.SEVERE, null, ex);
-                 } catch (BrokenBarrierException ex) {
-                     Logger.getLogger(ObtencionMuestras.class.getName()).log(Level.SEVERE, null, ex);
-                 }
-    }};
-        Thread tb = new Thread(){
-            public void run(){
-                try {
-                    gate2.await();
-                    //do stuff   
-                        System.out.println("Entre al hilo");
-                        fF = new File(storeFaceRecorder);
-                        fileLstF = fF.listFiles();
-            
-            System.out.println("cantidad de imagenes: "+ fileLstF.length);
-            while(repr){
-                       System.out.println("Entre al while2");         
-                   try {
-                    
-                       icon = new ImageIcon(fileLstF[frameSegundoF].getAbsolutePath());
-                       Face.setIcon(icon);
-                       if(frameSegundoF==fileLstF.length-1){
-                       repr=false;
-                       //detener = true;
-                       }
-                       frameSegundoF+=1;
-                
-                   
-			// 10 FPS Thread.sleep(100);
-			Thread.sleep(captureInterval);
-                        
-                } catch (InterruptedException ex) {
-                    //Logger.getLogger(CameraTest.class.getName()).log(Level.SEVERE, null, ex);
-                } 
-                
-                }
-                    setVisible(true);
-                    jFrameMin1.setVisible(false);
-                    
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(ObtencionMuestras.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (BrokenBarrierException ex) {
-                    Logger.getLogger(ObtencionMuestras.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }};
-                    Thread tc = new Thread(){
-            public void run(){
-                try {
-                    gate2.await();
-                    //do stuff   
-                        System.out.println("Entre al hilo");
-                        fE = new File(storeExternalPerspective);
-                        fileLstE = fE.listFiles();
-            
-            System.out.println("cantidad de imagenes: "+ fileLstE.length);
-            while(repr){
-                       System.out.println("Entre al while2");         
-                   try {
-                    
-                       icon = new ImageIcon(fileLstE[frameSegundoE].getAbsolutePath());
-                       Externa.setIcon(icon);
-                       if(frameSegundoE==fileLstF.length-1){
-                       repr=false;
-                       //detener = true;
-                       }
-                       frameSegundoE+=1;
-                
-                   
-			// 10 FPS Thread.sleep(100);
-			Thread.sleep(captureInterval);
-                        
-                } catch (InterruptedException ex) {
-                    //Logger.getLogger(CameraTest.class.getName()).log(Level.SEVERE, null, ex);
-                } 
-                
-                }
-                    setVisible(true);
-                    jFrameMin1.setVisible(false);
-                    
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(ObtencionMuestras.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (BrokenBarrierException ex) {
-                    Logger.getLogger(ObtencionMuestras.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }};
+        jFrameMin1.setSize(1086, 391);
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice defaultScreen = ge.getDefaultScreenDevice();
+        Rectangle rect = defaultScreen.getDefaultConfiguration().getBounds();
+        int x = (int) rect.getMaxX() - jFrameMin1.getWidth();
+        int y = (int) rect.getMaxY() - jFrameMin1.getHeight();
+        //jFrameMin1.setLocation(x, y);
+        jFrameMin1.setVisible(true);
+        setVisible(false);
+        repr = true;
 
-            ta.start();
-            tb.start();
-            tc.start();
+        Thread ta = new Thread() {
+            public void run() {
+                try {
+                    gate2.await();
+                    //do stuff 
+                    System.out.println("Entre al hilo Vista previa activyty");
+                    fA = new File(storeActivityRender);
+                    fileLstA = fA.listFiles();
+
+                    System.out.println("cantidad de imagenes: " + fileLstA.length);
+                    while (repr) {
+                        System.out.println("Entre al while");
+
+                        try {
+
+                            icon = new ImageIcon(fileLstA[frameSegundoA].getAbsolutePath());
+                            Activity.setIcon(icon);
+                            if (frameSegundoA == fileLstA.length - 1) {
+                                repr = false;
+                                //detener = true;
+                            }
+                            frameSegundoA += 1;
+
+                            // 10 FPS Thread.sleep(100);
+                            Thread.sleep(captureInterval);
+
+                        } catch (InterruptedException ex) {
+                            //Logger.getLogger(CameraTest.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+
+                    }
+                    setVisible(true);
+                    jFrameMin1.setVisible(false);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(ObtencionMuestras.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (BrokenBarrierException ex) {
+                    Logger.getLogger(ObtencionMuestras.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        };
+        Thread tb = new Thread() {
+            public void run() {
+                try {
+                    gate2.await();
+                    //do stuff   
+                    System.out.println("Entre al hilo");
+                    fF = new File(storeFaceRecorder);
+                    fileLstF = fF.listFiles();
+
+                    System.out.println("cantidad de imagenes: " + fileLstF.length);
+                    while (repr) {
+                        System.out.println("Entre al while2");
+                        try {
+
+                            icon = new ImageIcon(fileLstF[frameSegundoF].getAbsolutePath());
+                            Face.setIcon(icon);
+                            if (frameSegundoF == fileLstF.length - 1) {
+                                repr = false;
+                                //detener = true;
+                            }
+                            frameSegundoF += 1;
+
+                            // 10 FPS Thread.sleep(100);
+                            Thread.sleep(captureInterval);
+
+                        } catch (InterruptedException ex) {
+                            //Logger.getLogger(CameraTest.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+
+                    }
+                    setVisible(true);
+                    jFrameMin1.setVisible(false);
+
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(ObtencionMuestras.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (BrokenBarrierException ex) {
+                    Logger.getLogger(ObtencionMuestras.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        };
+        Thread tc = new Thread() {
+            public void run() {
+                try {
+                    gate2.await();
+                    //do stuff   
+                    System.out.println("Entre al hilo");
+                    fE = new File(storeExternalPerspective);
+                    fileLstE = fE.listFiles();
+
+                    System.out.println("cantidad de imagenes: " + fileLstE.length);
+                    while (repr) {
+                        System.out.println("Entre al while2");
+                        try {
+
+                            icon = new ImageIcon(fileLstE[frameSegundoE].getAbsolutePath());
+                            Externa.setIcon(icon);
+                            if (frameSegundoE == fileLstF.length - 1) {
+                                repr = false;
+                                //detener = true;
+                            }
+                            frameSegundoE += 1;
+
+                            // 10 FPS Thread.sleep(100);
+                            Thread.sleep(captureInterval);
+
+                        } catch (InterruptedException ex) {
+                            //Logger.getLogger(CameraTest.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+
+                    }
+                    setVisible(true);
+                    jFrameMin1.setVisible(false);
+
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(ObtencionMuestras.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (BrokenBarrierException ex) {
+                    Logger.getLogger(ObtencionMuestras.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        };
+
+        ta.start();
+        tb.start();
+        tc.start();
 
         try {
             // At this point, t1 and t2 are blocking on the gate.
@@ -1171,16 +1289,15 @@ public class ObtencionMuestras extends javax.swing.JFrame {
 // Now if we block on the gate from the main thread, it will open
 // and all threads will start to do stuff!
 
-        gate2.await();
+            gate2.await();
         } catch (InterruptedException ex) {
             Logger.getLogger(ObtencionMuestras.class.getName()).log(Level.SEVERE, null, ex);
         } catch (BrokenBarrierException ex) {
             Logger.getLogger(ObtencionMuestras.class.getName()).log(Level.SEVERE, null, ex);
         }
         System.out.println("all threads started");
-        
-        
-        
+
+
     }//GEN-LAST:event_jButton3MouseClicked
 
     private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
@@ -1188,44 +1305,37 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         setVisible(true);
         jFrameMin1.setVisible(false);
         repr = true;
-        frameSegundoA =0;
-        frameSegundoF =0;
+        frameSegundoA = 0;
+        frameSegundoF = 0;
         frameSegundoE = 0;
-        
-        
+
+
     }//GEN-LAST:event_jLabel3MouseClicked
 
     private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
         // TODO add your handling code here:
-        
-        
-       DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-       model.addRow(new Object[]{codigoMuestra, tiempoTotal});
-        rutasMuestras.add(nombreMuestraActual); 
+
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.addRow(new Object[]{codigoMuestra, tiempoTotal});
+        rutasMuestras.add(nombreMuestraActual);
         duracionMuestras.add(tiempoTotal);
-        nombreMuestras.add("Muestra"+String.valueOf(cantidadMuestras));
-        
-       
-  
-   
-   
-       
-       
-       
+        nombreMuestras.add("Muestra" + String.valueOf(cantidadMuestras));
+
+
     }//GEN-LAST:event_jButton4MouseClicked
 
     private void jButton5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseClicked
         // TODO add your handling code here:
-        System.out.println("nombreCarpeta: "+ nombreMuestraActual);
+        System.out.println("nombreCarpeta: " + nombreMuestraActual);
         Path path = Paths.get(nombreMuestraActual);
-                try {
+        try {
             //Files.delete(path);
-            
+
             FileUtils.deleteDirectory(new File(nombreMuestraActual));
-            if(cantidadMuestras-1!=0){
-            cantidadMuestras = cantidadMuestras-1;}
-            else{
-            cantidadMuestras = 0;
+            if (cantidadMuestras - 1 != 0) {
+                cantidadMuestras = cantidadMuestras - 1;
+            } else {
+                cantidadMuestras = 0;
             }
         } catch (NoSuchFileException x) {
             System.err.format("%s: no such" + " file or directory%n", path);
@@ -1239,46 +1349,25 @@ public class ObtencionMuestras extends javax.swing.JFrame {
 
     private void jButton8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton8MouseClicked
         // TODO add your handling code here:
-           JSONArray employeeList = new JSONArray();
-        
-         for (int i = 0; i < cantidadMuestras; i++) {
-            JSONObject employeeDetails = new JSONObject();
-        employeeDetails.put("ruta", rutasMuestras.get(i));
-        employeeDetails.put("tiempo", duracionMuestras.get(i));
-        employeeDetails.put("nombre", nombreMuestras.get(i));
-         
-        JSONObject employeeObject = new JSONObject();
-        employeeObject.put("directorio", employeeDetails);
-        employeeList.add(employeeObject);
-        }
+         escribirJson();
 
-        try (FileWriter file = new FileWriter("informacion.json")) {
- 
-            file.write(employeeList.toJSONString());
-            file.flush();
- 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-       VisualizacionMuestras visualizacionMuestras = new VisualizacionMuestras();
-       visualizacionMuestras.setVisible(true);
-       this.setVisible(false);
+        VisualizacionMuestras visualizacionMuestras = new VisualizacionMuestras();
+        visualizacionMuestras.setVisible(true);
+        this.setVisible(false);
     }//GEN-LAST:event_jButton8MouseClicked
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton8ActionPerformed
 
- 
-public static void copyImage(String filePath, String copyPath) {
+    public static void copyImage(String filePath, String copyPath) {
         BufferedImage bimage = loadImage(filePath);
-        if(bimage.getHeight()>bimage.getWidth()){
+        if (bimage.getHeight() > bimage.getWidth()) {
             int heigt = (bimage.getHeight() * MAX_WIDTH) / bimage.getWidth();
             bimage = resize(bimage, MAX_WIDTH, heigt);
             int width = (bimage.getWidth() * MAX_HEIGHT) / bimage.getHeight();
             bimage = resize(bimage, width, MAX_HEIGHT);
-        }else{
+        } else {
             int width = (bimage.getWidth() * MAX_HEIGHT) / bimage.getHeight();
             bimage = resize(bimage, width, MAX_HEIGHT);
             int heigt = (bimage.getHeight() * MAX_WIDTH) / bimage.getWidth();
@@ -1286,9 +1375,10 @@ public static void copyImage(String filePath, String copyPath) {
         }
         saveImage(bimage, copyPath);
     }
+
     /*
     Este método se utiliza para cargar la imagen de disco
-    */
+     */
     public static BufferedImage loadImage(String pathName) {
         BufferedImage bimage = null;
         try {
@@ -1298,24 +1388,24 @@ public static void copyImage(String filePath, String copyPath) {
         }
         return bimage;
     }
- 
+
     /*
     Este método se utiliza para almacenar la imagen en disco
-    */
+     */
     public static void saveImage(BufferedImage bufferedImage, String pathName) {
         try {
             String format = (pathName.endsWith(".png")) ? "png" : "jpg";
-            File file =new File(pathName);
+            File file = new File(pathName);
             file.getParentFile().mkdirs();
             ImageIO.write(bufferedImage, format, file);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-     
+
     /*
     Este método se utiliza para redimensionar la imagen
-    */
+     */
     public static BufferedImage resize(BufferedImage bufferedImage, int newW, int newH) {
         int w = bufferedImage.getWidth();
         int h = bufferedImage.getHeight();
@@ -1327,109 +1417,105 @@ public static void copyImage(String filePath, String copyPath) {
         return bufim;
     }
 
-    public String calculoTiempo(int frameSegundo){
-    
-    String tiempoFinal= "";
-    int minutos = 0;
-    int restoMinutos = 0;
-    int segundos = 0;
-    int restoSegundos = 0;
-    int millesimas = 0;
-    
-    //para 10FPS
-    if(fps == 10){
-        //minutos
-        
-        //hay minutos
-        minutos = frameSegundo/600;
-        restoMinutos = frameSegundo - (minutos*600);
+    public String calculoTiempo(int frameSegundo) {
 
-        //hay segundos
-        segundos = restoMinutos/10;
-        restoSegundos = restoMinutos-(segundos*10);
+        String tiempoFinal = "";
+        int minutos = 0;
+        int restoMinutos = 0;
+        int segundos = 0;
+        int restoSegundos = 0;
+        int millesimas = 0;
+
+        //para 10FPS
+        if (fps == 10) {
+            //minutos
+
+            //hay minutos
+            minutos = frameSegundo / 600;
+            restoMinutos = frameSegundo - (minutos * 600);
+
+            //hay segundos
+            segundos = restoMinutos / 10;
+            restoSegundos = restoMinutos - (segundos * 10);
 
             //hay millesimas
-        millesimas = (restoSegundos*1000)/10;
-                
-        String minutosStr, segundosStr, millesimasStr;
-        int cantidadMinutos = Integer.toString(minutos).length();
-        int cantidadSegundos = Integer.toString(segundos).length();
-        int cantidadMillesimas = Integer.toString(millesimas).length();
-        
-        if(cantidadMinutos==1){
-            minutosStr = "0"+String.valueOf(minutos);
+            millesimas = (restoSegundos * 1000) / 10;
+
+            String minutosStr, segundosStr, millesimasStr;
+            int cantidadMinutos = Integer.toString(minutos).length();
+            int cantidadSegundos = Integer.toString(segundos).length();
+            int cantidadMillesimas = Integer.toString(millesimas).length();
+
+            if (cantidadMinutos == 1) {
+                minutosStr = "0" + String.valueOf(minutos);
+            } else {
+                minutosStr = String.valueOf(minutos);
+            }
+
+            if (cantidadSegundos == 1) {
+                segundosStr = "0" + String.valueOf(segundos);
+            } else {
+                segundosStr = String.valueOf(segundos);
+            }
+            if (cantidadMillesimas == 1) {
+                millesimasStr = "00" + String.valueOf(millesimas);
+            } else if (cantidadMillesimas == 2) {
+                millesimasStr = "0" + String.valueOf(millesimas);
+            } else {
+                millesimasStr = String.valueOf(millesimas);
+            }
+
+            tiempoTotal = minutosStr + ":" + segundosStr + ":" + millesimasStr;
+            jLabel6.setText(tiempoTotal);
+            jLabel8.setText(tiempoTotal);
+
         }
-        else{
-            minutosStr = String.valueOf(minutos);
+        //para 20FPS
+        if (fps == 20) {
+            //minutos
+            //segundos
+            //millisegundos
         }
-        
-        if(cantidadSegundos == 1){
-            segundosStr = "0"+String.valueOf(segundos);
+        //para 25FPS
+        if (fps == 25) {
+            //minutos
+            //segundos
+            //millisegundos
         }
-        else{
-            segundosStr = String.valueOf(segundos);
-        }
-        if(cantidadMillesimas==1){
-            millesimasStr = "00"+String.valueOf(millesimas);
-        }
-        else if (cantidadMillesimas ==2){
-            millesimasStr = "0"+String.valueOf(millesimas);
-        }
-        else{
-            millesimasStr = String.valueOf(millesimas);
-        }
-        
-      tiempoTotal = minutosStr+":"+segundosStr+":"+millesimasStr;
-      jLabel6.setText(tiempoTotal);
-      jLabel8.setText(tiempoTotal);
-        
+
+        return tiempoFinal;
     }
-    //para 20FPS
-    if(fps == 20){
-        //minutos
-        //segundos
-        //millisegundos
-    }
-    //para 25FPS
-    if(fps == 25){
-        //minutos
-        //segundos
-        //millisegundos
-    }
-    
-    
-    return tiempoFinal;
-    }
-    
+
     static public String formatMillis(long val) {
-    StringBuilder buf=new StringBuilder(20);
-    String sgn="";
+        StringBuilder buf = new StringBuilder(20);
+        String sgn = "";
 
-    if(val<0) { sgn="-"; val=Math.abs(val); }
+        if (val < 0) {
+            sgn = "-";
+            val = Math.abs(val);
+        }
 
-    append(buf,sgn,0,( val/3600000             ));
-    append(buf,":",2,((val%3600000)/60000      ));
-    append(buf,":",2,((val         %60000)/1000));
-    append(buf,".",3,( val                %1000));
-    return buf.toString();
+        append(buf, sgn, 0, (val / 3600000));
+        append(buf, ":", 2, ((val % 3600000) / 60000));
+        append(buf, ":", 2, ((val % 60000) / 1000));
+        append(buf, ".", 3, (val % 1000));
+        return buf.toString();
     }
-
 
     static private void append(StringBuilder tgt, String pfx, int dgt, long val) {
-    tgt.append(pfx);
-    if(dgt>1) {
-        int pad=(dgt-1);
-        for(long xa=val; xa>9 && pad>0; xa/=10) { pad--;           }
-        for(int  xa=0;   xa<pad;        xa++  ) { tgt.append('0'); }
+        tgt.append(pfx);
+        if (dgt > 1) {
+            int pad = (dgt - 1);
+            for (long xa = val; xa > 9 && pad > 0; xa /= 10) {
+                pad--;
+            }
+            for (int xa = 0; xa < pad; xa++) {
+                tgt.append('0');
+            }
         }
-    tgt.append(val);
+        tgt.append(val);
     }
-  
 
-
-
-    
- 
     /**
      * @param args the command line arguments
      */

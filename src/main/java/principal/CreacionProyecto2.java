@@ -5,17 +5,34 @@
  */
 package principal;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 /**
  *
  * @author Katherine
  */
 public class CreacionProyecto2 extends javax.swing.JFrame {
 
+    public boolean AR = false;
+    public boolean FR = false;
+    public boolean PE = false;
+
+    public String nombreProyecto, codigoProyecto, descripcionProyecto, ruta;
+
     /**
      * Creates new form VentanaPrincipal
      */
     public CreacionProyecto2() {
         initComponents();
+        leerJson();
+
     }
 
     /**
@@ -115,6 +132,11 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
         jButton1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(33, 33, 33)));
         jButton1.setContentAreaFilled(false);
         jButton1.setFocusPainted(false);
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -256,8 +278,86 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        
+
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+        // TODO add your handling code here:
+        escribirJson();
+        ObtencionMuestras obtencionMuestras = new ObtencionMuestras();
+        obtencionMuestras.setVisible(true);
+        this.setVisible(false);
+
+    }//GEN-LAST:event_jButton1MouseClicked
+    public void leerJson() {
+        //JSON parser object to parse read file
+        JSONParser jsonParser = new JSONParser();
+
+        try (FileReader reader = new FileReader("informacionProyecto.json")) {
+            //Read JSON file
+            Object obj = jsonParser.parse(reader);
+
+            JSONArray employeeList = (JSONArray) obj;
+            System.out.println(employeeList);
+
+            //Iterate over employee array
+            employeeList.forEach(emp -> parseEmployeeObject((JSONObject) emp));
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+    }
+    public void parseEmployeeObject(JSONObject employee) {
+        //Get employee object within list
+        JSONObject employeeObject = (JSONObject) employee.get("proyecto");
+
+        //Get employee first name
+        nombreProyecto = (String) employeeObject.get("nombre");
+        ruta = (String) employeeObject.get("destino");
+        codigoProyecto = (String) employeeObject.get("codigo");
+        descripcionProyecto= (String) employeeObject.get("descripcion");
+        
+
+    }
+    public void escribirJson() {
+        JSONArray employeeList = new JSONArray();
+
+        JSONObject employeeDetails1 = new JSONObject();
+        employeeDetails1.put("nombre", nombreProyecto);
+        employeeDetails1.put("destino", ruta);
+        employeeDetails1.put("codigo", codigoProyecto);
+        employeeDetails1.put("descripcion", descripcionProyecto);
+
+        JSONObject employeeObject = new JSONObject();
+        employeeObject.put("proyecto", employeeDetails1);
+        employeeList.add(employeeObject);
+        
+        JSONObject employeeDetails2 = new JSONObject();
+        employeeDetails2.put("perspectivaCara", String.valueOf(FR));
+        employeeDetails2.put("perspectivaActividad", String.valueOf(AR));
+        employeeDetails2.put("perspectivaExterna", String.valueOf(PE));
+        
+
+        JSONObject employeeObject2 = new JSONObject();
+        employeeObject2.put("perspectivas", employeeDetails2);
+        employeeList.add(employeeObject2);
+
+        try (FileWriter file = new FileWriter("informacionProyecto.json")) {
+
+            file.write(employeeList.toJSONString());
+            file.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
     /**
      * @param args the command line arguments
