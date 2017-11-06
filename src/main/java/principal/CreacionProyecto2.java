@@ -5,10 +5,17 @@
  */
 package principal;
 
+import com.github.sarxos.webcam.Webcam;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.concurrent.CyclicBarrier;
+import javax.swing.ImageIcon;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -20,19 +27,137 @@ import org.json.simple.parser.ParseException;
  */
 public class CreacionProyecto2 extends javax.swing.JFrame {
 
+    
+    public static String storeMuestras = "muestras";
+    public static String storeMuestra = "muestra";
+    public static String storeActivityRender = "activityRender";
+    public static String storeFaceRecorder = "faceRecorder";
+    public static String storeExternalPerspective = "ExternalPerspective";
+    public boolean carpetaPrincipalCreada = false;
+    public int cantidadMuestras = 0;
+    Webcam webcamPC, webcamCelu;
+    boolean isRunning = false;
+    boolean repr = true;
+    public boolean activityRender = true;
+    public boolean faceRecorder = true;
+    public boolean externalPerspective = true;
+    BufferedImage image2, image3;
+    Thread t1, t2, t3;
+    int cantidadFrame = 0;
+    final CyclicBarrier gate = new CyclicBarrier(4);
+    final CyclicBarrier gate2 = new CyclicBarrier(4);
+    long tiempoFaceRecorderi, tiempoActivityRenderi, tiempoFaceRecorderf, tiempoActivityRenderf;
+    String codigoMuestra, tiempoTotal;
+
+    public File fA, fF, fE;
+    public File[] fileLstA, fileLstF, fileLstE;
+    public ImageIcon icon, icon2;
+    //frames que han sido mostrados
+    public int frameSegundoA = 0;
+    public int frameSegundoF = 0;
+    public int frameSegundoE = 0;
+    public ArrayList<String> rutasMuestras = new ArrayList<>();
+    public ArrayList<String> nombreMuestras = new ArrayList<>();
+    public ArrayList<String> duracionMuestras = new ArrayList<>();
+
+    /**
+     * Screen Width.
+     */
+    public static int screenWidth = (int) Toolkit.getDefaultToolkit()
+            .getScreenSize().getWidth();
+
+    /**
+     * Screen Height.
+     */
+    public static int screenHeight = (int) Toolkit.getDefaultToolkit()
+            .getScreenSize().getHeight();
+    //Ancho máximo
+    public static int MAX_WIDTH = 320;
+    //Alto máximo
+    public static int MAX_HEIGHT = 300;
+    /**
+     * Interval between which the image needs to be captured.
+     */
+    // 10 FPS Thread.sleep(100);
+    // 20 FPS -> (50)
+    // 25 FPS -> (40)
+    public static int captureInterval = 100;
+    public static int fps = 10;
+    String nombreCarpeta, nombreMuestraActual;
     public boolean AR = false;
     public boolean FR = false;
     public boolean PE = false;
-
+    public int objeto = 0;
     public String nombreProyecto, codigoProyecto, descripcionProyecto, ruta;
-
+    
+    private final String direccion;
+    
+    
+     
     /**
      * Creates new form VentanaPrincipal
      */
-    public CreacionProyecto2() {
-        initComponents();
-        leerJson();
+    
+    public void creacionCarpetas() {
+        /*
+    |-muestras(carpeta)
+    |--m1(carpeta)
+    |---acvtivityRender(carpeta)
+    |---faceRecorder(carpeta)
+    |---videoAcvtivityRender(archivo)
+    |---videoFaceRecorder(archivo)
+    |--m2(carpeta)
+    |---acvtivityRender(carpeta)
+    |---faceRecorder(carpeta)
+    |---videoAcvtivityRender(archivo)
+    |---videoFaceRecorder(archivo)
+    |--m3(carpeta)
+    |---acvtivityRender(carpeta)
+    |---faceRecorder(carpeta)
+    |---videoAcvtivityRender(archivo)
+    |---videoFaceRecorder(archivo)
+    
+    
+         */
+        nombreCarpeta = ruta+"/"+nombreProyecto + "Muestras";
+  
+            //creacion de carpetas de muestra
+            nombreMuestraActual = nombreCarpeta + "/Muestra" + String.valueOf(cantidadMuestras);
+            File f2 = new File(nombreMuestraActual);
+            f2.mkdir();
+            System.out.println("se creo el directorio de muestras: " + nombreMuestraActual);
 
+            if (activityRender) {
+                File f3 = new File(nombreMuestraActual + "/" + "storeActivityRender");
+                f3.mkdir();
+                System.out.println("se creo el directorio de muestras: " + nombreMuestraActual + "/" + "storeActivityRender");
+                storeActivityRender = nombreMuestraActual + "/" + "storeActivityRender" + "/";
+            }
+            if (faceRecorder) {
+                File f3 = new File(nombreMuestraActual + "/" + "storeFaceRecorder");
+                f3.mkdir();
+                System.out.println("se creo el directorio de muestras: " + nombreMuestraActual + "/" + "storeFaceRecorder");
+                storeFaceRecorder = nombreMuestraActual + "/" + "storeFaceRecorder" + "/";
+            }
+            if (externalPerspective) {
+                File f3 = new File(nombreMuestraActual + "/" + "storeExternalPerspective");
+                f3.mkdir();
+                System.out.println("se creo el directorio de muestras: " + nombreMuestraActual + "/" + "storeExternalPerspective");
+                storeExternalPerspective = nombreMuestraActual + "/" + "storeExternalPerspective" + "/";
+            }
+
+        
+    }
+    public CreacionProyecto2(String dir) {
+        this.direccion = dir;
+        initComponents();
+        
+        //leerJson();
+
+    }
+    public void fn(){
+    
+    System.out.println("NUMEROSdsñkfjlsdjflsdkjflksdjfds: "+ direccion);
     }
 
     /**
@@ -284,16 +409,17 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
         // TODO add your handling code here:
         escribirJson();
-        ObtencionMuestras obtencionMuestras = new ObtencionMuestras();
+        ObtencionMuestras obtencionMuestras = new ObtencionMuestras(direccion);
         obtencionMuestras.setVisible(true);
         this.setVisible(false);
 
     }//GEN-LAST:event_jButton1MouseClicked
     public void leerJson() {
+        fn();
         //JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();
 
-        try (FileReader reader = new FileReader("informacionProyecto.json")) {
+        try (FileReader reader = new FileReader(direccion+"informacionProyecto.json")) {
             //Read JSON file
             Object obj = jsonParser.parse(reader);
 
@@ -347,7 +473,7 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
         employeeObject2.put("perspectivas", employeeDetails2);
         employeeList.add(employeeObject2);
 
-        try (FileWriter file = new FileWriter("informacionProyecto.json")) {
+        try (FileWriter file = new FileWriter(direccion +"informacionProyecto.json")) {
 
             file.write(employeeList.toJSONString());
             file.flush();
@@ -396,7 +522,7 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new CreacionProyecto2().setVisible(true);
+                //new CreacionProyecto2(5).setVisible(true);        
             }
         });
     }

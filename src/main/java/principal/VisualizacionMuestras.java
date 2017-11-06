@@ -30,7 +30,7 @@ import org.json.simple.parser.ParseException;
  */
 public class VisualizacionMuestras extends javax.swing.JFrame {
 
-    public static String nombreProyecto = "eBox";
+    
     public static String storeMuestras = "muestras";
     public static String storeMuestra = "muestra";
     public static String storeActivityRender = "activityRender";
@@ -87,6 +87,12 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
     public ArrayList<String> descripcionMuestra = new ArrayList<>();
     boolean edit = false;
     int muestraTablaActual;
+    public boolean AR = false;
+    public boolean FR = false;
+    public boolean PE = false;
+    public int objeto = 0;
+    public String nombreProyecto, codigoProyecto, descripcionProyecto, ruta;
+
 
     /**
      * Creates new form VentanaPrincipal
@@ -97,26 +103,7 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
         jPanel2.setVisible(false);
         jPanel8.setVisible(true);
         
-        //JSON parser object to parse read file
-        JSONParser jsonParser = new JSONParser();
-
-        try (FileReader reader = new FileReader("informacion.json")) {
-            //Read JSON file
-            Object obj = jsonParser.parse(reader);
-
-            JSONArray employeeList = (JSONArray) obj;
-            System.out.println(employeeList);
-
-            //Iterate over employee array
-            employeeList.forEach(emp -> parseEmployeeObject((JSONObject) emp));
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        leerJson();
 
         for (int i = 0; i < rutasMuestras.size(); i++) {
             System.out.println("finalmente1: " + rutasMuestras.get(i));
@@ -130,24 +117,97 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
 
     }
 
+  
+    
+      public void leerJson() {
+        //JSON parser object to parse read file
+        JSONParser jsonParser = new JSONParser();
+
+        try (FileReader reader = new FileReader("informacionProyecto.json")) {
+            //Read JSON file
+            Object obj = jsonParser.parse(reader);
+
+            JSONArray employeeList = (JSONArray) obj;
+            System.out.println("discoteca: " +employeeList);
+
+            //Iterate over employee array
+            employeeList.forEach(emp -> parseEmployeeObject((JSONObject) emp));
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public void parseEmployeeObject(JSONObject employee) {
         //Get employee object within list
-        JSONObject employeeObject = (JSONObject) employee.get("directorio");
+        //Get employee object within list
+        System.out.println("APROVECHALO: "+ employee);
+        if (objeto == 0) {
+
+            JSONObject employeeObject1 = (JSONObject) employee.get("proyecto");
+            
+            //Get employee first name
+            nombreProyecto = (String) employeeObject1.get("nombre");
+            System.out.println(nombreProyecto);
+            ruta = (String) employeeObject1.get("destino");
+            System.out.println(ruta);
+            codigoProyecto = (String) employeeObject1.get("codigo");
+            System.out.println(codigoProyecto);
+            descripcionProyecto = (String) employeeObject1.get("descripcion");
+            System.out.println(descripcionProyecto);
+
+            
+
+        } if(objeto == 1) {
+            JSONObject employeeObject2 = (JSONObject) employee.get("perspectivas");
+        System.out.println("objeto2: "+ employeeObject2);
+            //Get employee first name
+            PE = stringToBoolean((String) employeeObject2.get("perspectivaExterna"));
+            System.out.println(PE);
+            AR = stringToBoolean((String) employeeObject2.get("perspectivaActividad"));
+            System.out.println(AR);
+            FR = stringToBoolean((String) employeeObject2.get("perspectivaCara"));
+            System.out.println(FR);
+            
+            
+            
+        }
+        if( objeto > 1){
+        
+               JSONObject employeeObject3 = (JSONObject) employee.get("muestra");
 
         //Get employee first name
-        String firstName = (String) employeeObject.get("ruta");
+        String firstName = (String) employeeObject3.get("ruta");
         rutasMuestras.add(firstName);
         System.out.println(firstName);
 
-        String secondName = (String) employeeObject.get("tiempo");
+        String secondName = (String) employeeObject3.get("tiempo");
         duracionMuestras.add(secondName);
         System.out.println(secondName);
 
-        String tresName = (String) employeeObject.get("nombre");
+        String tresName = (String) employeeObject3.get("nombre");
         nombreMuestras.add(tresName);
         System.out.println(tresName);
+        
+        }
+        objeto += 1;
 
     }
+
+    public boolean stringToBoolean(String elemento) {
+        if(elemento == "true") {
+            return true;
+
+        }
+        return false;
+
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -785,23 +845,50 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
 
 
     }//GEN-LAST:event_jLabel3MouseClicked
-
-    private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
-        // TODO add your handling code here:
-
-        // TODO add your handling code here:
+public void escribirJson(int seleccionada) {
         JSONArray employeeList = new JSONArray();
 
-        JSONObject employeeDetails = new JSONObject();
-        employeeDetails.put("ruta", rutasMuestras.get(muestraTablaActual));
-        employeeDetails.put("tiempo", duracionMuestras.get(muestraTablaActual));
-        employeeDetails.put("nombre", nombreMuestras.get(muestraTablaActual));
+        JSONObject employeeDetails1 = new JSONObject();
+        employeeDetails1.put("nombre", nombreProyecto);
+        employeeDetails1.put("destino", ruta);
+        employeeDetails1.put("codigo", codigoProyecto);
+        employeeDetails1.put("descripcion", descripcionProyecto);
 
         JSONObject employeeObject = new JSONObject();
-        employeeObject.put("directorio", employeeDetails);
+        employeeObject.put("proyecto", employeeDetails1);
         employeeList.add(employeeObject);
 
-        try (FileWriter file = new FileWriter("muestraSelecionada.json")) {
+        JSONObject employeeDetails2 = new JSONObject();
+        employeeDetails2.put("perspectivaCara", String.valueOf(FR));
+        employeeDetails2.put("perspectivaActividad", String.valueOf(AR));
+        employeeDetails2.put("perspectivaExterna", String.valueOf(PE));
+
+        JSONObject employeeObject2 = new JSONObject();
+        employeeObject2.put("perspectivas", employeeDetails2);
+        employeeList.add(employeeObject2);
+        
+        
+        for (int i = 0; i < cantidadMuestras; i++) {
+            JSONObject employeeDetails3 = new JSONObject();
+            employeeDetails3.put("ruta", rutasMuestras.get(i));
+            employeeDetails3.put("tiempo", duracionMuestras.get(i));
+            employeeDetails3.put("nombre", nombreMuestras.get(i));
+            if (i == seleccionada){
+            employeeDetails3.put("seleccionada", "true");
+            
+            }
+                
+            else{
+            employeeDetails3.put("seleccionada", "false");
+            }
+            
+            
+
+            JSONObject employeeObject3 = new JSONObject();
+            employeeObject3.put("muestra", employeeDetails3);
+            employeeList.add(employeeObject3);
+        }
+        try (FileWriter file = new FileWriter("informacionProyecto.json")) {
 
             file.write(employeeList.toJSONString());
             file.flush();
@@ -809,6 +896,13 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
+    } 
+    private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
+        // TODO add your handling code here:
+
+        // TODO add your handling code here:
+        escribirJson(muestraTablaActual);
 
         Reproductor reproductor = new Reproductor();
         reproductor.setVisible(true);

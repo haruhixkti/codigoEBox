@@ -111,13 +111,13 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     public boolean FR = false;
     public boolean PE = false;
     public int objeto = 0;
-
     public String nombreProyecto, codigoProyecto, descripcionProyecto, ruta;
-
+    private final String direccion;
     /**
      * Creates new form VentanaPrincipal
      */
-    public ObtencionMuestras() {
+    public ObtencionMuestras(String dir) {
+        this.direccion = dir;
         leerJson();
         
         initComponents();
@@ -129,7 +129,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         //JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();
 
-        try (FileReader reader = new FileReader("informacionProyecto.json")) {
+        try (FileReader reader = new FileReader(this.direccion+"informacionProyecto.json")) {
             //Read JSON file
             Object obj = jsonParser.parse(reader);
 
@@ -225,7 +225,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
             employeeObject3.put("muestra", employeeDetails3);
             employeeList.add(employeeObject3);
         }
-        try (FileWriter file = new FileWriter("informacionProyecto.json")) {
+        try (FileWriter file = new FileWriter(this.direccion+"informacionProyecto.json")) {
 
             file.write(employeeList.toJSONString());
             file.flush();
@@ -264,17 +264,9 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     
     
          */
-        nombreCarpeta = nombreProyecto + "Muestras";
-        if (carpetaPrincipalCreada == false) {
-            //creacion de carpetas desde 0
-
-            File f1 = new File(nombreCarpeta);
-            f1.mkdir();
-            System.out.println("se creo el directorio de muestras: " + nombreCarpeta);
-            carpetaPrincipalCreada = true;
-        } else {
+    
             //creacion de carpetas de muestra
-            nombreMuestraActual = nombreCarpeta + "/Muestra" + String.valueOf(cantidadMuestras);
+            nombreMuestraActual = this.direccion + "Muestra" + String.valueOf(cantidadMuestras);
             File f2 = new File(nombreMuestraActual);
             f2.mkdir();
             System.out.println("se creo el directorio de muestras: " + nombreMuestraActual);
@@ -298,7 +290,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
                 storeExternalPerspective = nombreMuestraActual + "/" + "storeExternalPerspective" + "/";
             }
 
-        }
+        
     }
 
     /**
@@ -937,7 +929,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
-
+        creacionCarpetas();
         System.out.println("Se iniciaran las grabaciones (se aumento en 1 la cantidad de muestras");
         cargando.setText("Cargando...");
         cantidadMuestras += 1;
@@ -946,7 +938,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         isRunning = true;
         cantidadFrame = 0;
         System.out.println("Se crearan las carpetas");
-        creacionCarpetas();
+        
         System.out.println("Carpetas creadas");
 
         System.out.println("Se iniciaran los thread");
@@ -1561,7 +1553,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ObtencionMuestras().setVisible(true);
+               // new ObtencionMuestras().setVisible(true);
             }
         });
     }

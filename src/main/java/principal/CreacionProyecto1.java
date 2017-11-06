@@ -5,10 +5,16 @@
  */
 package principal;
 
+import com.github.sarxos.webcam.Webcam;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.concurrent.CyclicBarrier;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -21,12 +27,104 @@ import org.json.simple.JSONObject;
  */
 public class CreacionProyecto1 extends javax.swing.JFrame {
 
-    boolean edit = false;
-    public String nombreProyecto, codigoProyecto, descripcionProyecto, ruta;
+    public static String storeMuestras = "muestras";
+    public static String storeMuestra = "muestra";
+    public static String storeActivityRender = "activityRender";
+    public static String storeFaceRecorder = "faceRecorder";
+    public static String storeExternalPerspective = "ExternalPerspective";
+    public boolean carpetaPrincipalCreada = false;
+    public int cantidadMuestras = 0;
+    Webcam webcamPC, webcamCelu;
+    boolean isRunning = false;
+    boolean repr = true;
+    public boolean activityRender = true;
+    public boolean faceRecorder = true;
+    public boolean externalPerspective = true;
+    BufferedImage image2, image3;
+    Thread t1, t2, t3;
+    int cantidadFrame = 0;
+    final CyclicBarrier gate = new CyclicBarrier(4);
+    final CyclicBarrier gate2 = new CyclicBarrier(4);
+    long tiempoFaceRecorderi, tiempoActivityRenderi, tiempoFaceRecorderf, tiempoActivityRenderf;
+    String codigoMuestra, tiempoTotal;
 
+    public File fA, fF, fE;
+    public File[] fileLstA, fileLstF, fileLstE;
+    public ImageIcon icon, icon2;
+    //frames que han sido mostrados
+    public int frameSegundoA = 0;
+    public int frameSegundoF = 0;
+    public int frameSegundoE = 0;
+    public ArrayList<String> rutasMuestras = new ArrayList<>();
+    public ArrayList<String> nombreMuestras = new ArrayList<>();
+    public ArrayList<String> duracionMuestras = new ArrayList<>();
+
+    /**
+     * Screen Width.
+     */
+    public static int screenWidth = (int) Toolkit.getDefaultToolkit()
+            .getScreenSize().getWidth();
+
+    /**
+     * Screen Height.
+     */
+    public static int screenHeight = (int) Toolkit.getDefaultToolkit()
+            .getScreenSize().getHeight();
+    //Ancho máximo
+    public static int MAX_WIDTH = 320;
+    //Alto máximo
+    public static int MAX_HEIGHT = 300;
+    /**
+     * Interval between which the image needs to be captured.
+     */
+    // 10 FPS Thread.sleep(100);
+    // 20 FPS -> (50)
+    // 25 FPS -> (40)
+    public static int captureInterval = 100;
+    public static int fps = 10;
+    String nombreCarpeta, nombreMuestraActual;
+    public boolean AR = false;
+    public boolean FR = false;
+    public boolean PE = false;
+    public int objeto = 0;
+    public String nombreProyecto, codigoProyecto, descripcionProyecto, ruta;
+    boolean edit = false;
+    
+    
     /**
      * Creates new form VentanaPrincipal
      */
+     public void creacionCarpetas() {
+        /*
+    |-muestras(carpeta)
+    |--m1(carpeta)
+    |---acvtivityRender(carpeta)
+    |---faceRecorder(carpeta)
+    |---videoAcvtivityRender(archivo)
+    |---videoFaceRecorder(archivo)
+    |--m2(carpeta)
+    |---acvtivityRender(carpeta)
+    |---faceRecorder(carpeta)
+    |---videoAcvtivityRender(archivo)
+    |---videoFaceRecorder(archivo)
+    |--m3(carpeta)
+    |---acvtivityRender(carpeta)
+    |---faceRecorder(carpeta)
+    |---videoAcvtivityRender(archivo)
+    |---videoFaceRecorder(archivo)
+    
+    
+         */
+        nombreCarpeta = ruta+"/"+nombreProyecto + "Muestras/";
+        
+            //creacion de carpetas desde 0
+
+            File f1 = new File(nombreCarpeta);
+            f1.mkdir();
+            System.out.println("se creo el directorio de muestras: " + nombreCarpeta);
+            carpetaPrincipalCreada = true;
+         
+    }
     public CreacionProyecto1() {
         initComponents();
     }
@@ -439,16 +537,19 @@ public class CreacionProyecto1 extends javax.swing.JFrame {
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
         // TODO add your handling code here:
+        
         nombreProyecto = txtNombreProyecto.getText();
         codigoProyecto = txtCodigoProyecto.getText();
         descripcionProyecto = txtDescripcionMuestra.getText();
-        ruta = path.getText();
+        ruta = limpiaTexto(path.getText());
+        
+        creacionCarpetas();
 
         JSONArray employeeList = new JSONArray();
 
         JSONObject employeeDetails = new JSONObject();
         employeeDetails.put("nombre", limpiaTexto(nombreProyecto));
-        employeeDetails.put("destino", limpiaTexto(path.getText()));
+        employeeDetails.put("destino", nombreCarpeta);
         employeeDetails.put("codigo", limpiaTexto(codigoProyecto));
         employeeDetails.put("descripcion", descripcionProyecto);
 
@@ -456,7 +557,7 @@ public class CreacionProyecto1 extends javax.swing.JFrame {
         employeeObject.put("proyecto", employeeDetails);
         employeeList.add(employeeObject);
 
-        try (FileWriter file = new FileWriter("informacionProyecto.json")) {
+        try (FileWriter file = new FileWriter(nombreCarpeta+"informacionProyecto.json")) {
 
             file.write(employeeList.toJSONString());
             file.flush();
@@ -465,8 +566,9 @@ public class CreacionProyecto1 extends javax.swing.JFrame {
             e.printStackTrace();
         }
         
-        CreacionProyecto2 creacionProyecto2 = new CreacionProyecto2();
-        creacionProyecto2.setVisible(true);
+        CreacionProyecto2 creacionProyecto2 = new CreacionProyecto2(nombreCarpeta);
+        //creacionProyecto2.setNumber(5);
+       creacionProyecto2.setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_jButton1MouseClicked
 
