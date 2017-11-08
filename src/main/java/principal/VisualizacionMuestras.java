@@ -92,13 +92,15 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
     public boolean PE = false;
     public int objeto = 0;
     public String nombreProyecto, codigoProyecto, descripcionProyecto, ruta;
-
+    private final String direccion;
 
     /**
      * Creates new form VentanaPrincipal
      */
-    public VisualizacionMuestras() {
-        System.out.println("entre a visualizacion");
+    public VisualizacionMuestras(String dir) {
+        System.out.println("<<<<<<VISUALIZACION DE MUESTRAS>>>>>");
+        this.direccion = dir;
+        
         initComponents();
         jPanel2.setVisible(false);
         jPanel8.setVisible(true);
@@ -112,8 +114,10 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
             model.addRow(new Object[]{nombreMuestras.get(i), duracionMuestras.get(i)});
             nombreIndividuo.add("");
             descripcionMuestra.add("");
+            
 
         }
+        cantidadMuestras =  rutasMuestras.size();
 
     }
 
@@ -123,7 +127,7 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
         //JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();
 
-        try (FileReader reader = new FileReader("informacionProyecto.json")) {
+        try (FileReader reader = new FileReader(this.direccion+"informacionProyecto.json")) {
             //Read JSON file
             Object obj = jsonParser.parse(reader);
 
@@ -165,7 +169,8 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
 
         } if(objeto == 1) {
             JSONObject employeeObject2 = (JSONObject) employee.get("perspectivas");
-        System.out.println("objeto2: "+ employeeObject2);
+        
+            System.out.println("objeto2: "+ employeeObject2);
             //Get employee first name
             PE = stringToBoolean((String) employeeObject2.get("perspectivaExterna"));
             System.out.println(PE);
@@ -180,7 +185,7 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
         if( objeto > 1){
         
                JSONObject employeeObject3 = (JSONObject) employee.get("muestra");
-
+               
         //Get employee first name
         String firstName = (String) employeeObject3.get("ruta");
         rutasMuestras.add(firstName);
@@ -888,7 +893,7 @@ public void escribirJson(int seleccionada) {
             employeeObject3.put("muestra", employeeDetails3);
             employeeList.add(employeeObject3);
         }
-        try (FileWriter file = new FileWriter("informacionProyecto.json")) {
+        try (FileWriter file = new FileWriter(this.direccion+"informacionProyecto.json")) {
 
             file.write(employeeList.toJSONString());
             file.flush();
@@ -904,7 +909,7 @@ public void escribirJson(int seleccionada) {
         // TODO add your handling code here:
         escribirJson(muestraTablaActual);
 
-        Reproductor reproductor = new Reproductor();
+        Reproductor reproductor = new Reproductor(direccion);
         reproductor.setVisible(true);
         this.setVisible(false);
 
@@ -1022,7 +1027,7 @@ public void escribirJson(int seleccionada) {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new VisualizacionMuestras().setVisible(true);
+              //  new VisualizacionMuestras().setVisible(true);
             }
         });
     }

@@ -32,6 +32,7 @@ import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import static java.lang.Math.toIntExact;
 import java.util.Hashtable;
@@ -111,7 +112,7 @@ public class Reproductor extends javax.swing.JFrame {
     //tags
     public Hashtable<Integer, JLabel> tag = new Hashtable<Integer, JLabel>();
 
-    public int posTagManual;
+    public int posTagManual, numeroSeleccionada;
     String tiempo, nombre;
 
     final CyclicBarrier gate = new CyclicBarrier(4);
@@ -129,14 +130,20 @@ public class Reproductor extends javax.swing.JFrame {
     public boolean FR = false;
     public boolean PE = false;
     public int objeto = 0;
-    public String nombreProyecto, codigoProyecto, descripcionProyecto, ruta;
+    public String nombreProyecto, codigoProyecto, descripcionProyecto, rutaProyecto, ruta;
     public ArrayList<String> rutasMuestras = new ArrayList<>();
     public ArrayList<String> duracionMuestras = new ArrayList<>();
     public ArrayList<String> nombreMuestras = new ArrayList<>();
     public ArrayList<String> nombreIndividuo = new ArrayList<>();
     public ArrayList<String> descripcionMuestra = new ArrayList<>();
+    private final String direccion;
+    int cantidadTagsManual = 5;
+    int cantidadTagsAutomaticos = 5;
+    int muestra;
 
-    public Reproductor() {
+    public Reproductor(String dir) {
+        System.out.println("<<<<<<REPRODUCTOR DE MUESTRAS>>>>>");
+        this.direccion = dir;
         //initComponents();
        /* JSONParser jsonParser = new JSONParser();
 
@@ -186,7 +193,7 @@ public class Reproductor extends javax.swing.JFrame {
         //JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();
 
-        try (FileReader reader = new FileReader("informacionProyecto.json")) {
+        try (FileReader reader = new FileReader(this.direccion+"informacionProyecto.json")) {
             //Read JSON file
             Object obj = jsonParser.parse(reader);
 
@@ -217,8 +224,8 @@ public class Reproductor extends javax.swing.JFrame {
             //Get employee first name
             nombreProyecto = (String) employeeObject1.get("nombre");
             System.out.println(nombreProyecto);
-            ruta = (String) employeeObject1.get("destino");
-            System.out.println(ruta);
+            rutaProyecto = (String) employeeObject1.get("destino");
+            System.out.println(rutaProyecto);
             codigoProyecto = (String) employeeObject1.get("codigo");
             System.out.println(codigoProyecto);
             descripcionProyecto = (String) employeeObject1.get("descripcion");
@@ -238,7 +245,6 @@ public class Reproductor extends javax.swing.JFrame {
 
         }
         if (objeto > 1) {
-
             JSONObject employeeObject3 = (JSONObject) employee.get("muestra");
 
             //Get employee first name
@@ -257,7 +263,8 @@ public class Reproductor extends javax.swing.JFrame {
             String seleccionada = (String) employeeObject3.get("seleccionada");
             
             if("true".equals(seleccionada)){
-            
+                numeroSeleccionada = muestra;
+                System.out.println("pos OBjeto seleccionado: "+ numeroSeleccionada);
                 String firstName = (String) employeeObject3.get("ruta");
                 ruta = firstName;
                 System.out.println(firstName);
@@ -271,6 +278,8 @@ public class Reproductor extends javax.swing.JFrame {
                 System.out.println(tresName);
 
             }
+                muestra+=1;
+
             
 
         }
@@ -285,6 +294,102 @@ public class Reproductor extends javax.swing.JFrame {
         }
         return false;
 
+    }
+    public void escribirTags(){
+     
+        JSONObject employeeObject1 = new JSONObject();
+        JSONObject employeeObject2 = new JSONObject();
+        JSONObject tagManual = new JSONObject();
+        for (int i = 0; i < cantidadTagsManual; i++) {
+            tagManual.put("id", String.valueOf(i));
+            tagManual.put("xInicial", "1");
+            tagManual.put("xFinal", "1");
+            tagManual.put("frameInicial", "1");
+            tagManual.put("frameFinal", "1");
+            tagManual.put("tiempoInicial", "1");
+            tagManual.put("tiempoFinal", "1");
+            
+            employeeObject1.put("tagsManuales", tagManual);
+        }
+        
+        
+        
+        JSONObject tagAutomatico = new JSONObject();
+        for (int i = 0; i < cantidadTagsManual; i++) {
+            tagAutomatico.put("id", String.valueOf(i));
+            tagAutomatico.put("xInicial", "1");
+            tagAutomatico.put("xFinal", "1");
+            tagAutomatico.put("frameInicial", "1");
+            tagAutomatico.put("frameFinal", "1");
+            tagAutomatico.put("tiempoInicial", "1");
+            tagAutomatico.put("tiempoFinal", "1");
+            employeeObject2.put("tagsAutomaticos", tagAutomatico);
+        }
+        JSONArray employeeList = new JSONArray();
+        employeeList.add(employeeObject1);
+        employeeList.add(employeeObject2);
+        
+        
+        
+
+        
+      
+        try (FileWriter file = new FileWriter(ruta+"/informacionTags.json")) {
+
+            file.write(employeeList.toJSONString());
+            file.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+    
+    }
+    public void escribirJson() {
+        JSONArray employeeList = new JSONArray();
+
+        JSONObject employeeDetails1 = new JSONObject();
+        employeeDetails1.put("nombre", nombreProyecto);
+        employeeDetails1.put("destino", rutaProyecto);
+        employeeDetails1.put("codigo", codigoProyecto);
+        employeeDetails1.put("descripcion", descripcionProyecto);
+
+        JSONObject employeeObject = new JSONObject();
+        employeeObject.put("proyecto", employeeDetails1);
+        employeeList.add(employeeObject);
+
+        JSONObject employeeDetails2 = new JSONObject();
+        employeeDetails2.put("perspectivaCara", String.valueOf(FR));
+        employeeDetails2.put("perspectivaActividad", String.valueOf(AR));
+        employeeDetails2.put("perspectivaExterna", String.valueOf(PE));
+
+        JSONObject employeeObject2 = new JSONObject();
+        employeeObject2.put("perspectivas", employeeDetails2);
+        employeeList.add(employeeObject2);
+        
+        
+        for (int i = 0; i <  rutasMuestras.size(); i++) {
+            JSONObject employeeDetails3 = new JSONObject();
+            employeeDetails3.put("ruta", rutasMuestras.get(i));
+            employeeDetails3.put("tiempo", duracionMuestras.get(i));
+            employeeDetails3.put("nombre", nombreMuestras.get(i));
+            System.out.println("nombre muestra:" +nombreMuestras.get(i));
+            employeeDetails3.put("seleccionada", "false");
+         
+            
+            JSONObject employeeObject3 = new JSONObject();
+            employeeObject3.put("muestra", employeeDetails3);
+            employeeList.add(employeeObject3);
+        }
+        try (FileWriter file = new FileWriter(this.direccion+"informacionProyecto.json")) {
+
+            file.write(employeeList.toJSONString());
+            file.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
     }
 
     private void iniciarComponentes() {
@@ -617,6 +722,8 @@ public class Reproductor extends javax.swing.JFrame {
     }
 
     private void btnPlayMouseClicked() {
+        escribirJson();
+        escribirTags();
 
         /*    detener = false;
         //Se determina si es el primer inicio para determinar el largo y la división de las lineas de tiempoDuracionMuestra
@@ -1105,7 +1212,7 @@ public class Reproductor extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 System.out.println("size: " + Toolkit.getDefaultToolkit().getScreenSize());
-                new Reproductor().setVisible(true);
+               // new Reproductor().setVisible(true);
 
             }
         });

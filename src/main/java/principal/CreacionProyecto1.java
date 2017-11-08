@@ -126,6 +126,7 @@ public class CreacionProyecto1 extends javax.swing.JFrame {
          
     }
     public CreacionProyecto1() {
+        System.out.println("<<<<<<CREACIÓN DEL PROYECTO 1>>>>>");
         initComponents();
     }
 

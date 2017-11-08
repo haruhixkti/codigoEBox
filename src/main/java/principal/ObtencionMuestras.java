@@ -82,6 +82,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     public ArrayList<String> rutasMuestras = new ArrayList<>();
     public ArrayList<String> nombreMuestras = new ArrayList<>();
     public ArrayList<String> duracionMuestras = new ArrayList<>();
+    
 
     /**
      * Screen Width.
@@ -117,6 +118,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
      * Creates new form VentanaPrincipal
      */
     public ObtencionMuestras(String dir) {
+        System.out.println("<<<<<<OBTENCIÓN DE MUESTRAS>>>>>");
         this.direccion = dir;
         leerJson();
         
@@ -155,7 +157,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         if (objeto == 0) {
 
             JSONObject employeeObject = (JSONObject) employee.get("proyecto");
-
+            System.out.println("employeeObject: "+ employeeObject );
             //Get employee first name
             nombreProyecto = (String) employeeObject.get("nombre");
             System.out.println(nombreProyecto);
@@ -1342,8 +1344,8 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     private void jButton8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton8MouseClicked
         // TODO add your handling code here:
          escribirJson();
-
-        VisualizacionMuestras visualizacionMuestras = new VisualizacionMuestras();
+  
+        VisualizacionMuestras visualizacionMuestras = new VisualizacionMuestras(direccion);
         visualizacionMuestras.setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_jButton8MouseClicked

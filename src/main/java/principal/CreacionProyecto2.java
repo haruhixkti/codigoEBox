@@ -149,10 +149,11 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
         
     }
     public CreacionProyecto2(String dir) {
+        System.out.println("<<<<<<CREACIÓN DEL PROYECTO 2>>>>>");
         this.direccion = dir;
         initComponents();
         
-        //leerJson();
+        leerJson();
 
     }
     public void fn(){
@@ -444,6 +445,7 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
 
         //Get employee first name
         nombreProyecto = (String) employeeObject.get("nombre");
+        System.out.println("NOMBRE leido: "+ nombreProyecto);
         ruta = (String) employeeObject.get("destino");
         codigoProyecto = (String) employeeObject.get("codigo");
         descripcionProyecto= (String) employeeObject.get("descripcion");
@@ -454,6 +456,7 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
         JSONArray employeeList = new JSONArray();
 
         JSONObject employeeDetails1 = new JSONObject();
+        System.out.println("nombreProyecto escrito: "+ nombreProyecto);
         employeeDetails1.put("nombre", nombreProyecto);
         employeeDetails1.put("destino", ruta);
         employeeDetails1.put("codigo", codigoProyecto);
