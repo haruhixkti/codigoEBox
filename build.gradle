@@ -1,0 +1,41 @@
+apply plugin: 'java'
+
+
+jar {
+    baseName = 'memoriacodigoEbox'
+    version =  '1.0'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+
+
+
+repositories {
+    mavenCentral()
+    maven { url "https://repository.jboss.org/nexus/content/repositories/releases" }
+    maven { url "http://www.dcm4che.org/maven2/" }
+    maven { url "http://repository.springsource.com/maven/bundles/external" }
+    maven { url "https://raw.github.com/agomezmoron/screen-recorder/mvn-repo" }
+
+
+    
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    compile 'org.mongodb:mongodb-driver:3.5.0'
+    compile 'com.github.sarxos:webcam-capture:0.3.11'
+    compile 'log4j:log4j:1.2.17'
+    compile 'com.googlecode.json-simple:json-simple:1.1.1'
+    compile 'io.indico:io.indico:3.14.0'
+    compile 'xuggle:xuggle-xuggler:5.4'
+    compile 'javax.media.jai:com.springsource.javax.media.jai.core:1.1.3'
+    compile 'javax.media:jmf:2.1.1e'
+    compile 'com.github.stephenc.monte:monte-screen-recorder:0.7.7.0'
+    compile 'com.github.agomezmoron:screen-recorder:0.0.3'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
+    compile 'ch.qos.logback:logback-core:1.2.3'
+    compile 'uk.co.caprica:vlcj:3.10.1'
+    compile 'unknown.binary:AbsoluteLayout:SNAPSHOT'
+}

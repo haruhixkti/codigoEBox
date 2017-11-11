@@ -568,7 +568,7 @@ public class CreacionProyecto1 extends javax.swing.JFrame {
         }
         
         CreacionProyecto2 creacionProyecto2 = new CreacionProyecto2(nombreCarpeta);
-        //creacionProyecto2.setNumber(5);
+        
        creacionProyecto2.setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_jButton1MouseClicked

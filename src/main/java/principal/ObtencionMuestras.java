@@ -36,6 +36,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 import javax.swing.ImageIcon;
 import static jmapps.ui.ImageArea.loadImage;
@@ -59,6 +60,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     public boolean carpetaPrincipalCreada = false;
     public int cantidadMuestras = 0;
     Webcam webcamPC, webcamCelu;
+     List<Webcam> webcamTest;
     boolean isRunning = false;
     boolean repr = true;
     public boolean activityRender = true;
@@ -82,7 +84,6 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     public ArrayList<String> rutasMuestras = new ArrayList<>();
     public ArrayList<String> nombreMuestras = new ArrayList<>();
     public ArrayList<String> duracionMuestras = new ArrayList<>();
-    
 
     /**
      * Screen Width.
@@ -114,6 +115,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     public int objeto = 0;
     public String nombreProyecto, codigoProyecto, descripcionProyecto, ruta;
     private final String direccion;
+
     /**
      * Creates new form VentanaPrincipal
      */
@@ -121,7 +123,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         System.out.println("<<<<<<OBTENCIÓN DE MUESTRAS>>>>>");
         this.direccion = dir;
         leerJson();
-        
+
         initComponents();
         creacionCarpetas();
 
@@ -131,7 +133,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         //JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();
 
-        try (FileReader reader = new FileReader(this.direccion+"informacionProyecto.json")) {
+        try (FileReader reader = new FileReader(this.direccion + "informacionProyecto.json")) {
             //Read JSON file
             Object obj = jsonParser.parse(reader);
 
@@ -157,7 +159,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         if (objeto == 0) {
 
             JSONObject employeeObject = (JSONObject) employee.get("proyecto");
-            System.out.println("employeeObject: "+ employeeObject );
+            System.out.println("employeeObject: " + employeeObject);
             //Get employee first name
             nombreProyecto = (String) employeeObject.get("nombre");
             System.out.println(nombreProyecto);
@@ -180,13 +182,13 @@ public class ObtencionMuestras extends javax.swing.JFrame {
             System.out.println(AR);
             FR = stringToBoolean((String) employeeObject.get("perspectivaCara"));
             System.out.println(FR);
-            
+
         }
 
     }
 
     public boolean stringToBoolean(String elemento) {
-        if(elemento == "true") {
+        if (elemento == "true") {
             return true;
 
         }
@@ -215,8 +217,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         JSONObject employeeObject2 = new JSONObject();
         employeeObject2.put("perspectivas", employeeDetails2);
         employeeList.add(employeeObject2);
-        
-        
+
         for (int i = 0; i < cantidadMuestras; i++) {
             JSONObject employeeDetails3 = new JSONObject();
             employeeDetails3.put("ruta", rutasMuestras.get(i));
@@ -227,7 +228,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
             employeeObject3.put("muestra", employeeDetails3);
             employeeList.add(employeeObject3);
         }
-        try (FileWriter file = new FileWriter(this.direccion+"informacionProyecto.json")) {
+        try (FileWriter file = new FileWriter(this.direccion + "informacionProyecto.json")) {
 
             file.write(employeeList.toJSONString());
             file.flush();
@@ -235,13 +236,6 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
-        
-         
-
-
-
-   
 
     }
 
@@ -266,33 +260,32 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     
     
          */
-    
-            //creacion de carpetas de muestra
-            nombreMuestraActual = this.direccion + "Muestra" + String.valueOf(cantidadMuestras);
-            File f2 = new File(nombreMuestraActual);
-            f2.mkdir();
-            System.out.println("se creo el directorio de muestras: " + nombreMuestraActual);
 
-            if (activityRender) {
-                File f3 = new File(nombreMuestraActual + "/" + "storeActivityRender");
-                f3.mkdir();
-                System.out.println("se creo el directorio de muestras: " + nombreMuestraActual + "/" + "storeActivityRender");
-                storeActivityRender = nombreMuestraActual + "/" + "storeActivityRender" + "/";
-            }
-            if (faceRecorder) {
-                File f3 = new File(nombreMuestraActual + "/" + "storeFaceRecorder");
-                f3.mkdir();
-                System.out.println("se creo el directorio de muestras: " + nombreMuestraActual + "/" + "storeFaceRecorder");
-                storeFaceRecorder = nombreMuestraActual + "/" + "storeFaceRecorder" + "/";
-            }
-            if (externalPerspective) {
-                File f3 = new File(nombreMuestraActual + "/" + "storeExternalPerspective");
-                f3.mkdir();
-                System.out.println("se creo el directorio de muestras: " + nombreMuestraActual + "/" + "storeExternalPerspective");
-                storeExternalPerspective = nombreMuestraActual + "/" + "storeExternalPerspective" + "/";
-            }
+        //creacion de carpetas de muestra
+        nombreMuestraActual = this.direccion + "Muestra" + String.valueOf(cantidadMuestras);
+        File f2 = new File(nombreMuestraActual);
+        f2.mkdir();
+        System.out.println("se creo el directorio de muestras: " + nombreMuestraActual);
 
-        
+        if (activityRender) {
+            File f3 = new File(nombreMuestraActual + "/" + "storeActivityRender");
+            f3.mkdir();
+            System.out.println("se creo el directorio de muestras: " + nombreMuestraActual + "/" + "storeActivityRender");
+            storeActivityRender = nombreMuestraActual + "/" + "storeActivityRender" + "/";
+        }
+        if (faceRecorder) {
+            File f3 = new File(nombreMuestraActual + "/" + "storeFaceRecorder");
+            f3.mkdir();
+            System.out.println("se creo el directorio de muestras: " + nombreMuestraActual + "/" + "storeFaceRecorder");
+            storeFaceRecorder = nombreMuestraActual + "/" + "storeFaceRecorder" + "/";
+        }
+        if (externalPerspective) {
+            File f3 = new File(nombreMuestraActual + "/" + "storeExternalPerspective");
+            f3.mkdir();
+            System.out.println("se creo el directorio de muestras: " + nombreMuestraActual + "/" + "storeExternalPerspective");
+            storeExternalPerspective = nombreMuestraActual + "/" + "storeExternalPerspective" + "/";
+        }
+
     }
 
     /**
@@ -933,14 +926,14 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
         creacionCarpetas();
         System.out.println("Se iniciaran las grabaciones (se aumento en 1 la cantidad de muestras");
-        cargando.setText("Cargando...");
+        
         cantidadMuestras += 1;
         codigoMuestra = "cod1Muestra" + String.valueOf(cantidadMuestras);
         jLabel2.setText(codigoMuestra);
         isRunning = true;
         cantidadFrame = 0;
         System.out.println("Se crearan las carpetas");
-        
+
         System.out.println("Carpetas creadas");
 
         System.out.println("Se iniciaran los thread");
@@ -948,45 +941,49 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         t3 = new Thread() {
             @Override
             public void run() {
+             
 
-                try {
-                    gate.await();
-                    System.out.println("****** Inicio captura de muestras face Celular ******");
-                    System.out.println("Se debio haber abierto la camara");
-                    long timeFRC = 0;
+                    try {
+                        gate.await();
+                        System.out.println("****** Inicio captura de muestras face Celular ******");
+                        System.out.println("Se debio haber abierto la camara");
+                        long timeFRC = 0;
 
-                    while (isRunning) {
-                        try {
+                        while (isRunning) {
+                            try {
 
-                            image3 = webcamCelu.getImage();
-                            timeFRC = System.currentTimeMillis();
-                            String ruta = storeExternalPerspective + timeFRC + ".jpg";
-                            ImageIO.write(image3, "jpg", new File(ruta));
-                            copyImage(ruta, ruta);
-                            Thread.sleep(captureInterval);
+                                image3 = webcamCelu.getImage();
+                                timeFRC = System.currentTimeMillis();
+                                String ruta = storeExternalPerspective + timeFRC + ".jpg";
+                                ImageIO.write(image3, "jpg", new File(ruta));
+                                //copyImage(ruta, ruta);
+                                Thread.sleep(captureInterval);
 
-                        } catch (InterruptedException ex) {
-                            //Logger.getLogger(CameraTest.class.getName()).log(Level.SEVERE, null, ex);
-                        } catch (IOException ex) {
-                            // Logger.getLogger(FaceRecorder.class.getName()).log(Level.SEVERE, null, ex);
+                            } catch (InterruptedException ex) {
+                                //Logger.getLogger(CameraTest.class.getName()).log(Level.SEVERE, null, ex);
+                            } catch (IOException ex) {
+                                // Logger.getLogger(FaceRecorder.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+
                         }
+                        System.out.println("Captura de cara finalizada");
 
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (BrokenBarrierException ex) {
+                        Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    System.out.println("Captura de cara finalizada");
+                
 
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (BrokenBarrierException ex) {
-                    Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
-                }
             }
         };
         //FACERECORDERWEBCAM
         t1 = new Thread() {
             @Override
             public void run() {
-
-                try {
+  
+                 
+                    try {
                     gate.await();
                     System.out.println("****** Inicio captura de muestras face PC ******");
                     System.out.println("Se debio haber abierto la camara");
@@ -1025,13 +1022,15 @@ public class ObtencionMuestras extends javax.swing.JFrame {
                 } catch (BrokenBarrierException ex) {
                     Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
                 }
+            
             }
         };
         //ACTIVIY RENDER
         t2 = new Thread() {
             @Override
             public void run() {
-                System.out.println("****** Inicio captura de muestras activity ******");
+               
+                   System.out.println("****** Inicio captura de muestras activity ******");
                 long timeAR = 0;
                 tiempoActivityRenderi = System.currentTimeMillis();
 
@@ -1047,8 +1046,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
                             String name = storeActivityRender + String.valueOf(timeAR) + ".jpeg";
                             ImageIO.write(img, "jpeg", new File(name));
 
-                            copyImage(name, name);
-
+                            //copyImage(name, name);
                             // System.out.println(record);
                             Thread.sleep(captureInterval);
                         }
@@ -1062,30 +1060,49 @@ public class ObtencionMuestras extends javax.swing.JFrame {
                 } catch (Exception ex) {
                     Logger.getLogger(Pestanas.class.getName()).log(Level.SEVERE, null, ex);
                 }
+             
             }
         };
 
         System.out.println("Antes de abrir la camara");
 
 //webcam = Webcam.getDefault();
-        webcamPC = Webcam.getWebcamByName("HP Truevision HD 0");
+/*
+  public boolean activityRender = true;
+    public boolean faceRecorder = true;
+    public boolean externalPerspective = false;
+
+         */
+       
+            //webcamTest = Webcam.getWebcams();
+            System.out.println("Entre al if faceRecorder");
+            webcamPC = Webcam.getDefault();
+            //webcamPC = Webcam.getWebcamByName("HP Truevision HD 0");
+            webcamPC.setViewSize(new Dimension(320, 240));
+            webcamPC.open(true);
+
+        
+
+            webcamCelu = Webcam.getWebcamByName("DroidCam Source 3 1");
+            
+            webcamCelu.open(true);
+        
+
         // System.out.println("TAMAÑOS CELULAR"+webcamCelu.getCustomViewSizes());
-
-        webcamCelu = Webcam.getWebcamByName("DroidCam Source 3 1");
-
-        webcamPC.setViewSize(new Dimension(320, 240));
         //webcamCelu.setViewSize(new Dimension(320,240));
+//t1: face
+//t3: externo
+        
+            if (webcamPC.isOpen()) {
+                System.out.println("Despues de abrir la camara1");
+                cargando.setText("Grabando");
+                t1.start();
+                t2.start();
+                t3.start();
+            }
 
-        webcamPC.open(true);
-        webcamCelu.open(true);
-
-        if (webcamPC.isOpen() && webcamCelu.isOpen()) {
-            System.out.println("Despues de abrir la camara");
-            cargando.setText("Grabando");
-            t1.start();
-            t2.start();
-            t3.start();
-        }
+        
+    
 
         try {
             gate.await();
@@ -1343,8 +1360,8 @@ public class ObtencionMuestras extends javax.swing.JFrame {
 
     private void jButton8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton8MouseClicked
         // TODO add your handling code here:
-         escribirJson();
-  
+        escribirJson();
+
         VisualizacionMuestras visualizacionMuestras = new VisualizacionMuestras(direccion);
         visualizacionMuestras.setVisible(true);
         this.setVisible(false);
@@ -1555,7 +1572,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-               // new ObtencionMuestras().setVisible(true);
+                // new ObtencionMuestras().setVisible(true);
             }
         });
     }

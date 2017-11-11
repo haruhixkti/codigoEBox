@@ -14,8 +14,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CyclicBarrier;
 import javax.swing.ImageIcon;
+import javax.swing.table.DefaultTableModel;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -38,9 +40,9 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
     Webcam webcamPC, webcamCelu;
     boolean isRunning = false;
     boolean repr = true;
-    public boolean activityRender = true;
-    public boolean faceRecorder = true;
-    public boolean externalPerspective = true;
+    public boolean activityRender;
+    public boolean faceRecorder;
+    public boolean externalPerspective;
     BufferedImage image2, image3;
     Thread t1, t2, t3;
     int cantidadFrame = 0;
@@ -97,69 +99,17 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
     /**
      * Creates new form VentanaPrincipal
      */
-    
-    public void creacionCarpetas() {
-        /*
-    |-muestras(carpeta)
-    |--m1(carpeta)
-    |---acvtivityRender(carpeta)
-    |---faceRecorder(carpeta)
-    |---videoAcvtivityRender(archivo)
-    |---videoFaceRecorder(archivo)
-    |--m2(carpeta)
-    |---acvtivityRender(carpeta)
-    |---faceRecorder(carpeta)
-    |---videoAcvtivityRender(archivo)
-    |---videoFaceRecorder(archivo)
-    |--m3(carpeta)
-    |---acvtivityRender(carpeta)
-    |---faceRecorder(carpeta)
-    |---videoAcvtivityRender(archivo)
-    |---videoFaceRecorder(archivo)
-    
-    
-         */
-        nombreCarpeta = ruta+"/"+nombreProyecto + "Muestras";
-  
-            //creacion de carpetas de muestra
-            nombreMuestraActual = nombreCarpeta + "/Muestra" + String.valueOf(cantidadMuestras);
-            File f2 = new File(nombreMuestraActual);
-            f2.mkdir();
-            System.out.println("se creo el directorio de muestras: " + nombreMuestraActual);
 
-            if (activityRender) {
-                File f3 = new File(nombreMuestraActual + "/" + "storeActivityRender");
-                f3.mkdir();
-                System.out.println("se creo el directorio de muestras: " + nombreMuestraActual + "/" + "storeActivityRender");
-                storeActivityRender = nombreMuestraActual + "/" + "storeActivityRender" + "/";
-            }
-            if (faceRecorder) {
-                File f3 = new File(nombreMuestraActual + "/" + "storeFaceRecorder");
-                f3.mkdir();
-                System.out.println("se creo el directorio de muestras: " + nombreMuestraActual + "/" + "storeFaceRecorder");
-                storeFaceRecorder = nombreMuestraActual + "/" + "storeFaceRecorder" + "/";
-            }
-            if (externalPerspective) {
-                File f3 = new File(nombreMuestraActual + "/" + "storeExternalPerspective");
-                f3.mkdir();
-                System.out.println("se creo el directorio de muestras: " + nombreMuestraActual + "/" + "storeExternalPerspective");
-                storeExternalPerspective = nombreMuestraActual + "/" + "storeExternalPerspective" + "/";
-            }
-
-        
-    }
     public CreacionProyecto2(String dir) {
         System.out.println("<<<<<<CREACIÓN DEL PROYECTO 2>>>>>");
         this.direccion = dir;
         initComponents();
         
         leerJson();
+        busquedaCamaras();
 
     }
-    public void fn(){
     
-    System.out.println("NUMEROSdsñkfjlsdjflsdkjflksdjfds: "+ direccion);
-    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -175,6 +125,11 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
         jLabel20 = new javax.swing.JLabel();
+        jCheckBox1 = new javax.swing.JCheckBox();
+        jCheckBox4 = new javax.swing.JCheckBox();
+        jCheckBox5 = new javax.swing.JCheckBox();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
@@ -209,30 +164,127 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
 
         jLabel20.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
         jLabel20.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel20.setText("Agregar perspectiva");
+        jLabel20.setText("Perspectiva externa");
+
+        jCheckBox1.setBackground(new java.awt.Color(76, 175, 80));
+        jCheckBox1.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
+        jCheckBox1.setForeground(new java.awt.Color(255, 255, 255));
+        jCheckBox1.setText("Seleccionar");
+        jCheckBox1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jCheckBox1MouseClicked(evt);
+            }
+        });
+        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox1ActionPerformed(evt);
+            }
+        });
+
+        jCheckBox4.setBackground(new java.awt.Color(76, 175, 80));
+        jCheckBox4.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
+        jCheckBox4.setForeground(new java.awt.Color(255, 255, 255));
+        jCheckBox4.setText("Seleccionar");
+        jCheckBox4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jCheckBox4MouseClicked(evt);
+            }
+        });
+        jCheckBox4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox4ActionPerformed(evt);
+            }
+        });
+
+        jCheckBox5.setBackground(new java.awt.Color(76, 175, 80));
+        jCheckBox5.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
+        jCheckBox5.setForeground(new java.awt.Color(255, 255, 255));
+        jCheckBox5.setText("Seleccionar");
+        jCheckBox5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jCheckBox5MouseClicked(evt);
+            }
+        });
+        jCheckBox5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox5ActionPerformed(evt);
+            }
+        });
+
+        jTable1.setAutoCreateRowSorter(true);
+        jTable1.setFont(new java.awt.Font("Roboto", 0, 10)); // NOI18N
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "CAMARAS DETECTADAS"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jTable1.setGridColor(new java.awt.Color(255, 255, 255));
+        jTable1.setIntercellSpacing(new java.awt.Dimension(5, 5));
+        jTable1.setRowHeight(25);
+        jTable1.setSelectionBackground(new java.awt.Color(200, 230, 201));
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(jTable1);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(104, 104, 104)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel20)
-                    .addComponent(jLabel18)
-                    .addComponent(jLabel12))
-                .addContainerGap(402, Short.MAX_VALUE))
+                .addGap(98, 98, 98)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 411, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel12)
+                            .addComponent(jLabel18)
+                            .addComponent(jLabel20))
+                        .addGap(86, 86, 86)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jCheckBox4)
+                            .addComponent(jCheckBox1)
+                            .addComponent(jCheckBox5))))
+                .addContainerGap(173, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(40, Short.MAX_VALUE)
-                .addComponent(jLabel12)
+                .addGap(43, 43, 43)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel12)
+                    .addComponent(jCheckBox5))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel18)
+                    .addComponent(jCheckBox1))
                 .addGap(69, 69, 69)
-                .addComponent(jLabel18)
-                .addGap(100, 100, 100)
-                .addComponent(jLabel20)
-                .addGap(434, 434, 434))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel20)
+                    .addComponent(jCheckBox4))
+                .addGap(150, 150, 150)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(175, 175, 175))
         );
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, 720, 730));
@@ -252,6 +304,11 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
         jLabel3.setText("computador");
 
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/Imagen1.png"))); // NOI18N
+        jLabel4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel4MouseClicked(evt);
+            }
+        });
 
         jButton1.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
         jButton1.setText("Crear proyecto");
@@ -409,14 +466,76 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
         // TODO add your handling code here:
+        System.out.println("seleccion: EXTERNA "+ jCheckBox4.isSelected());
+        System.out.println("seleccion ACTIVITY: "+ jCheckBox1.isSelected());
+        System.out.println("seleccion FACE: "+ jCheckBox5.isSelected());
+         AR = jCheckBox1.isSelected();
+         FR =  jCheckBox5.isSelected();
+         PE = jCheckBox4.isSelected();
+        
         escribirJson();
+        
         ObtencionMuestras obtencionMuestras = new ObtencionMuestras(direccion);
         obtencionMuestras.setVisible(true);
         this.setVisible(false);
 
     }//GEN-LAST:event_jButton1MouseClicked
+
+    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jCheckBox1ActionPerformed
+
+    private void jCheckBox4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jCheckBox4ActionPerformed
+
+    private void jCheckBox5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox5ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jCheckBox5ActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        // TODO add your handling code here:
+     
+    }//GEN-LAST:event_jTable1MouseClicked
+
+    private void jCheckBox5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jCheckBox5MouseClicked
+        // TODO add your handling code here:
+        
+        //facerecorder
+    }//GEN-LAST:event_jCheckBox5MouseClicked
+
+    private void jCheckBox1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jCheckBox1MouseClicked
+        // TODO add your handling code here:
+        
+        
+        //activyRender
+    }//GEN-LAST:event_jCheckBox1MouseClicked
+
+    private void jCheckBox4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jCheckBox4MouseClicked
+        // TODO add your handling code here:
+        
+        //perspectiva externa
+    }//GEN-LAST:event_jCheckBox4MouseClicked
+
+    private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
+        // TODO add your handling code here:
+      
+        
+    }//GEN-LAST:event_jLabel4MouseClicked
+    public void busquedaCamaras(){
+        
+    List<Webcam> webcamTest = Webcam.getWebcams();
+    
+    DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        for (int i = 0; i < webcamTest.size(); i++) {
+            model.addRow(new Object[]{webcamTest.get(i).getName()});
+        }
+        
+    
+    
+    }
     public void leerJson() {
-        fn();
+         
         //JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();
 
@@ -532,6 +651,9 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JCheckBox jCheckBox1;
+    private javax.swing.JCheckBox jCheckBox4;
+    private javax.swing.JCheckBox jCheckBox5;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
@@ -550,5 +672,7 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 }
