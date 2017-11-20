@@ -45,7 +45,6 @@ public class VentanaInicial extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setExtendedState(6);
         setPreferredSize(new java.awt.Dimension(1366, 768));
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
