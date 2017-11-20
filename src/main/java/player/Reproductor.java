@@ -149,6 +149,7 @@ public class Reproductor extends javax.swing.JFrame {
     public int minutos = 0;
     public int contadorTiempo = 0;
     int contador = 0;
+    public int e = -1;
     public ArrayList<Integer> tagsPorMinuto = new ArrayList<>();
     
 
@@ -159,10 +160,19 @@ public class Reproductor extends javax.swing.JFrame {
 
        leerJson();
         iniciarComponentes();
+        calculox();
         
 
     }
 
+    public void calculox(){
+        for (int i = 1; i < 600; i++) {
+            
+        }
+        //sliderTiempo.setValue(1);
+            
+    
+    }
   
     public void leerJson() {
         //JSON parser object to parse read file
@@ -855,8 +865,8 @@ public class Reproductor extends javax.swing.JFrame {
                 vistaTagManual.revalidate();
                 vistaTagManual.repaint();        
             }
-            System.out.println("Tiempo: "+ minutos);
-            System.out.println("medidas EN AGREGAR TAG: "+ contenedor.get(minutos).get(0).getBounds());
+          //  System.out.println("Tiempo: "+ minutos);
+         //   System.out.println("medidas EN AGREGAR TAG: "+ contenedor.get(minutos).get(0).getBounds());
             vistaTagManual.revalidate();
             vistaTagManual.repaint();        
 
@@ -883,7 +893,7 @@ public class Reproductor extends javax.swing.JFrame {
         //IMPORTANT
         vistaTagManual.revalidate();
         vistaTagManual.repaint();        
-        System.out.println("termine quitar tag");
+        //System.out.println("termine quitar tag");
     }
     
     public void crearAgregar() {
@@ -911,7 +921,7 @@ public class Reproductor extends javax.swing.JFrame {
         }
             tagsPorMinuto.add(0);
             contenedor.add(new ArrayList<JLabel>(arregloTag));
-            System.out.println("CONTENEDOR: "+ contenedor.get(j).get(0).getText());
+            //System.out.println("CONTENEDOR: "+ contenedor.get(j).get(0).getText());
 //            contenedor.add(arregloTag);
         }
 
@@ -925,9 +935,9 @@ public class Reproductor extends javax.swing.JFrame {
          //se completo el minuto
          if(contadorTiempo == 600){
              
-             System.out.println("entre con: ");
-           System.out.println("contadorTiempo: " + contadorTiempo);
-             System.out.println("minutos: " + minutos);
+          //   System.out.println("entre con: ");
+          // System.out.println("contadorTiempo: " + contadorTiempo);
+           //  System.out.println("minutos: " + minutos);
              contadorTiempo = 0;
              //agregarTag();
              quitarTag();
@@ -1395,7 +1405,7 @@ public class Reproductor extends javax.swing.JFrame {
                 public void paint(Graphics2D g, JSlider c, int w, int h) {
                     if (mouseDown == false) {
 
-                        //System.out.println("w: " + w);
+                      //  System.out.println("w: " + w);
                         int arc = 10;
                         int trackHeight = 8;
                         int trackWidth = w - 2;
@@ -1438,7 +1448,22 @@ public class Reproductor extends javax.swing.JFrame {
 
                     xPosition = Math.max(trackLeft, xPosition);
                     xPosition = Math.min(trackRight, xPosition);
-                    //System.out.println("posición en x: " + xPosition);
+                 
+                    
+                           
+                    if(frameSegundoA <600){
+                        
+                        if(e!=frameSegundoA){
+                        
+                        e = frameSegundoA;
+                        System.out.print("[");
+                        System.out.print(frameSegundoA);
+                        System.out.print("," + xPosition);
+                        System.out.print("]");
+                        }
+                        
+                     }
+                   
                     int posicionMarcada = xPosition;
 
                     //play
