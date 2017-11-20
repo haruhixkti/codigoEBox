@@ -92,6 +92,12 @@ public class VentanaInicial extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btnNuevoProyectoMouseClicked(evt);
             }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnNuevoProyectoMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnNuevoProyectoMouseExited(evt);
+            }
         });
         btnNuevoProyecto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -258,12 +264,24 @@ public class VentanaInicial extends javax.swing.JFrame {
 
     private void btnNuevoProyectoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnNuevoProyectoMouseClicked
         // TODO add your handling code here:
+        btnNuevoProyecto.setBackground(new java.awt.Color(200,230,201));
         
         CreacionProyecto1 creacionProyecto1 = new CreacionProyecto1();
         creacionProyecto1.setVisible(true);
         this.setVisible(false);
         
     }//GEN-LAST:event_btnNuevoProyectoMouseClicked
+
+    private void btnNuevoProyectoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnNuevoProyectoMouseEntered
+        // TODO add your handling code here:
+        btnNuevoProyecto.setBackground(new java.awt.Color(200,230,201));
+    }//GEN-LAST:event_btnNuevoProyectoMouseEntered
+
+    private void btnNuevoProyectoMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnNuevoProyectoMouseExited
+        // TODO add your handling code here:
+        btnNuevoProyecto.setBackground(new java.awt.Color(76,175,80));
+        
+    }//GEN-LAST:event_btnNuevoProyectoMouseExited
 
     /**
      * @param args the command line arguments

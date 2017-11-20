@@ -6,6 +6,7 @@
 package principal;
 
 import com.github.sarxos.webcam.Webcam;
+import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -538,7 +539,9 @@ public class CreacionProyecto1 extends javax.swing.JFrame {
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
         // TODO add your handling code here:
+        jButton1.setBackground(new java.awt.Color(76, 175, 80));
         
+       
         nombreProyecto = txtNombreProyecto.getText();
         codigoProyecto = txtCodigoProyecto.getText();
         descripcionProyecto = txtDescripcionMuestra.getText();
