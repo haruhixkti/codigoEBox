@@ -5,6 +5,7 @@
  */
 package player;
 
+
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -12,6 +13,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
@@ -37,12 +40,15 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import static java.lang.Math.toIntExact;
+import java.net.MalformedURLException;
 import java.util.EventListener;
 import java.util.Hashtable;
+import java.util.Vector;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.media.MediaLocator;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
@@ -52,10 +58,12 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import static oracle.jrockit.jfr.events.Bits.intValue;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import principal.VisualizacionMuestras;
 
 /**
  *
@@ -159,8 +167,19 @@ public class Reproductor extends javax.swing.JFrame {
     public ArrayList<Integer> tagsPorMinuto = new ArrayList<>();
     public int cantidadTags=0;
     int lista[] = {0, 0, 0, 0, 0, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 18, 19, 19, 20, 20, 21, 21, 22, 22, 23, 23, 24, 24, 25, 25, 25, 26, 26, 27, 27, 28, 28, 29, 29, 30, 30, 31, 31, 32, 32, 33, 33, 33, 34, 34, 35, 35, 36, 36, 37, 37, 38, 38, 39, 39, 40, 40, 41, 41, 41, 42, 42, 43, 43, 44, 44, 45, 45, 46, 46, 47, 47, 48, 48, 48, 49, 49, 50, 50, 51, 51, 52, 52, 53, 53, 54, 54, 55, 55, 56, 56, 56, 57, 57, 58, 58, 59, 59, 60, 60, 61, 61, 62, 62, 63, 63, 64, 64, 64, 65, 65, 66, 66, 67, 67, 68, 68, 69, 69, 70, 70, 71, 71, 72, 72, 72, 73, 73, 74, 74, 75, 75, 76, 76, 77, 77, 78, 78, 79, 79, 79, 80, 80, 81, 81, 82, 82, 83, 83, 84, 84, 85, 85, 86, 86, 87, 87, 87, 88, 88, 89, 89, 90, 90, 91, 91, 92, 92, 93, 93, 94, 94, 95, 95, 95, 96, 96, 97, 97, 98, 98, 99, 99, 100, 100, 101, 101, 102, 102, 102, 103, 103, 104, 104, 105, 105, 106, 106, 107, 107, 108, 108, 109, 109, 110, 110, 110, 111, 111, 112, 112, 113, 113, 114, 114, 115, 115, 116, 116, 117, 117, 118, 118, 118, 119, 119, 120, 120, 121, 121, 122, 122, 123, 123, 124, 124, 125, 125, 125, 126, 126, 127, 127, 128, 128, 129, 129, 130, 130, 131, 131, 132, 132, 133, 133, 133, 134, 135, 136, 136, 136, 136, 137, 137, 138, 138, 139, 139, 140, 140, 141, 141, 141, 142, 142, 143, 143, 144, 144, 145, 145, 146, 146, 147, 147, 148, 148, 148, 149, 149, 150, 150, 151, 151, 152, 152, 153, 153, 154, 154, 155, 155, 156, 156, 156, 157, 157, 158, 158, 159, 159, 160, 160, 161, 161, 162, 162, 163, 163, 164, 164, 164, 165, 165, 166, 166, 167, 167, 168, 168, 169, 169, 170, 170, 171, 171, 172, 172, 172, 173, 173, 174, 174, 175, 175, 176, 176, 177, 177, 178, 178, 179, 179, 179, 180, 180, 181, 181, 182, 182, 183, 183, 184, 184, 185, 185, 186, 186, 187, 187, 187, 188, 188, 189, 189, 190, 190, 191, 191, 192, 192, 193, 193, 194, 194, 195, 195, 195, 196, 196, 197, 197, 198, 198, 199, 199, 200, 200, 201, 201, 202, 202, 202, 203, 203, 204, 204, 205, 205, 206, 206, 207, 207, 208, 208, 209, 209, 210, 210, 210, 211, 211, 212, 212, 213, 213, 214, 214, 215, 215, 216, 216, 217, 217, 218, 218, 218, 219, 219, 220, 220, 221, 221, 222, 222, 223, 223, 224, 224, 225, 225, 225, 226, 226, 227, 227, 228, 228, 229, 229, 230, 230, 231, 231, 232, 232, 233, 233, 233, 234, 234, 235, 235, 236, 236, 237, 237, 238, 238, 239, 239, 240, 240, 241, 241, 241, 242, 242, 243, 243, 244, 244, 245, 245, 246, 246, 247, 247, 248, 248, 248, 249, 249, 250, 250, 251, 251, 252, 252, 253, 253, 254, 254, 255, 255, 256, 256, 256, 257, 257, 258, 258, 259, 259, 260, 260, 261, 261, 262, 262, 263, 263, 264, 264, 264, 265, 265, 266, 266, 267, 267, 268, 268, 269, 269, 270, 270, 271, 271, 272, 272, 272, 273, 273, 274, 274, 275, 275, 276, 276, 277, 277, 278, 278, 279, 279, 279, 280, 280, 281, 281, 282, 282, 283, 283, 284, 284, 285, 285, 286, 286, 287, 287, 287, 288, 288, 289, 289, 290, 290, 291, 291, 292, 292, 293, 293, 294, 294, 295, 295, 295, 296, 296, 297, 297, 298, 298, 299, 299, 300, 300, 301, 301, 302, 302, 302, 303, 303, 304, 304, 305, 305, 306, 306, 307, 307, 308, 308, 309, 309, 310, 310, 310, 311, 311, 312, 312, 313, 313, 314, 314, 315, 315, 316, 316, 317, 317, 318, 318, 318, 319, 319, 320, 320, 321, 321, 322, 322, 323, 323, 324, 324, 325, 325, 325, 326, 326, 327, 327, 328, 328, 329, 329, 330, 330, 331, 331, 332, 332, 333, 333, 333, 334, 334, 335, 335, 336, 336, 337, 337, 338, 338, 339, 339, 340, 340, 341, 341, 341, 342, 342, 343, 343, 344, 344, 345, 345, 346, 346, 347, 347, 348, 348, 348, 349, 349, 350, 350, 351, 351, 352, 352, 353, 353, 354, 354, 355, 355, 356, 356, 356, 357, 357, 358, 358, 359, 359, 360, 360, 361, 361, 362, 362, 363, 363, 364, 364, 364, 365, 365, 366, 366, 367, 367, 368, 368, 369, 369, 370, 370, 371, 371, 372, 372, 372, 373, 373, 374, 374, 375, 375, 376, 376, 377, 377, 378, 378, 379, 379, 379, 380, 380, 381, 381, 382, 382, 383, 383, 384, 384, 385, 385, 386, 386, 387, 387, 387, 388, 388, 389, 389, 390, 390, 391, 391, 392, 392, 393, 393, 394, 394, 395, 395, 395, 396, 396, 397, 397, 398, 398, 399, 399, 400, 400, 401, 401, 402, 402, 402, 403, 403, 404, 404, 405, 405, 406, 406, 407, 407, 408, 408, 409, 409, 410, 410, 410, 411, 411, 412, 412, 413, 413, 414, 414, 415, 415, 416, 416, 417, 417, 418, 418, 418, 419, 419, 420, 420, 421, 421, 422, 422, 423, 423, 424, 424, 425, 425, 425, 426, 426, 427, 427, 428, 428, 429, 429, 430, 430, 431, 431, 432, 432, 433, 433, 433, 434, 434, 435, 435, 436, 436, 437, 437, 438, 438, 439, 439, 440, 440, 441, 441, 441, 442, 442, 443, 443, 444, 444, 445, 445, 446, 446, 447, 447, 448, 448, 448, 449, 449, 450, 450, 451, 451, 452, 452, 453, 453, 454, 454, 455, 455, 456, 456, 456, 457, 457, 458, 458, 459, 459, 460, 460, 461, 461, 462, 462, 463, 463, 464, 464, 464, 465, 465, 466, 466, 467, 467, 468, 468, 469, 469, 470, 470, 471, 471, 472, 472, 472, 473, 473, 474, 474, 475, 475, 476, 476, 477, 477, 478, 478, 479, 479, 479, 480, 480, 481, 481, 482, 482, 483, 483, 484, 484, 485, 485, 486, 486, 487, 487, 487, 488, 488, 489, 489, 490, 490, 491, 491, 492, 492, 493, 493, 494, 494, 495, 495, 495, 496, 496, 497, 497, 498, 498, 499, 499, 500, 500, 501, 501, 502, 502, 502, 503, 503, 504, 504, 505, 505, 506, 506, 507, 507, 508, 508, 509, 509, 510, 510, 510, 511, 511, 512, 512, 513, 513, 514, 514, 515, 515, 516, 516, 517, 517, 518, 518, 518, 519, 519, 520, 520, 521, 521, 522, 522, 523, 523, 524, 524, 525, 525, 525, 526, 526, 527, 527, 528, 528, 529, 529, 530, 530, 531, 531, 532, 532, 533, 533, 533, 534, 534, 535, 535, 536, 536, 537, 537, 538, 538, 539, 539, 540, 540, 541, 541, 541, 542, 542, 543, 543, 544, 544, 545, 545, 546, 546, 547, 547, 548, 548, 548, 549, 549, 550, 550, 551, 551, 552, 552, 553, 553, 554, 554, 555, 555, 556, 556, 556, 557, 557, 558, 558, 559, 559, 560, 560, 561, 561, 562, 562, 563, 563, 564, 564, 564, 565, 565, 566, 566, 567, 567, 568, 568, 569, 569, 570, 570, 571, 571, 572, 572, 572, 573, 573, 574, 574, 575, 575, 576, 576, 577, 577, 578, 578, 579, 579, 579, 580, 580, 581, 581, 582, 582, 583, 583, 584, 584, 585, 585, 586, 586, 587, 587, 587, 588, 588, 589, 589, 590, 590, 591, 591, 592, 592, 593, 593, 594, 594, 595, 595, 595, 596, 596, 597, 597, 598, 599};
-
+    int posMuestraElegida;
     public int frameX[];
+    	/**
+	 * Screen Width.
+	 */
+	public static int screenWidth = (int) Toolkit.getDefaultToolkit()
+			.getScreenSize().getWidth();
+
+	/**
+	 * Screen Height.
+	 */
+	public static int screenHeight = (int) Toolkit.getDefaultToolkit()
+			.getScreenSize().getHeight();
 
     public Reproductor(String dir) {
         //System.out.println("<<<<<<REPRODUCTOR DE MUESTRAS>>>>>");
@@ -212,7 +231,7 @@ public class Reproductor extends javax.swing.JFrame {
         //Get employee object within list
         //Get employee object within list
         //System.out.println("APROVECHALO: " + employee);
-        if (objeto == 0) {
+        if (objeto == 1) {
 
             JSONObject employeeObject1 = (JSONObject) employee.get("proyecto");
 
@@ -227,7 +246,7 @@ public class Reproductor extends javax.swing.JFrame {
             //System.out.println(descripcionProyecto);
 
         }
-        if (objeto == 1) {
+        if (objeto == 2) {
             JSONObject employeeObject2 = (JSONObject) employee.get("perspectivas");
             //System.out.println("objeto2: " + employeeObject2);
             //Get employee first name
@@ -239,7 +258,7 @@ public class Reproductor extends javax.swing.JFrame {
             //System.out.println(FR);
 
         }
-        if (objeto > 1) {
+        if (objeto > 2) {
             JSONObject employeeObject3 = (JSONObject) employee.get("muestra");
 
             //Get employee first name
@@ -250,8 +269,7 @@ public class Reproductor extends javax.swing.JFrame {
             String secondNamea = (String) employeeObject3.get("tiempo");
             duracionMuestras.add(secondNamea);
             //System.out.println("tiempo: "+secondNamea);
-            String[] parts = secondNamea.split(":");
-            tiempoParaTags = Integer.parseInt(parts[0]);
+      
 
             String tresNamea = (String) employeeObject3.get("nombre");
             nombreMuestras.add(tresNamea);
@@ -260,19 +278,23 @@ public class Reproductor extends javax.swing.JFrame {
             String seleccionada = (String) employeeObject3.get("seleccionada");
 
             if ("true".equals(seleccionada)) {
+                
                 numeroSeleccionada = muestra;
-                //System.out.println("pos OBjeto seleccionado: "+ numeroSeleccionada);
+                System.out.println("pos OBjeto seleccionado: "+ numeroSeleccionada);
                 String firstName = (String) employeeObject3.get("ruta");
                 ruta = firstName;
-                //System.out.println(firstName);
+                System.out.println(firstName);
 
                 String secondName = (String) employeeObject3.get("tiempo");
                 tiempo = secondName;
-                //System.out.println(secondName);
+                System.out.println(secondName);
+                String[] parts = secondNamea.split(":");
+                System.out.println("partes: "+ parts);
+                tiempoParaTags = Integer.parseInt(parts[0]);
 
                 String tresName = (String) employeeObject3.get("nombre");
                 nombre = tresName;
-                //System.out.println(tresName);
+                System.out.println(tresName);
 
             }
             muestra += 1;
@@ -343,9 +365,18 @@ public class Reproductor extends javax.swing.JFrame {
 
     }
 
-    public void escribirJson() {
+    public void escribirJson(boolean paraBorrar) {
         JSONArray employeeList = new JSONArray();
-
+        JSONObject paso = new JSONObject();
+        paso.put("CreacionProyecto1", "0");
+        paso.put("CreacionProyecto2", "0");
+        paso.put("ObtencionMuestras", "0");
+        paso.put("VisualizacionMuestras", "1");
+       
+        JSONObject agregarPaso = new JSONObject();
+        agregarPaso.put("Paso", paso);
+        employeeList.add(agregarPaso);
+        
         JSONObject employeeDetails1 = new JSONObject();
         employeeDetails1.put("nombre", nombreProyecto);
         employeeDetails1.put("destino", rutaProyecto);
@@ -366,16 +397,43 @@ public class Reproductor extends javax.swing.JFrame {
         employeeList.add(employeeObject2);
 
         for (int i = 0; i < rutasMuestras.size(); i++) {
-            JSONObject employeeDetails3 = new JSONObject();
+            //paraBorrar = True Borra
+            //paraBorrar = False No borra
+            
+            if(paraBorrar){
+            if(numeroSeleccionada!=i){
+               JSONObject employeeDetails3 = new JSONObject();
             employeeDetails3.put("ruta", rutasMuestras.get(i));
             employeeDetails3.put("tiempo", duracionMuestras.get(i));
             employeeDetails3.put("nombre", nombreMuestras.get(i));
             //System.out.println("nombre muestra:" +nombreMuestras.get(i));
+            
             employeeDetails3.put("seleccionada", "false");
 
             JSONObject employeeObject3 = new JSONObject();
             employeeObject3.put("muestra", employeeDetails3);
             employeeList.add(employeeObject3);
+            
+            
+            }
+            
+            }
+            else{
+            
+                  JSONObject employeeDetails3 = new JSONObject();
+            employeeDetails3.put("ruta", rutasMuestras.get(i));
+            employeeDetails3.put("tiempo", duracionMuestras.get(i));
+            employeeDetails3.put("nombre", nombreMuestras.get(i));
+            //System.out.println("nombre muestra:" +nombreMuestras.get(i));
+            
+            employeeDetails3.put("seleccionada", "false");
+
+            JSONObject employeeObject3 = new JSONObject();
+            employeeObject3.put("muestra", employeeDetails3);
+            employeeList.add(employeeObject3);
+            
+            }
+      
         }
         try (FileWriter file = new FileWriter(this.direccion + "informacionProyecto.json")) {
 
@@ -390,6 +448,29 @@ public class Reproductor extends javax.swing.JFrame {
 
     private void iniciarComponentes() {
 
+        jFrameMin = new javax.swing.JFrame();
+        editarMarcas = new javax.swing.JPanel();
+        jButtonDetenerMin = new javax.swing.JButton();
+        jLabel22 = new javax.swing.JLabel();
+        jButtonDetenerMin1 = new javax.swing.JButton();
+        jLabel27 = new javax.swing.JLabel();
+        jComboBox1 = new javax.swing.JComboBox<>();
+        jLabel33 = new javax.swing.JLabel();
+        jLabel34 = new javax.swing.JLabel();
+        jLabel35 = new javax.swing.JLabel();
+        jFrameMin1 = new javax.swing.JFrame();
+        editarMarcas1 = new javax.swing.JPanel();
+        jButtonDetenerMin2 = new javax.swing.JButton();
+        jLabel24 = new javax.swing.JLabel();
+        textoEditarNuevo1 = new javax.swing.JTextField();
+        jSeparator2 = new javax.swing.JSeparator();
+        jLabel26 = new javax.swing.JLabel();
+        jButtonDetenerMin3 = new javax.swing.JButton();
+        textoEditarActual1 = new javax.swing.JLabel();
+        jFrameMin2 = new javax.swing.JFrame();
+        editarMarcas2 = new javax.swing.JPanel();
+        jLabel28 = new javax.swing.JLabel();
+        iconCargando = new javax.swing.JLabel();
         principal = new javax.swing.JPanel();
         vistaPerspectivaCara = new javax.swing.JPanel();
         videoCara = new javax.swing.JLabel();
@@ -434,7 +515,7 @@ public class Reproductor extends javax.swing.JFrame {
         videoExterno = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         vistaTiempo = new javax.swing.JPanel();
-
+        
         jPanel1 = new javax.swing.JPanel();
         minutero = new javax.swing.JLabel();
 
@@ -554,6 +635,300 @@ public class Reproductor extends javax.swing.JFrame {
         };
 
         //_____________________________________//
+ jFrameMin.setAlwaysOnTop(true);
+        jFrameMin.setBackground(new java.awt.Color(56, 142, 60));
+        jFrameMin.setUndecorated(true);
+
+        editarMarcas.setBackground(new java.awt.Color(56, 142, 60));
+        editarMarcas.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(200, 230, 201)));
+
+        jButtonDetenerMin.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jButtonDetenerMin.setText("Iniciar análisis");
+        jButtonDetenerMin.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButtonDetenerMinMouseClicked(evt);
+            }
+        });
+        jButtonDetenerMin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDetenerMinActionPerformed(evt);
+            }
+        });
+
+        jLabel22.setFont(new java.awt.Font("Roboto Light", 0, 18)); // NOI18N
+        jLabel22.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel22.setText("Análisis de sentimiento automático");
+
+        jButtonDetenerMin1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jButtonDetenerMin1.setText("Cancelar");
+        jButtonDetenerMin1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButtonDetenerMin1MouseClicked(evt);
+            }
+        });
+        jButtonDetenerMin1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDetenerMin1ActionPerformed(evt);
+            }
+        });
+
+        jLabel27.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        jLabel27.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel27.setText("Seleccionar sentimiento a analizar");
+
+        jComboBox1.setBackground(new java.awt.Color(56, 142, 60));
+        jComboBox1.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "felicidad", "tristeza", "enfado", "miedo", "sorpresa", "neutro" }));
+        jComboBox1.setBorder(null);
+        jComboBox1.setFocusable(false);
+        jComboBox1.setOpaque(false);
+
+        jLabel33.setFont(new java.awt.Font("Roboto Light", 0, 24)); // NOI18N
+        jLabel33.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel33.setText("¡Advertencia!");
+
+        jLabel34.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        jLabel34.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel34.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel34.setText("El uso de esta funcionalidad requiere de una conexión a internet");
+
+        jLabel35.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        jLabel35.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel35.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel35.setText("El uso de esta funcionalidad toma un tiempo considerable.");
+
+        javax.swing.GroupLayout editarMarcasLayout = new javax.swing.GroupLayout(editarMarcas);
+        editarMarcas.setLayout(editarMarcasLayout);
+        editarMarcasLayout.setHorizontalGroup(
+            editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(editarMarcasLayout.createSequentialGroup()
+                .addGroup(editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(editarMarcasLayout.createSequentialGroup()
+                        .addGap(103, 103, 103)
+                        .addComponent(jLabel22))
+                    .addGroup(editarMarcasLayout.createSequentialGroup()
+                        .addGap(135, 135, 135)
+                        .addGroup(editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel27, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(editarMarcasLayout.createSequentialGroup()
+                .addGap(63, 63, 63)
+                .addGroup(editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(editarMarcasLayout.createSequentialGroup()
+                        .addComponent(jButtonDetenerMin1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButtonDetenerMin)
+                        .addGap(75, 75, 75))
+                    .addGroup(editarMarcasLayout.createSequentialGroup()
+                        .addGroup(editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel34, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(editarMarcasLayout.createSequentialGroup()
+                                .addGap(114, 114, 114)
+                                .addComponent(jLabel33))
+                            .addComponent(jLabel35, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap(58, Short.MAX_VALUE))))
+        );
+        editarMarcasLayout.setVerticalGroup(
+            editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(editarMarcasLayout.createSequentialGroup()
+                .addGap(33, 33, 33)
+                .addComponent(jLabel22)
+                .addGap(40, 40, 40)
+                .addComponent(jLabel27)
+                .addGap(27, 27, 27)
+                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(38, 38, 38)
+                .addComponent(jLabel33)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel35)
+                .addGap(19, 19, 19)
+                .addComponent(jLabel34)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+                .addGroup(editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonDetenerMin)
+                    .addComponent(jButtonDetenerMin1))
+                .addGap(63, 63, 63))
+        );
+
+        javax.swing.GroupLayout jFrameMinLayout = new javax.swing.GroupLayout(jFrameMin.getContentPane());
+        jFrameMin.getContentPane().setLayout(jFrameMinLayout);
+        jFrameMinLayout.setHorizontalGroup(
+            jFrameMinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(editarMarcas, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+        jFrameMinLayout.setVerticalGroup(
+            jFrameMinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jFrameMinLayout.createSequentialGroup()
+                .addComponent(editarMarcas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        jFrameMin1.setAlwaysOnTop(true);
+        jFrameMin1.setBackground(new java.awt.Color(56, 142, 60));
+        jFrameMin1.setUndecorated(true);
+
+        editarMarcas1.setBackground(new java.awt.Color(56, 142, 60));
+        editarMarcas1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(200, 230, 201)));
+
+        jButtonDetenerMin2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jButtonDetenerMin2.setText("Guardar");
+        jButtonDetenerMin2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButtonDetenerMin2MouseClicked(evt);
+            }
+        });
+        jButtonDetenerMin2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDetenerMin2ActionPerformed(evt);
+            }
+        });
+
+        jLabel24.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        jLabel24.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel24.setText("Nuevo texto");
+
+        textoEditarNuevo1.setBackground(new java.awt.Color(56, 142, 60));
+        textoEditarNuevo1.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        textoEditarNuevo1.setForeground(new java.awt.Color(204, 204, 204));
+        textoEditarNuevo1.setBorder(null);
+        textoEditarNuevo1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                textoEditarNuevo1ActionPerformed(evt);
+            }
+        });
+
+        jLabel26.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        jLabel26.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel26.setText("Texto actual:");
+
+        jButtonDetenerMin3.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jButtonDetenerMin3.setText("Cancelar");
+        jButtonDetenerMin3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButtonDetenerMin3MouseClicked(evt);
+            }
+        });
+        jButtonDetenerMin3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDetenerMin3ActionPerformed(evt);
+            }
+        });
+
+        textoEditarActual1.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        textoEditarActual1.setForeground(new java.awt.Color(200, 230, 201));
+        textoEditarActual1.setText("Texto actual:");
+
+        javax.swing.GroupLayout editarMarcas1Layout = new javax.swing.GroupLayout(editarMarcas1);
+        editarMarcas1.setLayout(editarMarcas1Layout);
+        editarMarcas1Layout.setHorizontalGroup(
+            editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(editarMarcas1Layout.createSequentialGroup()
+                .addGap(42, 42, 42)
+                .addGroup(editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(editarMarcas1Layout.createSequentialGroup()
+                        .addGroup(editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, editarMarcas1Layout.createSequentialGroup()
+                                .addComponent(jLabel26)
+                                .addGap(35, 35, 35)
+                                .addComponent(textoEditarActual1))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, editarMarcas1Layout.createSequentialGroup()
+                                .addComponent(jLabel24)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(textoEditarNuevo1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(editarMarcas1Layout.createSequentialGroup()
+                                .addGap(81, 81, 81)
+                                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(editarMarcas1Layout.createSequentialGroup()
+                        .addGap(21, 21, 21)
+                        .addComponent(jButtonDetenerMin3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 80, Short.MAX_VALUE)
+                        .addComponent(jButtonDetenerMin2)
+                        .addGap(70, 70, 70))))
+        );
+        editarMarcas1Layout.setVerticalGroup(
+            editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(editarMarcas1Layout.createSequentialGroup()
+                .addGap(37, 37, 37)
+                .addGroup(editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel26)
+                    .addComponent(textoEditarActual1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
+                .addGroup(editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel24)
+                    .addComponent(textoEditarNuevo1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(40, 40, 40)
+                .addGroup(editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonDetenerMin2)
+                    .addComponent(jButtonDetenerMin3))
+                .addGap(46, 46, 46))
+        );
+
+        javax.swing.GroupLayout jFrameMin1Layout = new javax.swing.GroupLayout(jFrameMin1.getContentPane());
+        jFrameMin1.getContentPane().setLayout(jFrameMin1Layout);
+        jFrameMin1Layout.setHorizontalGroup(
+            jFrameMin1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(editarMarcas1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+        jFrameMin1Layout.setVerticalGroup(
+            jFrameMin1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jFrameMin1Layout.createSequentialGroup()
+                .addComponent(editarMarcas1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        jFrameMin2.setAlwaysOnTop(true);
+        jFrameMin2.setBackground(new java.awt.Color(56, 142, 60));
+        jFrameMin2.setUndecorated(true);
+
+        editarMarcas2.setBackground(new java.awt.Color(56, 142, 60));
+        editarMarcas2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(200, 230, 201)));
+
+        jLabel28.setFont(new java.awt.Font("Roboto Light", 0, 36)); // NOI18N
+        jLabel28.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel28.setText("Cargando");
+
+        iconCargando.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/cargando.png"))); // NOI18N
+
+        javax.swing.GroupLayout editarMarcas2Layout = new javax.swing.GroupLayout(editarMarcas2);
+        editarMarcas2.setLayout(editarMarcas2Layout);
+        editarMarcas2Layout.setHorizontalGroup(
+            editarMarcas2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(editarMarcas2Layout.createSequentialGroup()
+                .addGap(53, 53, 53)
+                .addComponent(iconCargando)
+                .addContainerGap(68, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, editarMarcas2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel28)
+                .addGap(135, 135, 135))
+        );
+        editarMarcas2Layout.setVerticalGroup(
+            editarMarcas2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(editarMarcas2Layout.createSequentialGroup()
+                .addGap(36, 36, 36)
+                .addComponent(jLabel28)
+                .addGap(52, 52, 52)
+                .addComponent(iconCargando)
+                .addContainerGap(53, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jFrameMin2Layout = new javax.swing.GroupLayout(jFrameMin2.getContentPane());
+        jFrameMin2.getContentPane().setLayout(jFrameMin2Layout);
+        jFrameMin2Layout.setHorizontalGroup(
+            jFrameMin2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(editarMarcas2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jFrameMin2Layout.setVerticalGroup(
+            jFrameMin2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jFrameMin2Layout.createSequentialGroup()
+                .addComponent(editarMarcas2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         principal.setPreferredSize(new java.awt.Dimension(1366, 768));
@@ -969,7 +1344,7 @@ public class Reproductor extends javax.swing.JFrame {
         vistaTiempo.setBackground(new java.awt.Color(153, 153, 0));
         vistaTiempo.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-      
+    
         vistaTiempo.add(sliderTiempo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1280, 60));
 
         principal.add(vistaTiempo, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 370, 1290, 60));
@@ -1022,8 +1397,7 @@ public class Reproductor extends javax.swing.JFrame {
     }
 
     private void btnPlayMouseClicked() {
-        escribirJson();
-        escribirTags();
+        
 
         //PLAY
         if (isRunning == false) {
@@ -1191,11 +1565,12 @@ public class Reproductor extends javax.swing.JFrame {
         Border border = BorderFactory.createLineBorder(colorBordeTag, 1);
         //tiempoParaTags
         //outer.add(new ArrayList<[var type]>(inner));
-
+        System.out.println("Tengo este tiempo: "+ tiempoParaTags);
         for (int j = 0; j < tiempoParaTags; j++) {
             //System.out.println("minuto: " + j);
             ArrayList<JLabel> arregloTag = new ArrayList<>();
             for (int i = 0; i < 40; i++) {
+                System.out.println("entre a agregar");
 
                 JLabel tag = new JLabel();
                 
@@ -1206,31 +1581,25 @@ public class Reproductor extends javax.swing.JFrame {
                adapterForTag.test(i,j);
                tag.addMouseListener(adapterForTag);
                 tag.addMouseMotionListener(adapterForTag);
-                //tag.addComponentListener(
-                /*
-                MouseListener[] mls = tag.getListeners(MouseListener.class);
-                EventListener[] els = tag.getListeners(EventListener.class);
-                
-                System.out.println("MLS: "+ mls[0].);
-                System.out.println("ELS: " + els[0].test());*/
+        
                 tag.setText(textoTagManual);
                 tag.setForeground(colorTxtTag);
-                //tag.setText("emoción /" + i +"/"+ j);
+            
                 tag.setOpaque(true);
                 tag.setBackground(colorFondoTag);
                 tag.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                //System.out.println("bond!: "+ tag.getBounds());
+       
                 tag.setBorder(border);
                 arregloTag.add(tag);
 
-                //System.out.println("tag agregados: "+ arregloTag.size());
+ 
             }
             tagsPorMinuto.add(0);
             contenedor.add(new ArrayList<JLabel>(arregloTag));
             //System.out.println("CONTENEDOR: "+ contenedor.get(j).get(0).getText());
 //            contenedor.add(arregloTag);
         }
-
+        System.out.println("tamaño: "+ contenedor.size());
     }
 
     public void contadorMinutero(boolean accion) {
@@ -1270,6 +1639,33 @@ public class Reproductor extends javax.swing.JFrame {
         minutero.setText(String.valueOf(minutos));
     }
 
+    public static void makeVideo(String movFile, String rutaInicial, int frameInicial, int frameFinal) {
+		      System.out.println("Creando video");
+                      //ruta + "/storeFaceRecorder/"
+		JpegImagesToMovie imageToMovie = new JpegImagesToMovie();
+		Vector<String> imgLst = new Vector<String>();
+		File f = new File(rutaInicial);
+		File[] fileLst = f.listFiles();
+		for (int i = frameInicial; i < frameFinal; i++) {
+			imgLst.add(fileLst[i].getAbsolutePath());
+		}
+		// Generate the output media locators.
+                
+                
+		MediaLocator oml;
+		if ((oml = imageToMovie.createMediaLocator(movFile)) == null) {
+                    
+			System.err.println("Cannot build media locator from: " + movFile);
+			System.exit(0);
+		}
+        try {
+            imageToMovie.doIt(screenWidth, screenHeight, (1000 / captureInterval),
+                    imgLst, oml);
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(Reproductor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+	}
     public String calculoTiempo(int frameSegundo) {
 
         String tiempoFinal = "";
@@ -1348,6 +1744,29 @@ public class Reproductor extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jFrameMin = new javax.swing.JFrame();
+        editarMarcas = new javax.swing.JPanel();
+        jButtonDetenerMin = new javax.swing.JButton();
+        jLabel22 = new javax.swing.JLabel();
+        jButtonDetenerMin1 = new javax.swing.JButton();
+        jLabel27 = new javax.swing.JLabel();
+        jComboBox1 = new javax.swing.JComboBox<>();
+        jLabel33 = new javax.swing.JLabel();
+        jLabel34 = new javax.swing.JLabel();
+        jLabel35 = new javax.swing.JLabel();
+        jFrameMin1 = new javax.swing.JFrame();
+        editarMarcas1 = new javax.swing.JPanel();
+        jButtonDetenerMin2 = new javax.swing.JButton();
+        jLabel24 = new javax.swing.JLabel();
+        textoEditarNuevo1 = new javax.swing.JTextField();
+        jSeparator2 = new javax.swing.JSeparator();
+        jLabel26 = new javax.swing.JLabel();
+        jButtonDetenerMin3 = new javax.swing.JButton();
+        textoEditarActual1 = new javax.swing.JLabel();
+        jFrameMin2 = new javax.swing.JFrame();
+        editarMarcas2 = new javax.swing.JPanel();
+        jLabel28 = new javax.swing.JLabel();
+        iconCargando = new javax.swing.JLabel();
         principal = new javax.swing.JPanel();
         vistaPerspectivaCara = new javax.swing.JPanel();
         videoCara = new javax.swing.JLabel();
@@ -1395,6 +1814,300 @@ public class Reproductor extends javax.swing.JFrame {
         sliderTiempo = new javax.swing.JSlider();
         jPanel1 = new javax.swing.JPanel();
         minutero = new javax.swing.JLabel();
+
+        jFrameMin.setAlwaysOnTop(true);
+        jFrameMin.setBackground(new java.awt.Color(56, 142, 60));
+        jFrameMin.setUndecorated(true);
+
+        editarMarcas.setBackground(new java.awt.Color(56, 142, 60));
+        editarMarcas.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(200, 230, 201)));
+
+        jButtonDetenerMin.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jButtonDetenerMin.setText("Iniciar análisis");
+        jButtonDetenerMin.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButtonDetenerMinMouseClicked(evt);
+            }
+        });
+        jButtonDetenerMin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDetenerMinActionPerformed(evt);
+            }
+        });
+
+        jLabel22.setFont(new java.awt.Font("Roboto Light", 0, 18)); // NOI18N
+        jLabel22.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel22.setText("Análisis de sentimiento automático");
+
+        jButtonDetenerMin1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jButtonDetenerMin1.setText("Cancelar");
+        jButtonDetenerMin1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButtonDetenerMin1MouseClicked(evt);
+            }
+        });
+        jButtonDetenerMin1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDetenerMin1ActionPerformed(evt);
+            }
+        });
+
+        jLabel27.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        jLabel27.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel27.setText("Seleccionar sentimiento a analizar");
+
+        jComboBox1.setBackground(new java.awt.Color(56, 142, 60));
+        jComboBox1.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "felicidad", "tristeza", "enfado", "miedo", "sorpresa", "neutro" }));
+        jComboBox1.setBorder(null);
+        jComboBox1.setFocusable(false);
+        jComboBox1.setOpaque(false);
+
+        jLabel33.setFont(new java.awt.Font("Roboto Light", 0, 24)); // NOI18N
+        jLabel33.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel33.setText("¡Advertencia!");
+
+        jLabel34.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        jLabel34.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel34.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel34.setText("El uso de esta funcionalidad requiere de una conexión a internet");
+
+        jLabel35.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        jLabel35.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel35.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel35.setText("El uso de esta funcionalidad toma un tiempo considerable.");
+
+        javax.swing.GroupLayout editarMarcasLayout = new javax.swing.GroupLayout(editarMarcas);
+        editarMarcas.setLayout(editarMarcasLayout);
+        editarMarcasLayout.setHorizontalGroup(
+            editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(editarMarcasLayout.createSequentialGroup()
+                .addGroup(editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(editarMarcasLayout.createSequentialGroup()
+                        .addGap(103, 103, 103)
+                        .addComponent(jLabel22))
+                    .addGroup(editarMarcasLayout.createSequentialGroup()
+                        .addGap(135, 135, 135)
+                        .addGroup(editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel27, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(editarMarcasLayout.createSequentialGroup()
+                .addGap(63, 63, 63)
+                .addGroup(editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(editarMarcasLayout.createSequentialGroup()
+                        .addComponent(jButtonDetenerMin1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButtonDetenerMin)
+                        .addGap(75, 75, 75))
+                    .addGroup(editarMarcasLayout.createSequentialGroup()
+                        .addGroup(editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel34, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(editarMarcasLayout.createSequentialGroup()
+                                .addGap(114, 114, 114)
+                                .addComponent(jLabel33))
+                            .addComponent(jLabel35, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap(58, Short.MAX_VALUE))))
+        );
+        editarMarcasLayout.setVerticalGroup(
+            editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(editarMarcasLayout.createSequentialGroup()
+                .addGap(33, 33, 33)
+                .addComponent(jLabel22)
+                .addGap(40, 40, 40)
+                .addComponent(jLabel27)
+                .addGap(27, 27, 27)
+                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(38, 38, 38)
+                .addComponent(jLabel33)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel35)
+                .addGap(19, 19, 19)
+                .addComponent(jLabel34)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+                .addGroup(editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonDetenerMin)
+                    .addComponent(jButtonDetenerMin1))
+                .addGap(63, 63, 63))
+        );
+
+        javax.swing.GroupLayout jFrameMinLayout = new javax.swing.GroupLayout(jFrameMin.getContentPane());
+        jFrameMin.getContentPane().setLayout(jFrameMinLayout);
+        jFrameMinLayout.setHorizontalGroup(
+            jFrameMinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(editarMarcas, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+        jFrameMinLayout.setVerticalGroup(
+            jFrameMinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jFrameMinLayout.createSequentialGroup()
+                .addComponent(editarMarcas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        jFrameMin1.setAlwaysOnTop(true);
+        jFrameMin1.setBackground(new java.awt.Color(56, 142, 60));
+        jFrameMin1.setUndecorated(true);
+
+        editarMarcas1.setBackground(new java.awt.Color(56, 142, 60));
+        editarMarcas1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(200, 230, 201)));
+
+        jButtonDetenerMin2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jButtonDetenerMin2.setText("Guardar");
+        jButtonDetenerMin2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButtonDetenerMin2MouseClicked(evt);
+            }
+        });
+        jButtonDetenerMin2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDetenerMin2ActionPerformed(evt);
+            }
+        });
+
+        jLabel24.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        jLabel24.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel24.setText("Nuevo texto");
+
+        textoEditarNuevo1.setBackground(new java.awt.Color(56, 142, 60));
+        textoEditarNuevo1.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        textoEditarNuevo1.setForeground(new java.awt.Color(204, 204, 204));
+        textoEditarNuevo1.setBorder(null);
+        textoEditarNuevo1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                textoEditarNuevo1ActionPerformed(evt);
+            }
+        });
+
+        jLabel26.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        jLabel26.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel26.setText("Texto actual:");
+
+        jButtonDetenerMin3.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jButtonDetenerMin3.setText("Cancelar");
+        jButtonDetenerMin3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButtonDetenerMin3MouseClicked(evt);
+            }
+        });
+        jButtonDetenerMin3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDetenerMin3ActionPerformed(evt);
+            }
+        });
+
+        textoEditarActual1.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        textoEditarActual1.setForeground(new java.awt.Color(200, 230, 201));
+        textoEditarActual1.setText("Texto actual:");
+
+        javax.swing.GroupLayout editarMarcas1Layout = new javax.swing.GroupLayout(editarMarcas1);
+        editarMarcas1.setLayout(editarMarcas1Layout);
+        editarMarcas1Layout.setHorizontalGroup(
+            editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(editarMarcas1Layout.createSequentialGroup()
+                .addGap(42, 42, 42)
+                .addGroup(editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(editarMarcas1Layout.createSequentialGroup()
+                        .addGroup(editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, editarMarcas1Layout.createSequentialGroup()
+                                .addComponent(jLabel26)
+                                .addGap(35, 35, 35)
+                                .addComponent(textoEditarActual1))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, editarMarcas1Layout.createSequentialGroup()
+                                .addComponent(jLabel24)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(textoEditarNuevo1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(editarMarcas1Layout.createSequentialGroup()
+                                .addGap(81, 81, 81)
+                                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(editarMarcas1Layout.createSequentialGroup()
+                        .addGap(21, 21, 21)
+                        .addComponent(jButtonDetenerMin3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 80, Short.MAX_VALUE)
+                        .addComponent(jButtonDetenerMin2)
+                        .addGap(70, 70, 70))))
+        );
+        editarMarcas1Layout.setVerticalGroup(
+            editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(editarMarcas1Layout.createSequentialGroup()
+                .addGap(37, 37, 37)
+                .addGroup(editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel26)
+                    .addComponent(textoEditarActual1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
+                .addGroup(editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel24)
+                    .addComponent(textoEditarNuevo1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(40, 40, 40)
+                .addGroup(editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonDetenerMin2)
+                    .addComponent(jButtonDetenerMin3))
+                .addGap(46, 46, 46))
+        );
+
+        javax.swing.GroupLayout jFrameMin1Layout = new javax.swing.GroupLayout(jFrameMin1.getContentPane());
+        jFrameMin1.getContentPane().setLayout(jFrameMin1Layout);
+        jFrameMin1Layout.setHorizontalGroup(
+            jFrameMin1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(editarMarcas1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+        jFrameMin1Layout.setVerticalGroup(
+            jFrameMin1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jFrameMin1Layout.createSequentialGroup()
+                .addComponent(editarMarcas1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        jFrameMin2.setAlwaysOnTop(true);
+        jFrameMin2.setBackground(new java.awt.Color(56, 142, 60));
+        jFrameMin2.setUndecorated(true);
+
+        editarMarcas2.setBackground(new java.awt.Color(56, 142, 60));
+        editarMarcas2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(200, 230, 201)));
+
+        jLabel28.setFont(new java.awt.Font("Roboto Light", 0, 36)); // NOI18N
+        jLabel28.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel28.setText("Cargando");
+
+        iconCargando.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/cargando.png"))); // NOI18N
+
+        javax.swing.GroupLayout editarMarcas2Layout = new javax.swing.GroupLayout(editarMarcas2);
+        editarMarcas2.setLayout(editarMarcas2Layout);
+        editarMarcas2Layout.setHorizontalGroup(
+            editarMarcas2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(editarMarcas2Layout.createSequentialGroup()
+                .addGap(53, 53, 53)
+                .addComponent(iconCargando)
+                .addContainerGap(68, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, editarMarcas2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel28)
+                .addGap(135, 135, 135))
+        );
+        editarMarcas2Layout.setVerticalGroup(
+            editarMarcas2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(editarMarcas2Layout.createSequentialGroup()
+                .addGap(36, 36, 36)
+                .addComponent(jLabel28)
+                .addGap(52, 52, 52)
+                .addComponent(iconCargando)
+                .addContainerGap(53, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jFrameMin2Layout = new javax.swing.GroupLayout(jFrameMin2.getContentPane());
+        jFrameMin2.getContentPane().setLayout(jFrameMin2Layout);
+        jFrameMin2Layout.setHorizontalGroup(
+            jFrameMin2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(editarMarcas2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jFrameMin2Layout.setVerticalGroup(
+            jFrameMin2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jFrameMin2Layout.createSequentialGroup()
+                .addComponent(editarMarcas2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -1866,10 +2579,28 @@ public class Reproductor extends javax.swing.JFrame {
 
     private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
         // TODO add your handling code here:
+        
+         jFrameMin.setSize(515, 417);
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice defaultScreen = ge.getDefaultScreenDevice();
+        jFrameMin.setLocationRelativeTo(null);
+        jFrameMin.setVisible(true);
+        setVisible(false);
+      
     }//GEN-LAST:event_jLabel4MouseClicked
 
     private void editarMarcasBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_editarMarcasBtnMouseClicked
         // TODO add your handling code here:
+        textoEditarNuevo1.setText("");
+        jFrameMin1.setSize(365, 245);
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice defaultScreen = ge.getDefaultScreenDevice();
+        jFrameMin1.setLocationRelativeTo(null);
+        textoEditarActual1.setText(textoTagManual);
+        jFrameMin1.setVisible(true);
+        setVisible(false);
+        
+        
     }//GEN-LAST:event_editarMarcasBtnMouseClicked
 
     private void agregarMarcaTxTMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_agregarMarcaTxTMouseClicked
@@ -1946,15 +2677,162 @@ public class Reproductor extends javax.swing.JFrame {
 
     private void obtenerEpisodiosBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_obtenerEpisodiosBtnMouseClicked
         // TODO add your handling code here:
+     
+        
+           for (int i = 0; i < tiempoParaTags; i++) {
+               for (int j = 0; j < 40; j++) {
+                   if(contenedor.get(i).get(j).getBounds().getX() == 0 && contenedor.get(i).get(j).getBounds().getY()==0)
+                   {}
+               else{
+                       System.out.println("tag min "+i+"/id "+j+": "+intValue(contenedor.get(i).get(j).getBounds().getX()));
+                       System.out.println("tag min "+i+"/id "+j+": "+contenedor.get(i).get(j).getBounds());
+                       
+        
+                        
+                       ///faceRecorder
+                                
+                                //
+                                String rutaInicialFR = ruta + "/storeFaceRecorder/";
+                                String rutaVideoFR = ruta + "/episodio"+i+j+"/faceRecorder.mov";
+                                int frameIFR = intValue(contenedor.get(i).get(j).getBounds().getX());
+                                int frameFFR = frameIFR + intValue(contenedor.get(i).get(j).getBounds().getWidth());
+                                int frameInicialFR = convercionPosicionFrame(frameIFR);
+                                int frameFinalFR = convercionPosicionFrame(frameFFR);
+                                
+             //makeVideo(rutaVideoFR,rutaInicialFR,frameInicialFR,frameFinalFR);
+             ////C:/Users/Katherine/Desktop/ReproductorMuestras/Muestra0/test1.mov"
+                                makeVideo(rutaVideoFR,rutaInicialFR,frameInicialFR,frameFinalFR);
+                                
+                       ///activityRender
+                                //ruta + "/storeActivityRender/"
+                                String rutaInicialAR = ruta + "/storeActivityRender/";
+                                String rutaVideoAR = ruta + "/episodio"+i+j+"/activityRender.mov";
+                                int frameIAR = intValue(contenedor.get(i).get(j).getBounds().getX());
+                                int frameFAR = frameIAR + intValue(contenedor.get(i).get(j).getBounds().getWidth());
+                                int frameInicialAR = convercionPosicionFrame(frameIAR);
+                                int frameFinalAR = convercionPosicionFrame(frameFAR);
+                                makeVideo(rutaVideoAR,rutaInicialAR,frameInicialAR,frameFinalAR);
+                       ///Perspectiva Externa
+                                //ruta + "/storeExternalPerspective"   
+                                String rutaInicialEP = ruta + "/storeExternalPerspective/";
+                                String rutaVideoEP = ruta + "/episodio"+i+j+"/ExternalPerspective.mov";
+                                int frameIEP = intValue(contenedor.get(i).get(j).getBounds().getX());
+                                int frameFEP = frameIEP + intValue(contenedor.get(i).get(j).getBounds().getWidth());
+                                int frameInicialEP = convercionPosicionFrame(frameIEP);
+                                int frameFinalEP = convercionPosicionFrame(frameFEP);
+                                makeVideo(rutaVideoEP,rutaInicialEP,frameInicialEP,frameFinalEP);
+                                
+                       }
+                       }
+               
+        }
+        
+        
+        
     }//GEN-LAST:event_obtenerEpisodiosBtnMouseClicked
 
     private void cambiarMuestraBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cambiarMuestraBtnMouseClicked
         // TODO add your handling code here:
+        
+              escribirJson(false);
+              escribirTags();
+
+        VisualizacionMuestras visualizacionMuestras = new VisualizacionMuestras(direccion);
+        visualizacionMuestras.setVisible(true);
+        this.setVisible(false);
+        
     }//GEN-LAST:event_cambiarMuestraBtnMouseClicked
 
     private void eliminarMuestraBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_eliminarMuestraBtnMouseClicked
         // TODO add your handling code here:
+        
+        escribirJson(true);
+        VisualizacionMuestras visualizacionMuestras = new VisualizacionMuestras(direccion);
+        visualizacionMuestras.setVisible(true);
+        this.setVisible(false);
     }//GEN-LAST:event_eliminarMuestraBtnMouseClicked
+
+    private void jButtonDetenerMinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDetenerMinActionPerformed
+        // TODO add your handling code here:
+       
+        //jButton6ActionPerformed(evt);
+    }//GEN-LAST:event_jButtonDetenerMinActionPerformed
+
+    private void jButtonDetenerMin1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDetenerMin1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonDetenerMin1ActionPerformed
+
+    private void jButtonDetenerMin2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDetenerMin2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonDetenerMin2ActionPerformed
+
+    private void textoEditarNuevo1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textoEditarNuevo1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_textoEditarNuevo1ActionPerformed
+
+    private void jButtonDetenerMin3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDetenerMin3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonDetenerMin3ActionPerformed
+
+    private void jButtonDetenerMinMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonDetenerMinMouseClicked
+        // TODO add your handling code here:
+       
+        jFrameMin2.setSize(431, 490);
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice defaultScreen = ge.getDefaultScreenDevice();
+        Rectangle rect = defaultScreen.getDefaultConfiguration().getBounds();
+        String x = String.valueOf(jComboBox1.getSelectedItem());
+        System.out.println("Opcion elegida: "+ x);
+        jFrameMin2.setLocationRelativeTo(null);
+        jFrameMin2.setVisible(true);
+        jFrameMin.setVisible(false);
+        
+               
+        //jFrameMin2.setVisible(false);
+        //setVisible(true);
+        
+        
+        
+    }//GEN-LAST:event_jButtonDetenerMinMouseClicked
+
+    private void jButtonDetenerMin1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonDetenerMin1MouseClicked
+        // TODO add your handling code here:
+        
+        String opcionRealizada = String.valueOf(jComboBox1.getSelectedItem());
+        System.out.println("Opcion: "+ opcionRealizada);
+        setVisible(true);
+        jFrameMin.setVisible(false);
+        
+        
+        
+        
+    }//GEN-LAST:event_jButtonDetenerMin1MouseClicked
+
+    private void jButtonDetenerMin2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonDetenerMin2MouseClicked
+        // TODO add your handling code here:
+        
+        String ntextoTagManual = textoEditarNuevo1.getText();
+        textoTagManual = ntextoTagManual;
+                   for (int i = 0; i < tiempoParaTags; i++) {
+               for (int j = 0; j < 40; j++) {
+                   contenedor.get(i).get(j).setText(ntextoTagManual);
+                            }
+               
+        }
+                   vistaTagManual.revalidate();
+                vistaTagManual.repaint();
+          jFrameMin1.setVisible(false);
+        setVisible(true);
+        
+    }//GEN-LAST:event_jButtonDetenerMin2MouseClicked
+
+    private void jButtonDetenerMin3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonDetenerMin3MouseClicked
+        // TODO add your handling code here:
+        
+        jFrameMin1.setVisible(false);
+        setVisible(true);
+        
+    }//GEN-LAST:event_jButtonDetenerMin3MouseClicked
 
     /**
      * @param args the command line arguments
@@ -1987,8 +2865,7 @@ public class Reproductor extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 //System.out.println("size: " + Toolkit.getDefaultToolkit().getScreenSize());
-                String direc = "C:/Users/Katherine/Desktop/ReproductorMuestras/";
-                new Reproductor(direc).setVisible(true);
+                
 
             }
         });
@@ -2496,34 +3373,57 @@ public class Reproductor extends javax.swing.JFrame {
     private javax.swing.JLabel btnPlay;
     private javax.swing.JLabel cambiarMuestraBtn;
     private javax.swing.JLabel cambiarMuestraTxt;
+    private javax.swing.JPanel editarMarcas;
+    private javax.swing.JPanel editarMarcas1;
+    private javax.swing.JPanel editarMarcas2;
     private javax.swing.JLabel editarMarcasBtn;
     private javax.swing.JLabel editarMarcasTxt;
     private javax.swing.JLabel eliminarMuestraBtn;
     private javax.swing.JLabel eliminarMuestraTxt;
     private javax.swing.JLabel finTiempoTag;
+    private javax.swing.JLabel iconCargando;
     private javax.swing.JLabel inicioTiempoTag;
+    private javax.swing.JButton jButtonDetenerMin;
+    private javax.swing.JButton jButtonDetenerMin1;
+    private javax.swing.JButton jButtonDetenerMin2;
+    private javax.swing.JButton jButtonDetenerMin3;
+    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JFrame jFrameMin;
+    private javax.swing.JFrame jFrameMin1;
+    private javax.swing.JFrame jFrameMin2;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel31;
     private javax.swing.JLabel jLabel32;
+    private javax.swing.JLabel jLabel33;
+    private javax.swing.JLabel jLabel34;
+    private javax.swing.JLabel jLabel35;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JLabel minutero;
     private javax.swing.JLabel obtenerEpisodiosBtn;
     private javax.swing.JLabel obtenerEpisodiosTxt;
     private javax.swing.JPanel principal;
     private javax.swing.JLabel retrocederBtn;
     private javax.swing.JSlider sliderTiempo;
+    private javax.swing.JLabel textoEditarActual1;
+    private javax.swing.JTextField textoEditarNuevo1;
     private javax.swing.JLabel videoActividad;
     private javax.swing.JLabel videoCara;
     private javax.swing.JLabel videoExterno;

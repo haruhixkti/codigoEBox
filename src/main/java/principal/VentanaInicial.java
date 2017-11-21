@@ -5,17 +5,132 @@
  */
 package principal;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 /**
  *
  * @author Katherine
  */
 public class VentanaInicial extends javax.swing.JFrame {
-
+    public int objeto = 0;
+    public int CreacionProyecto1 = 0;
+    public int CreacionProyecto2 = 0;
+    public int ObtencionMuestras = 0;
+    public int VisualizacionMuestras = 0;
+    public String direccion = "";
+    
+                                    
     /**
      * Creates new form VentanaPrincipal
      */
     public VentanaInicial() {
         initComponents();
+        
+    }
+         public void leerJson() {
+        //JSON parser object to parse read file
+        JSONParser jsonParser = new JSONParser();
+
+        try (FileReader reader = new FileReader(direccion+"informacionProyecto.json")) {
+            //Read JSON file
+            Object obj = jsonParser.parse(reader);
+
+            JSONArray employeeList = (JSONArray) obj;
+            System.out.println("discoteca: " +employeeList);
+
+            //Iterate over employee array
+            employeeList.forEach(emp -> parseEmployeeObject((JSONObject) emp));
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void parseEmployeeObject(JSONObject employee) {
+        //Get employee object within list
+        //Get employee object within list
+        System.out.println("APROVECHALO: "+ employee);
+      
+       if (objeto == 0) {
+
+            JSONObject employeeObject1 = (JSONObject) employee.get("Paso");
+               /* public int CreacionProyecto1 = 0;
+    public int CreacionProyecto2 = 0;
+    public int ObtencionMuestras = 0;
+    public int VisualizacionMuestras = 0;*/
+               
+            //Get employee first name
+            String a = (String) employeeObject1.get("CreacionProyecto1");
+            System.out.println(a);
+            String b = (String) employeeObject1.get("CreacionProyecto2");
+            System.out.println(b);
+            String c = (String) employeeObject1.get("ObtencionMuestras");
+            System.out.println(c);
+            String d = (String) employeeObject1.get("VisualizacionMuestras");
+            System.out.println(d);
+            
+            CreacionProyecto1 =  Integer.parseInt(a);
+            CreacionProyecto2 = Integer.parseInt(b);
+            ObtencionMuestras = Integer.parseInt(c);
+            VisualizacionMuestras = Integer.parseInt(d);
+            
+            if(CreacionProyecto1==1){
+                
+            
+            }
+            if(CreacionProyecto2==1){
+            CreacionProyecto2 creacionProyecto2 = new CreacionProyecto2(direccion);
+                creacionProyecto2.setVisible(true);
+                this.setVisible(false);
+            }
+            if(ObtencionMuestras==1){
+            ObtencionMuestras obtencionMuestras = new ObtencionMuestras(direccion);
+                obtencionMuestras.setVisible(true);
+                this.setVisible(false);
+            }
+            if(VisualizacionMuestras==1){
+            VisualizacionMuestras visualizacionMuestras = new VisualizacionMuestras(direccion);
+             visualizacionMuestras.setVisible(true);
+            this.setVisible(false);
+            }
+
+            
+
+        }
+       objeto+=1;
+    }
+    
+    private void seleccionarArchivo(int fileSelectionMode, String approveButtonText, JLabel field, String fileFilter, String currentDirectory) {
+        System.out.println("entre");
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(fileSelectionMode);
+        if (!"".equals(fileFilter)) {
+            FileNameExtensionFilter filtro = new FileNameExtensionFilter("*." + fileFilter, fileFilter.toLowerCase(), fileFilter.toUpperCase());
+            fileChooser.setFileFilter(filtro);
+        }
+        fileChooser.setCurrentDirectory(new File(currentDirectory));
+        int result = fileChooser.showDialog(this, approveButtonText);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            field.setText(selectedFile.getAbsolutePath());
+        }
+
     }
 
     /**
@@ -35,6 +150,7 @@ public class VentanaInicial extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         btnNuevoProyecto = new javax.swing.JButton();
+        path = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
@@ -75,6 +191,11 @@ public class VentanaInicial extends javax.swing.JFrame {
         jButton1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
         jButton1.setContentAreaFilled(false);
         jButton1.setFocusPainted(false);
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -104,10 +225,20 @@ public class VentanaInicial extends javax.swing.JFrame {
             }
         });
 
+        path.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        path.setForeground(new java.awt.Color(200, 230, 201));
+        path.setText("Debe seleccionar la carpeta del proyecto");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(151, Short.MAX_VALUE)
+                .addComponent(path)
+                .addGap(18, 18, 18)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(39, 39, 39))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(77, 77, 77)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -115,11 +246,7 @@ public class VentanaInicial extends javax.swing.JFrame {
                     .addComponent(jLabel2)
                     .addComponent(jLabel1)
                     .addComponent(jLabel12))
-                .addContainerGap(179, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(39, 39, 39))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                     .addContainerGap(411, Short.MAX_VALUE)
@@ -137,8 +264,13 @@ public class VentanaInicial extends javax.swing.JFrame {
                 .addComponent(jLabel12)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel11)
-                .addGap(52, 52, 52)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(52, 52, 52)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(63, 63, 63)
+                        .addComponent(path)))
                 .addContainerGap(182, Short.MAX_VALUE))
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel2Layout.createSequentialGroup()
@@ -282,6 +414,16 @@ public class VentanaInicial extends javax.swing.JFrame {
         
     }//GEN-LAST:event_btnNuevoProyectoMouseExited
 
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+        // TODO add your handling code here:
+            seleccionarArchivo(JFileChooser.DIRECTORIES_ONLY, "Guardar", path, "", "C:\\");
+            System.out.println("paht: "+ path.getText());
+            direccion = path.getText()+"/";
+            leerJson();
+        
+        
+    }//GEN-LAST:event_jButton1MouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -337,5 +479,6 @@ public class VentanaInicial extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JLabel path;
     // End of variables declaration//GEN-END:variables
 }

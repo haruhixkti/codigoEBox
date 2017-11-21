@@ -1,14 +1,11 @@
-
-
-
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package activityRender;
+package player;
 
+import activityRender.*;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
@@ -110,8 +107,6 @@ public class JpegImagesToMovie implements ControllerListener, DataSinkListener
 		fileDone = false;
 
 		System.out.println("Generating the video : "+outML.getURL().toString());
-                 
-                         
 
 		// OK, we can now start the actual transcoding.
 		try {
@@ -307,7 +302,7 @@ public class JpegImagesToMovie implements ControllerListener, DataSinkListener
 			System.exit(0);
 		}
 
-		JpegImagesToMovie doIt = new JpegImagesToMovie();
+		JpegImagesToMovie imageToMovie = new JpegImagesToMovie();
 		imageToMovie.doIt(width, height, frameRate, inputFiles, oml);
 
 		System.exit(0);
@@ -326,7 +321,7 @@ public class JpegImagesToMovie implements ControllerListener, DataSinkListener
 
 		MediaLocator ml;
 
-		if (url.indexOf(":") > 0 && (ml = new MediaLocator(url)) != null)
+		/*if (url.indexOf(":") > 0 && (ml = new MediaLocator(url)) != null)
 			return ml;
 
 		if (url.startsWith(File.separator)) {
@@ -339,7 +334,11 @@ public class JpegImagesToMovie implements ControllerListener, DataSinkListener
 				return ml;
 		}
 
-		return null;
+		return null;*/
+                //String file = "file:"+C:/Users/Katherine/Desktop/ReproductorMuestras/Muestra0/test1.mov"; 
+                String file = "file:"+url; 
+                ml = new MediaLocator(file);
+                return ml;
 	}
 
 	// /////////////////////////////////////////////

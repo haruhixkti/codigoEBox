@@ -126,6 +126,15 @@ public class ObtencionMuestras extends javax.swing.JFrame {
 
         initComponents();
         creacionCarpetas();
+                this.setDefaultCloseOperation(this.DO_NOTHING_ON_CLOSE);
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+        @Override
+        public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+            
+            escribirJson();
+            System.exit(0);
+    }
+});
 
     }
 
@@ -155,8 +164,11 @@ public class ObtencionMuestras extends javax.swing.JFrame {
 
     public void parseEmployeeObject(JSONObject employee) {
         //Get employee object within list
-
-        if (objeto == 0) {
+        if(objeto == 0){
+            objeto+=1;
+        
+        }
+        else if (objeto == 1) {
 
             JSONObject employeeObject = (JSONObject) employee.get("proyecto");
             System.out.println("employeeObject: " + employeeObject);
@@ -198,6 +210,16 @@ public class ObtencionMuestras extends javax.swing.JFrame {
 
     public void escribirJson() {
         JSONArray employeeList = new JSONArray();
+        
+        JSONObject paso = new JSONObject();
+        paso.put("CreacionProyecto1", "0");
+        paso.put("CreacionProyecto2", "0");
+        paso.put("ObtencionMuestras", "1");
+        paso.put("VisualizacionMuestras", "0");
+       
+        JSONObject agregarPaso = new JSONObject();
+        agregarPaso.put("Paso", paso);
+        employeeList.add(agregarPaso);
 
         JSONObject employeeDetails1 = new JSONObject();
         employeeDetails1.put("nombre", nombreProyecto);

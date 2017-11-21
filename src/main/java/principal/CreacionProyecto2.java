@@ -104,6 +104,7 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
         System.out.println("<<<<<<CREACIÓN DEL PROYECTO 2>>>>>");
         this.direccion = dir;
         initComponents();
+ 
         
         leerJson();
         busquedaCamaras();
@@ -537,6 +538,10 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
     public void leerJson() {
          
         //JSON parser object to parse read file
+        if(objeto == 0){
+        objeto+=1;
+        }
+        else{
         JSONParser jsonParser = new JSONParser();
 
         try (FileReader reader = new FileReader(direccion+"informacionProyecto.json")) {
@@ -556,6 +561,7 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+    }
 
     }
     public void parseEmployeeObject(JSONObject employee) {
@@ -573,6 +579,15 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
     }
     public void escribirJson() {
         JSONArray employeeList = new JSONArray();
+        JSONObject paso = new JSONObject();
+        paso.put("CreacionProyecto1", "0");
+        paso.put("CreacionProyecto2", "1");
+        paso.put("ObtencionMuestras", "0");
+        paso.put("VisualizacionMuestras", "0");
+       
+        JSONObject agregarPaso = new JSONObject();
+        agregarPaso.put("Paso", paso);
+        employeeList.add(agregarPaso);
 
         JSONObject employeeDetails1 = new JSONObject();
         System.out.println("nombreProyecto escrito: "+ nombreProyecto);

@@ -92,6 +92,7 @@ public class CreacionProyecto1 extends javax.swing.JFrame {
     boolean edit = false;
     
     
+    
     /**
      * Creates new form VentanaPrincipal
      */
@@ -549,6 +550,17 @@ public class CreacionProyecto1 extends javax.swing.JFrame {
         creacionCarpetas();
 
         JSONArray employeeList = new JSONArray();
+        
+         JSONObject paso = new JSONObject();
+        paso.put("CreacionProyecto1", "1");
+        paso.put("CreacionProyecto2", "0");
+        paso.put("ObtencionMuestras", "0");
+        paso.put("VisualizacionMuestras", "0");
+       
+        JSONObject agregarPaso = new JSONObject();
+        agregarPaso.put("Paso", paso);
+        employeeList.add(agregarPaso);
+        
 
         JSONObject employeeDetails = new JSONObject();
         employeeDetails.put("nombre", limpiaTexto(nombreProyecto));
@@ -559,6 +571,11 @@ public class CreacionProyecto1 extends javax.swing.JFrame {
         JSONObject employeeObject = new JSONObject();
         employeeObject.put("proyecto", employeeDetails);
         employeeList.add(employeeObject);
+        
+       
+        
+
+        
 
         try (FileWriter file = new FileWriter(nombreCarpeta+"informacionProyecto.json")) {
 

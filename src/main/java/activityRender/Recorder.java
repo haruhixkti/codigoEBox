@@ -99,6 +99,7 @@ public class Recorder {
 		}
 		// Generate the output media locators.
 		MediaLocator oml;
+
 		if ((oml = imageToMovie.createMediaLocator(movFile)) == null) {
 			System.err.println("Cannot build media locator from: " + movFile);
 			System.exit(0);

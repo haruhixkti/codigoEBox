@@ -102,6 +102,15 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
         this.direccion = dir;
         
         initComponents();
+                this.setDefaultCloseOperation(this.DO_NOTHING_ON_CLOSE);
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+        @Override
+        public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+            
+            escribirJson(-1);
+            System.exit(0);
+    }
+});
         jPanel2.setVisible(false);
         jPanel8.setVisible(true);
         
@@ -151,7 +160,8 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
         //Get employee object within list
         //Get employee object within list
         System.out.println("APROVECHALO: "+ employee);
-        if (objeto == 0) {
+      
+       if (objeto == 1) {
 
             JSONObject employeeObject1 = (JSONObject) employee.get("proyecto");
             
@@ -167,7 +177,7 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
 
             
 
-        } if(objeto == 1) {
+        } if(objeto == 2) {
             JSONObject employeeObject2 = (JSONObject) employee.get("perspectivas");
         
             System.out.println("objeto2: "+ employeeObject2);
@@ -182,7 +192,7 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
             
             
         }
-        if( objeto > 1){
+        if( objeto > 2){
         
                JSONObject employeeObject3 = (JSONObject) employee.get("muestra");
                
@@ -851,6 +861,16 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel3MouseClicked
 public void escribirJson(int seleccionada) {
         JSONArray employeeList = new JSONArray();
+        
+        JSONObject paso = new JSONObject();
+        paso.put("CreacionProyecto1", "0");
+        paso.put("CreacionProyecto2", "0");
+        paso.put("ObtencionMuestras", "0");
+        paso.put("VisualizacionMuestras", "1");
+       
+        JSONObject agregarPaso = new JSONObject();
+        agregarPaso.put("Paso", paso);
+        employeeList.add(agregarPaso);
 
         JSONObject employeeDetails1 = new JSONObject();
         employeeDetails1.put("nombre", nombreProyecto);
