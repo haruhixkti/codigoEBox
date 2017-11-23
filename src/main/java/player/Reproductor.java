@@ -5,7 +5,10 @@
  */
 package player;
 
-
+import io.indico.Indico;
+import io.indico.api.image.FacialEmotion;
+import io.indico.api.results.IndicoResult;
+import io.indico.api.utils.IndicoException;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -43,6 +46,8 @@ import static java.lang.Math.toIntExact;
 import java.net.MalformedURLException;
 import java.util.EventListener;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
@@ -64,7 +69,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import principal.VisualizacionMuestras;
-
+import java.util.Map.Entry;
 /**
  *
  * @author Katherine
@@ -78,7 +83,7 @@ public class Reproductor extends javax.swing.JFrame {
     //TAG
     static public Color colorFondoTag = new Color(121, 85, 72);
     static public Color colorBordeTag = new Color(189, 189, 189);
-    static public Color colorTxtTag = new Color(200,230,201);
+    static public Color colorTxtTag = new Color(200, 230, 201);
     static public Color colorLineaTag = new Color(121, 85, 72);
     static public Color colorFondoGuiTag = new Color(56, 142, 60);
 
@@ -97,6 +102,7 @@ public class Reproductor extends javax.swing.JFrame {
     static final int PREF_WIDTH = 1290;
     static final int PREF_HEIGHT = 49;
     static final int tamanoTag = 52;
+    public int time = 0;
 
     //REPRODUCTOR
     //path de las perspectivas    
@@ -165,21 +171,47 @@ public class Reproductor extends javax.swing.JFrame {
     int contador = 0;
     public int e = -1;
     public ArrayList<Integer> tagsPorMinuto = new ArrayList<>();
-    public int cantidadTags=0;
+    public int cantidadTags = 0;
     int lista[] = {0, 0, 0, 0, 0, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 18, 19, 19, 20, 20, 21, 21, 22, 22, 23, 23, 24, 24, 25, 25, 25, 26, 26, 27, 27, 28, 28, 29, 29, 30, 30, 31, 31, 32, 32, 33, 33, 33, 34, 34, 35, 35, 36, 36, 37, 37, 38, 38, 39, 39, 40, 40, 41, 41, 41, 42, 42, 43, 43, 44, 44, 45, 45, 46, 46, 47, 47, 48, 48, 48, 49, 49, 50, 50, 51, 51, 52, 52, 53, 53, 54, 54, 55, 55, 56, 56, 56, 57, 57, 58, 58, 59, 59, 60, 60, 61, 61, 62, 62, 63, 63, 64, 64, 64, 65, 65, 66, 66, 67, 67, 68, 68, 69, 69, 70, 70, 71, 71, 72, 72, 72, 73, 73, 74, 74, 75, 75, 76, 76, 77, 77, 78, 78, 79, 79, 79, 80, 80, 81, 81, 82, 82, 83, 83, 84, 84, 85, 85, 86, 86, 87, 87, 87, 88, 88, 89, 89, 90, 90, 91, 91, 92, 92, 93, 93, 94, 94, 95, 95, 95, 96, 96, 97, 97, 98, 98, 99, 99, 100, 100, 101, 101, 102, 102, 102, 103, 103, 104, 104, 105, 105, 106, 106, 107, 107, 108, 108, 109, 109, 110, 110, 110, 111, 111, 112, 112, 113, 113, 114, 114, 115, 115, 116, 116, 117, 117, 118, 118, 118, 119, 119, 120, 120, 121, 121, 122, 122, 123, 123, 124, 124, 125, 125, 125, 126, 126, 127, 127, 128, 128, 129, 129, 130, 130, 131, 131, 132, 132, 133, 133, 133, 134, 135, 136, 136, 136, 136, 137, 137, 138, 138, 139, 139, 140, 140, 141, 141, 141, 142, 142, 143, 143, 144, 144, 145, 145, 146, 146, 147, 147, 148, 148, 148, 149, 149, 150, 150, 151, 151, 152, 152, 153, 153, 154, 154, 155, 155, 156, 156, 156, 157, 157, 158, 158, 159, 159, 160, 160, 161, 161, 162, 162, 163, 163, 164, 164, 164, 165, 165, 166, 166, 167, 167, 168, 168, 169, 169, 170, 170, 171, 171, 172, 172, 172, 173, 173, 174, 174, 175, 175, 176, 176, 177, 177, 178, 178, 179, 179, 179, 180, 180, 181, 181, 182, 182, 183, 183, 184, 184, 185, 185, 186, 186, 187, 187, 187, 188, 188, 189, 189, 190, 190, 191, 191, 192, 192, 193, 193, 194, 194, 195, 195, 195, 196, 196, 197, 197, 198, 198, 199, 199, 200, 200, 201, 201, 202, 202, 202, 203, 203, 204, 204, 205, 205, 206, 206, 207, 207, 208, 208, 209, 209, 210, 210, 210, 211, 211, 212, 212, 213, 213, 214, 214, 215, 215, 216, 216, 217, 217, 218, 218, 218, 219, 219, 220, 220, 221, 221, 222, 222, 223, 223, 224, 224, 225, 225, 225, 226, 226, 227, 227, 228, 228, 229, 229, 230, 230, 231, 231, 232, 232, 233, 233, 233, 234, 234, 235, 235, 236, 236, 237, 237, 238, 238, 239, 239, 240, 240, 241, 241, 241, 242, 242, 243, 243, 244, 244, 245, 245, 246, 246, 247, 247, 248, 248, 248, 249, 249, 250, 250, 251, 251, 252, 252, 253, 253, 254, 254, 255, 255, 256, 256, 256, 257, 257, 258, 258, 259, 259, 260, 260, 261, 261, 262, 262, 263, 263, 264, 264, 264, 265, 265, 266, 266, 267, 267, 268, 268, 269, 269, 270, 270, 271, 271, 272, 272, 272, 273, 273, 274, 274, 275, 275, 276, 276, 277, 277, 278, 278, 279, 279, 279, 280, 280, 281, 281, 282, 282, 283, 283, 284, 284, 285, 285, 286, 286, 287, 287, 287, 288, 288, 289, 289, 290, 290, 291, 291, 292, 292, 293, 293, 294, 294, 295, 295, 295, 296, 296, 297, 297, 298, 298, 299, 299, 300, 300, 301, 301, 302, 302, 302, 303, 303, 304, 304, 305, 305, 306, 306, 307, 307, 308, 308, 309, 309, 310, 310, 310, 311, 311, 312, 312, 313, 313, 314, 314, 315, 315, 316, 316, 317, 317, 318, 318, 318, 319, 319, 320, 320, 321, 321, 322, 322, 323, 323, 324, 324, 325, 325, 325, 326, 326, 327, 327, 328, 328, 329, 329, 330, 330, 331, 331, 332, 332, 333, 333, 333, 334, 334, 335, 335, 336, 336, 337, 337, 338, 338, 339, 339, 340, 340, 341, 341, 341, 342, 342, 343, 343, 344, 344, 345, 345, 346, 346, 347, 347, 348, 348, 348, 349, 349, 350, 350, 351, 351, 352, 352, 353, 353, 354, 354, 355, 355, 356, 356, 356, 357, 357, 358, 358, 359, 359, 360, 360, 361, 361, 362, 362, 363, 363, 364, 364, 364, 365, 365, 366, 366, 367, 367, 368, 368, 369, 369, 370, 370, 371, 371, 372, 372, 372, 373, 373, 374, 374, 375, 375, 376, 376, 377, 377, 378, 378, 379, 379, 379, 380, 380, 381, 381, 382, 382, 383, 383, 384, 384, 385, 385, 386, 386, 387, 387, 387, 388, 388, 389, 389, 390, 390, 391, 391, 392, 392, 393, 393, 394, 394, 395, 395, 395, 396, 396, 397, 397, 398, 398, 399, 399, 400, 400, 401, 401, 402, 402, 402, 403, 403, 404, 404, 405, 405, 406, 406, 407, 407, 408, 408, 409, 409, 410, 410, 410, 411, 411, 412, 412, 413, 413, 414, 414, 415, 415, 416, 416, 417, 417, 418, 418, 418, 419, 419, 420, 420, 421, 421, 422, 422, 423, 423, 424, 424, 425, 425, 425, 426, 426, 427, 427, 428, 428, 429, 429, 430, 430, 431, 431, 432, 432, 433, 433, 433, 434, 434, 435, 435, 436, 436, 437, 437, 438, 438, 439, 439, 440, 440, 441, 441, 441, 442, 442, 443, 443, 444, 444, 445, 445, 446, 446, 447, 447, 448, 448, 448, 449, 449, 450, 450, 451, 451, 452, 452, 453, 453, 454, 454, 455, 455, 456, 456, 456, 457, 457, 458, 458, 459, 459, 460, 460, 461, 461, 462, 462, 463, 463, 464, 464, 464, 465, 465, 466, 466, 467, 467, 468, 468, 469, 469, 470, 470, 471, 471, 472, 472, 472, 473, 473, 474, 474, 475, 475, 476, 476, 477, 477, 478, 478, 479, 479, 479, 480, 480, 481, 481, 482, 482, 483, 483, 484, 484, 485, 485, 486, 486, 487, 487, 487, 488, 488, 489, 489, 490, 490, 491, 491, 492, 492, 493, 493, 494, 494, 495, 495, 495, 496, 496, 497, 497, 498, 498, 499, 499, 500, 500, 501, 501, 502, 502, 502, 503, 503, 504, 504, 505, 505, 506, 506, 507, 507, 508, 508, 509, 509, 510, 510, 510, 511, 511, 512, 512, 513, 513, 514, 514, 515, 515, 516, 516, 517, 517, 518, 518, 518, 519, 519, 520, 520, 521, 521, 522, 522, 523, 523, 524, 524, 525, 525, 525, 526, 526, 527, 527, 528, 528, 529, 529, 530, 530, 531, 531, 532, 532, 533, 533, 533, 534, 534, 535, 535, 536, 536, 537, 537, 538, 538, 539, 539, 540, 540, 541, 541, 541, 542, 542, 543, 543, 544, 544, 545, 545, 546, 546, 547, 547, 548, 548, 548, 549, 549, 550, 550, 551, 551, 552, 552, 553, 553, 554, 554, 555, 555, 556, 556, 556, 557, 557, 558, 558, 559, 559, 560, 560, 561, 561, 562, 562, 563, 563, 564, 564, 564, 565, 565, 566, 566, 567, 567, 568, 568, 569, 569, 570, 570, 571, 571, 572, 572, 572, 573, 573, 574, 574, 575, 575, 576, 576, 577, 577, 578, 578, 579, 579, 579, 580, 580, 581, 581, 582, 582, 583, 583, 584, 584, 585, 585, 586, 586, 587, 587, 587, 588, 588, 589, 589, 590, 590, 591, 591, 592, 592, 593, 593, 594, 594, 595, 595, 595, 596, 596, 597, 597, 598, 599};
     int posMuestraElegida;
     public int frameX[];
-    	/**
-	 * Screen Width.
-	 */
-	public static int screenWidth = (int) Toolkit.getDefaultToolkit()
-			.getScreenSize().getWidth();
+    public ArrayList<Integer> felicidad1 = new ArrayList<Integer>();
+    public ArrayList<Integer> felicidad2 = new ArrayList<Integer>();
+    public ArrayList<Integer> felicidad3 = new ArrayList<Integer>();
+    
+    public ArrayList<Integer> sorpresa1 = new ArrayList<Integer>();
+    public ArrayList<Integer> sorpresa2 = new ArrayList<Integer>();
+    public ArrayList<Integer> sorpresa3 = new ArrayList<Integer>();
+    
+    public ArrayList<Integer> tristeza1 = new ArrayList<Integer>();
+    public ArrayList<Integer> tristeza2 = new ArrayList<Integer>();
+    public ArrayList<Integer> tristeza3 = new ArrayList<Integer>();
+    
+    public ArrayList<Integer> temeroso1 = new ArrayList<Integer>();
+    public ArrayList<Integer> temeroso2 = new ArrayList<Integer>();
+    public ArrayList<Integer> temeroso3 = new ArrayList<Integer>();
+    
+    public ArrayList<Integer> enojado1 = new ArrayList<Integer>();
+    public ArrayList<Integer> enojado2 = new ArrayList<Integer>();
+    public ArrayList<Integer> enojado3 = new ArrayList<Integer>();
+    
+    public ArrayList<Integer> neutral1 = new ArrayList<Integer>();
+    public ArrayList<Integer> neutral2 = new ArrayList<Integer>();
+    public ArrayList<Integer> neutral3 = new ArrayList<Integer>();
+    
+    
+         
+    /**
+     * Screen Width.
+     */
+    public static int screenWidth = (int) Toolkit.getDefaultToolkit()
+            .getScreenSize().getWidth();
 
-	/**
-	 * Screen Height.
-	 */
-	public static int screenHeight = (int) Toolkit.getDefaultToolkit()
-			.getScreenSize().getHeight();
+    /**
+     * Screen Height.
+     */
+    public static int screenHeight = (int) Toolkit.getDefaultToolkit()
+            .getScreenSize().getHeight();
 
     public Reproductor(String dir) {
         //System.out.println("<<<<<<REPRODUCTOR DE MUESTRAS>>>>>");
@@ -198,7 +230,6 @@ public class Reproductor extends javax.swing.JFrame {
     public void asignacion() {
         //this.frameX[posicionX]= frame
         int lista[] = {0, 0, 0, 0, 0, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 18, 19, 19, 20, 20, 21, 21, 22, 22, 23, 23, 24, 24, 25, 25, 25, 26, 26, 27, 27, 28, 28, 29, 29, 30, 30, 31, 31, 32, 32, 33, 33, 33, 34, 34, 35, 35, 36, 36, 37, 37, 38, 38, 39, 39, 40, 40, 41, 41, 41, 42, 42, 43, 43, 44, 44, 45, 45, 46, 46, 47, 47, 48, 48, 48, 49, 49, 50, 50, 51, 51, 52, 52, 53, 53, 54, 54, 55, 55, 56, 56, 56, 57, 57, 58, 58, 59, 59, 60, 60, 61, 61, 62, 62, 63, 63, 64, 64, 64, 65, 65, 66, 66, 67, 67, 68, 68, 69, 69, 70, 70, 71, 71, 72, 72, 72, 73, 73, 74, 74, 75, 75, 76, 76, 77, 77, 78, 78, 79, 79, 79, 80, 80, 81, 81, 82, 82, 83, 83, 84, 84, 85, 85, 86, 86, 87, 87, 87, 88, 88, 89, 89, 90, 90, 91, 91, 92, 92, 93, 93, 94, 94, 95, 95, 95, 96, 96, 97, 97, 98, 98, 99, 99, 100, 100, 101, 101, 102, 102, 102, 103, 103, 104, 104, 105, 105, 106, 106, 107, 107, 108, 108, 109, 109, 110, 110, 110, 111, 111, 112, 112, 113, 113, 114, 114, 115, 115, 116, 116, 117, 117, 118, 118, 118, 119, 119, 120, 120, 121, 121, 122, 122, 123, 123, 124, 124, 125, 125, 125, 126, 126, 127, 127, 128, 128, 129, 129, 130, 130, 131, 131, 132, 132, 133, 133, 133, 134, 135, 136, 136, 136, 136, 137, 137, 138, 138, 139, 139, 140, 140, 141, 141, 141, 142, 142, 143, 143, 144, 144, 145, 145, 146, 146, 147, 147, 148, 148, 148, 149, 149, 150, 150, 151, 151, 152, 152, 153, 153, 154, 154, 155, 155, 156, 156, 156, 157, 157, 158, 158, 159, 159, 160, 160, 161, 161, 162, 162, 163, 163, 164, 164, 164, 165, 165, 166, 166, 167, 167, 168, 168, 169, 169, 170, 170, 171, 171, 172, 172, 172, 173, 173, 174, 174, 175, 175, 176, 176, 177, 177, 178, 178, 179, 179, 179, 180, 180, 181, 181, 182, 182, 183, 183, 184, 184, 185, 185, 186, 186, 187, 187, 187, 188, 188, 189, 189, 190, 190, 191, 191, 192, 192, 193, 193, 194, 194, 195, 195, 195, 196, 196, 197, 197, 198, 198, 199, 199, 200, 200, 201, 201, 202, 202, 202, 203, 203, 204, 204, 205, 205, 206, 206, 207, 207, 208, 208, 209, 209, 210, 210, 210, 211, 211, 212, 212, 213, 213, 214, 214, 215, 215, 216, 216, 217, 217, 218, 218, 218, 219, 219, 220, 220, 221, 221, 222, 222, 223, 223, 224, 224, 225, 225, 225, 226, 226, 227, 227, 228, 228, 229, 229, 230, 230, 231, 231, 232, 232, 233, 233, 233, 234, 234, 235, 235, 236, 236, 237, 237, 238, 238, 239, 239, 240, 240, 241, 241, 241, 242, 242, 243, 243, 244, 244, 245, 245, 246, 246, 247, 247, 248, 248, 248, 249, 249, 250, 250, 251, 251, 252, 252, 253, 253, 254, 254, 255, 255, 256, 256, 256, 257, 257, 258, 258, 259, 259, 260, 260, 261, 261, 262, 262, 263, 263, 264, 264, 264, 265, 265, 266, 266, 267, 267, 268, 268, 269, 269, 270, 270, 271, 271, 272, 272, 272, 273, 273, 274, 274, 275, 275, 276, 276, 277, 277, 278, 278, 279, 279, 279, 280, 280, 281, 281, 282, 282, 283, 283, 284, 284, 285, 285, 286, 286, 287, 287, 287, 288, 288, 289, 289, 290, 290, 291, 291, 292, 292, 293, 293, 294, 294, 295, 295, 295, 296, 296, 297, 297, 298, 298, 299, 299, 300, 300, 301, 301, 302, 302, 302, 303, 303, 304, 304, 305, 305, 306, 306, 307, 307, 308, 308, 309, 309, 310, 310, 310, 311, 311, 312, 312, 313, 313, 314, 314, 315, 315, 316, 316, 317, 317, 318, 318, 318, 319, 319, 320, 320, 321, 321, 322, 322, 323, 323, 324, 324, 325, 325, 325, 326, 326, 327, 327, 328, 328, 329, 329, 330, 330, 331, 331, 332, 332, 333, 333, 333, 334, 334, 335, 335, 336, 336, 337, 337, 338, 338, 339, 339, 340, 340, 341, 341, 341, 342, 342, 343, 343, 344, 344, 345, 345, 346, 346, 347, 347, 348, 348, 348, 349, 349, 350, 350, 351, 351, 352, 352, 353, 353, 354, 354, 355, 355, 356, 356, 356, 357, 357, 358, 358, 359, 359, 360, 360, 361, 361, 362, 362, 363, 363, 364, 364, 364, 365, 365, 366, 366, 367, 367, 368, 368, 369, 369, 370, 370, 371, 371, 372, 372, 372, 373, 373, 374, 374, 375, 375, 376, 376, 377, 377, 378, 378, 379, 379, 379, 380, 380, 381, 381, 382, 382, 383, 383, 384, 384, 385, 385, 386, 386, 387, 387, 387, 388, 388, 389, 389, 390, 390, 391, 391, 392, 392, 393, 393, 394, 394, 395, 395, 395, 396, 396, 397, 397, 398, 398, 399, 399, 400, 400, 401, 401, 402, 402, 402, 403, 403, 404, 404, 405, 405, 406, 406, 407, 407, 408, 408, 409, 409, 410, 410, 410, 411, 411, 412, 412, 413, 413, 414, 414, 415, 415, 416, 416, 417, 417, 418, 418, 418, 419, 419, 420, 420, 421, 421, 422, 422, 423, 423, 424, 424, 425, 425, 425, 426, 426, 427, 427, 428, 428, 429, 429, 430, 430, 431, 431, 432, 432, 433, 433, 433, 434, 434, 435, 435, 436, 436, 437, 437, 438, 438, 439, 439, 440, 440, 441, 441, 441, 442, 442, 443, 443, 444, 444, 445, 445, 446, 446, 447, 447, 448, 448, 448, 449, 449, 450, 450, 451, 451, 452, 452, 453, 453, 454, 454, 455, 455, 456, 456, 456, 457, 457, 458, 458, 459, 459, 460, 460, 461, 461, 462, 462, 463, 463, 464, 464, 464, 465, 465, 466, 466, 467, 467, 468, 468, 469, 469, 470, 470, 471, 471, 472, 472, 472, 473, 473, 474, 474, 475, 475, 476, 476, 477, 477, 478, 478, 479, 479, 479, 480, 480, 481, 481, 482, 482, 483, 483, 484, 484, 485, 485, 486, 486, 487, 487, 487, 488, 488, 489, 489, 490, 490, 491, 491, 492, 492, 493, 493, 494, 494, 495, 495, 495, 496, 496, 497, 497, 498, 498, 499, 499, 500, 500, 501, 501, 502, 502, 502, 503, 503, 504, 504, 505, 505, 506, 506, 507, 507, 508, 508, 509, 509, 510, 510, 510, 511, 511, 512, 512, 513, 513, 514, 514, 515, 515, 516, 516, 517, 517, 518, 518, 518, 519, 519, 520, 520, 521, 521, 522, 522, 523, 523, 524, 524, 525, 525, 525, 526, 526, 527, 527, 528, 528, 529, 529, 530, 530, 531, 531, 532, 532, 533, 533, 533, 534, 534, 535, 535, 536, 536, 537, 537, 538, 538, 539, 539, 540, 540, 541, 541, 541, 542, 542, 543, 543, 544, 544, 545, 545, 546, 546, 547, 547, 548, 548, 548, 549, 549, 550, 550, 551, 551, 552, 552, 553, 553, 554, 554, 555, 555, 556, 556, 556, 557, 557, 558, 558, 559, 559, 560, 560, 561, 561, 562, 562, 563, 563, 564, 564, 564, 565, 565, 566, 566, 567, 567, 568, 568, 569, 569, 570, 570, 571, 571, 572, 572, 572, 573, 573, 574, 574, 575, 575, 576, 576, 577, 577, 578, 578, 579, 579, 579, 580, 580, 581, 581, 582, 582, 583, 583, 584, 584, 585, 585, 586, 586, 587, 587, 587, 588, 588, 589, 589, 590, 590, 591, 591, 592, 592, 593, 593, 594, 594, 595, 595, 595, 596, 596, 597, 597, 598, 599};
-        
 
     }
 
@@ -269,7 +300,6 @@ public class Reproductor extends javax.swing.JFrame {
             String secondNamea = (String) employeeObject3.get("tiempo");
             duracionMuestras.add(secondNamea);
             //System.out.println("tiempo: "+secondNamea);
-      
 
             String tresNamea = (String) employeeObject3.get("nombre");
             nombreMuestras.add(tresNamea);
@@ -278,9 +308,9 @@ public class Reproductor extends javax.swing.JFrame {
             String seleccionada = (String) employeeObject3.get("seleccionada");
 
             if ("true".equals(seleccionada)) {
-                
+
                 numeroSeleccionada = muestra;
-                System.out.println("pos OBjeto seleccionado: "+ numeroSeleccionada);
+                System.out.println("pos OBjeto seleccionado: " + numeroSeleccionada);
                 String firstName = (String) employeeObject3.get("ruta");
                 ruta = firstName;
                 System.out.println(firstName);
@@ -289,7 +319,7 @@ public class Reproductor extends javax.swing.JFrame {
                 tiempo = secondName;
                 System.out.println(secondName);
                 String[] parts = secondNamea.split(":");
-                System.out.println("partes: "+ parts);
+                System.out.println("partes: " + parts);
                 tiempoParaTags = Integer.parseInt(parts[0]);
 
                 String tresName = (String) employeeObject3.get("nombre");
@@ -312,14 +342,15 @@ public class Reproductor extends javax.swing.JFrame {
         return false;
 
     }
-    public int convercionPosicionFrame(int pos){
-        System.out.println("pos que llega a conversion: "+ pos);
+
+    public int convercionPosicionFrame(int pos) {
+        System.out.println("pos que llega a conversion: " + pos);
         int frameFinal = 0;
-        frameFinal =  lista[pos];
-        System.out.println("Lista en la pos 0: "+ frameFinal);
-        
+        frameFinal = lista[pos];
+        System.out.println("Lista en la pos 0: " + frameFinal);
+
         return frameFinal;
-    
+
     }
 
     public void escribirTags() {
@@ -372,11 +403,11 @@ public class Reproductor extends javax.swing.JFrame {
         paso.put("CreacionProyecto2", "0");
         paso.put("ObtencionMuestras", "0");
         paso.put("VisualizacionMuestras", "1");
-       
+
         JSONObject agregarPaso = new JSONObject();
         agregarPaso.put("Paso", paso);
         employeeList.add(agregarPaso);
-        
+
         JSONObject employeeDetails1 = new JSONObject();
         employeeDetails1.put("nombre", nombreProyecto);
         employeeDetails1.put("destino", rutaProyecto);
@@ -399,41 +430,39 @@ public class Reproductor extends javax.swing.JFrame {
         for (int i = 0; i < rutasMuestras.size(); i++) {
             //paraBorrar = True Borra
             //paraBorrar = False No borra
-            
-            if(paraBorrar){
-            if(numeroSeleccionada!=i){
-               JSONObject employeeDetails3 = new JSONObject();
-            employeeDetails3.put("ruta", rutasMuestras.get(i));
-            employeeDetails3.put("tiempo", duracionMuestras.get(i));
-            employeeDetails3.put("nombre", nombreMuestras.get(i));
-            //System.out.println("nombre muestra:" +nombreMuestras.get(i));
-            
-            employeeDetails3.put("seleccionada", "false");
 
-            JSONObject employeeObject3 = new JSONObject();
-            employeeObject3.put("muestra", employeeDetails3);
-            employeeList.add(employeeObject3);
-            
-            
-            }
-            
-            }
-            else{
-            
-                  JSONObject employeeDetails3 = new JSONObject();
-            employeeDetails3.put("ruta", rutasMuestras.get(i));
-            employeeDetails3.put("tiempo", duracionMuestras.get(i));
-            employeeDetails3.put("nombre", nombreMuestras.get(i));
-            //System.out.println("nombre muestra:" +nombreMuestras.get(i));
-            
-            employeeDetails3.put("seleccionada", "false");
+            if (paraBorrar) {
+                if (numeroSeleccionada != i) {
+                    JSONObject employeeDetails3 = new JSONObject();
+                    employeeDetails3.put("ruta", rutasMuestras.get(i));
+                    employeeDetails3.put("tiempo", duracionMuestras.get(i));
+                    employeeDetails3.put("nombre", nombreMuestras.get(i));
+                    //System.out.println("nombre muestra:" +nombreMuestras.get(i));
 
-            JSONObject employeeObject3 = new JSONObject();
-            employeeObject3.put("muestra", employeeDetails3);
-            employeeList.add(employeeObject3);
-            
+                    employeeDetails3.put("seleccionada", "false");
+
+                    JSONObject employeeObject3 = new JSONObject();
+                    employeeObject3.put("muestra", employeeDetails3);
+                    employeeList.add(employeeObject3);
+
+                }
+
+            } else {
+
+                JSONObject employeeDetails3 = new JSONObject();
+                employeeDetails3.put("ruta", rutasMuestras.get(i));
+                employeeDetails3.put("tiempo", duracionMuestras.get(i));
+                employeeDetails3.put("nombre", nombreMuestras.get(i));
+                //System.out.println("nombre muestra:" +nombreMuestras.get(i));
+
+                employeeDetails3.put("seleccionada", "false");
+
+                JSONObject employeeObject3 = new JSONObject();
+                employeeObject3.put("muestra", employeeDetails3);
+                employeeList.add(employeeObject3);
+
             }
-      
+
         }
         try (FileWriter file = new FileWriter(this.direccion + "informacionProyecto.json")) {
 
@@ -515,7 +544,7 @@ public class Reproductor extends javax.swing.JFrame {
         videoExterno = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         vistaTiempo = new javax.swing.JPanel();
-        
+
         jPanel1 = new javax.swing.JPanel();
         minutero = new javax.swing.JLabel();
 
@@ -635,7 +664,7 @@ public class Reproductor extends javax.swing.JFrame {
         };
 
         //_____________________________________//
- jFrameMin.setAlwaysOnTop(true);
+        jFrameMin.setAlwaysOnTop(true);
         jFrameMin.setBackground(new java.awt.Color(56, 142, 60));
         jFrameMin.setUndecorated(true);
 
@@ -678,7 +707,7 @@ public class Reproductor extends javax.swing.JFrame {
 
         jComboBox1.setBackground(new java.awt.Color(56, 142, 60));
         jComboBox1.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "felicidad", "tristeza", "enfado", "miedo", "sorpresa", "neutro" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"felicidad", "tristeza", "enfado", "miedo", "sorpresa", "neutro"}));
         jComboBox1.setBorder(null);
         jComboBox1.setFocusable(false);
         jComboBox1.setOpaque(false);
@@ -700,68 +729,68 @@ public class Reproductor extends javax.swing.JFrame {
         javax.swing.GroupLayout editarMarcasLayout = new javax.swing.GroupLayout(editarMarcas);
         editarMarcas.setLayout(editarMarcasLayout);
         editarMarcasLayout.setHorizontalGroup(
-            editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(editarMarcasLayout.createSequentialGroup()
-                .addGroup(editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(editarMarcasLayout.createSequentialGroup()
-                        .addGap(103, 103, 103)
-                        .addComponent(jLabel22))
-                    .addGroup(editarMarcasLayout.createSequentialGroup()
-                        .addGap(135, 135, 135)
-                        .addGroup(editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel27, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(editarMarcasLayout.createSequentialGroup()
-                .addGap(63, 63, 63)
-                .addGroup(editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(editarMarcasLayout.createSequentialGroup()
-                        .addComponent(jButtonDetenerMin1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButtonDetenerMin)
-                        .addGap(75, 75, 75))
-                    .addGroup(editarMarcasLayout.createSequentialGroup()
-                        .addGroup(editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel34, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(editarMarcasLayout.createSequentialGroup()
-                                .addGap(114, 114, 114)
-                                .addComponent(jLabel33))
-                            .addComponent(jLabel35, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addContainerGap(58, Short.MAX_VALUE))))
+                editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(editarMarcasLayout.createSequentialGroup()
+                                .addGroup(editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(editarMarcasLayout.createSequentialGroup()
+                                                .addGap(103, 103, 103)
+                                                .addComponent(jLabel22))
+                                        .addGroup(editarMarcasLayout.createSequentialGroup()
+                                                .addGap(135, 135, 135)
+                                                .addGroup(editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                        .addComponent(jLabel27, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(editarMarcasLayout.createSequentialGroup()
+                                .addGap(63, 63, 63)
+                                .addGroup(editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(editarMarcasLayout.createSequentialGroup()
+                                                .addComponent(jButtonDetenerMin1)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(jButtonDetenerMin)
+                                                .addGap(75, 75, 75))
+                                        .addGroup(editarMarcasLayout.createSequentialGroup()
+                                                .addGroup(editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                        .addComponent(jLabel34, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addGroup(editarMarcasLayout.createSequentialGroup()
+                                                                .addGap(114, 114, 114)
+                                                                .addComponent(jLabel33))
+                                                        .addComponent(jLabel35, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                .addContainerGap(58, Short.MAX_VALUE))))
         );
         editarMarcasLayout.setVerticalGroup(
-            editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(editarMarcasLayout.createSequentialGroup()
-                .addGap(33, 33, 33)
-                .addComponent(jLabel22)
-                .addGap(40, 40, 40)
-                .addComponent(jLabel27)
-                .addGap(27, 27, 27)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(38, 38, 38)
-                .addComponent(jLabel33)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel35)
-                .addGap(19, 19, 19)
-                .addComponent(jLabel34)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
-                .addGroup(editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButtonDetenerMin)
-                    .addComponent(jButtonDetenerMin1))
-                .addGap(63, 63, 63))
+                editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(editarMarcasLayout.createSequentialGroup()
+                                .addGap(33, 33, 33)
+                                .addComponent(jLabel22)
+                                .addGap(40, 40, 40)
+                                .addComponent(jLabel27)
+                                .addGap(27, 27, 27)
+                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(38, 38, 38)
+                                .addComponent(jLabel33)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel35)
+                                .addGap(19, 19, 19)
+                                .addComponent(jLabel34)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+                                .addGroup(editarMarcasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jButtonDetenerMin)
+                                        .addComponent(jButtonDetenerMin1))
+                                .addGap(63, 63, 63))
         );
 
         javax.swing.GroupLayout jFrameMinLayout = new javax.swing.GroupLayout(jFrameMin.getContentPane());
         jFrameMin.getContentPane().setLayout(jFrameMinLayout);
         jFrameMinLayout.setHorizontalGroup(
-            jFrameMinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(editarMarcas, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                jFrameMinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(editarMarcas, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         jFrameMinLayout.setVerticalGroup(
-            jFrameMinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jFrameMinLayout.createSequentialGroup()
-                .addComponent(editarMarcas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                jFrameMinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jFrameMinLayout.createSequentialGroup()
+                                .addComponent(editarMarcas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         jFrameMin1.setAlwaysOnTop(true);
@@ -822,62 +851,62 @@ public class Reproductor extends javax.swing.JFrame {
         javax.swing.GroupLayout editarMarcas1Layout = new javax.swing.GroupLayout(editarMarcas1);
         editarMarcas1.setLayout(editarMarcas1Layout);
         editarMarcas1Layout.setHorizontalGroup(
-            editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(editarMarcas1Layout.createSequentialGroup()
-                .addGap(42, 42, 42)
-                .addGroup(editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(editarMarcas1Layout.createSequentialGroup()
-                        .addGroup(editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, editarMarcas1Layout.createSequentialGroup()
-                                .addComponent(jLabel26)
-                                .addGap(35, 35, 35)
-                                .addComponent(textoEditarActual1))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, editarMarcas1Layout.createSequentialGroup()
-                                .addComponent(jLabel24)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(textoEditarNuevo1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(editarMarcas1Layout.createSequentialGroup()
-                                .addGap(81, 81, 81)
-                                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(editarMarcas1Layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
-                        .addComponent(jButtonDetenerMin3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 80, Short.MAX_VALUE)
-                        .addComponent(jButtonDetenerMin2)
-                        .addGap(70, 70, 70))))
+                editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(editarMarcas1Layout.createSequentialGroup()
+                                .addGap(42, 42, 42)
+                                .addGroup(editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(editarMarcas1Layout.createSequentialGroup()
+                                                .addGroup(editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, editarMarcas1Layout.createSequentialGroup()
+                                                                .addComponent(jLabel26)
+                                                                .addGap(35, 35, 35)
+                                                                .addComponent(textoEditarActual1))
+                                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, editarMarcas1Layout.createSequentialGroup()
+                                                                .addComponent(jLabel24)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                .addComponent(textoEditarNuevo1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                        .addGroup(editarMarcas1Layout.createSequentialGroup()
+                                                                .addGap(81, 81, 81)
+                                                                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .addGroup(editarMarcas1Layout.createSequentialGroup()
+                                                .addGap(21, 21, 21)
+                                                .addComponent(jButtonDetenerMin3)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 80, Short.MAX_VALUE)
+                                                .addComponent(jButtonDetenerMin2)
+                                                .addGap(70, 70, 70))))
         );
         editarMarcas1Layout.setVerticalGroup(
-            editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(editarMarcas1Layout.createSequentialGroup()
-                .addGap(37, 37, 37)
-                .addGroup(editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel26)
-                    .addComponent(textoEditarActual1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
-                .addGroup(editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel24)
-                    .addComponent(textoEditarNuevo1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(40, 40, 40)
-                .addGroup(editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButtonDetenerMin2)
-                    .addComponent(jButtonDetenerMin3))
-                .addGap(46, 46, 46))
+                editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(editarMarcas1Layout.createSequentialGroup()
+                                .addGap(37, 37, 37)
+                                .addGroup(editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jLabel26)
+                                        .addComponent(textoEditarActual1))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
+                                .addGroup(editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jLabel24)
+                                        .addComponent(textoEditarNuevo1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(40, 40, 40)
+                                .addGroup(editarMarcas1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jButtonDetenerMin2)
+                                        .addComponent(jButtonDetenerMin3))
+                                .addGap(46, 46, 46))
         );
 
         javax.swing.GroupLayout jFrameMin1Layout = new javax.swing.GroupLayout(jFrameMin1.getContentPane());
         jFrameMin1.getContentPane().setLayout(jFrameMin1Layout);
         jFrameMin1Layout.setHorizontalGroup(
-            jFrameMin1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(editarMarcas1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                jFrameMin1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(editarMarcas1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         jFrameMin1Layout.setVerticalGroup(
-            jFrameMin1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jFrameMin1Layout.createSequentialGroup()
-                .addComponent(editarMarcas1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                jFrameMin1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jFrameMin1Layout.createSequentialGroup()
+                                .addComponent(editarMarcas1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         jFrameMin2.setAlwaysOnTop(true);
@@ -896,37 +925,37 @@ public class Reproductor extends javax.swing.JFrame {
         javax.swing.GroupLayout editarMarcas2Layout = new javax.swing.GroupLayout(editarMarcas2);
         editarMarcas2.setLayout(editarMarcas2Layout);
         editarMarcas2Layout.setHorizontalGroup(
-            editarMarcas2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(editarMarcas2Layout.createSequentialGroup()
-                .addGap(53, 53, 53)
-                .addComponent(iconCargando)
-                .addContainerGap(68, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, editarMarcas2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel28)
-                .addGap(135, 135, 135))
+                editarMarcas2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(editarMarcas2Layout.createSequentialGroup()
+                                .addGap(53, 53, 53)
+                                .addComponent(iconCargando)
+                                .addContainerGap(68, Short.MAX_VALUE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, editarMarcas2Layout.createSequentialGroup()
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel28)
+                                .addGap(135, 135, 135))
         );
         editarMarcas2Layout.setVerticalGroup(
-            editarMarcas2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(editarMarcas2Layout.createSequentialGroup()
-                .addGap(36, 36, 36)
-                .addComponent(jLabel28)
-                .addGap(52, 52, 52)
-                .addComponent(iconCargando)
-                .addContainerGap(53, Short.MAX_VALUE))
+                editarMarcas2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(editarMarcas2Layout.createSequentialGroup()
+                                .addGap(36, 36, 36)
+                                .addComponent(jLabel28)
+                                .addGap(52, 52, 52)
+                                .addComponent(iconCargando)
+                                .addContainerGap(53, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jFrameMin2Layout = new javax.swing.GroupLayout(jFrameMin2.getContentPane());
         jFrameMin2.getContentPane().setLayout(jFrameMin2Layout);
         jFrameMin2Layout.setHorizontalGroup(
-            jFrameMin2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(editarMarcas2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                jFrameMin2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(editarMarcas2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jFrameMin2Layout.setVerticalGroup(
-            jFrameMin2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jFrameMin2Layout.createSequentialGroup()
-                .addComponent(editarMarcas2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                jFrameMin2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jFrameMin2Layout.createSequentialGroup()
+                                .addComponent(editarMarcas2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -944,25 +973,25 @@ public class Reproductor extends javax.swing.JFrame {
         javax.swing.GroupLayout vistaPerspectivaCaraLayout = new javax.swing.GroupLayout(vistaPerspectivaCara);
         vistaPerspectivaCara.setLayout(vistaPerspectivaCaraLayout);
         vistaPerspectivaCaraLayout.setHorizontalGroup(
-            vistaPerspectivaCaraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(vistaPerspectivaCaraLayout.createSequentialGroup()
-                .addGroup(vistaPerspectivaCaraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(vistaPerspectivaCaraLayout.createSequentialGroup()
-                        .addGap(134, 134, 134)
-                        .addComponent(jLabel6))
-                    .addGroup(vistaPerspectivaCaraLayout.createSequentialGroup()
-                        .addGap(65, 65, 65)
-                        .addComponent(videoCara, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(68, Short.MAX_VALUE))
+                vistaPerspectivaCaraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(vistaPerspectivaCaraLayout.createSequentialGroup()
+                                .addGroup(vistaPerspectivaCaraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(vistaPerspectivaCaraLayout.createSequentialGroup()
+                                                .addGap(134, 134, 134)
+                                                .addComponent(jLabel6))
+                                        .addGroup(vistaPerspectivaCaraLayout.createSequentialGroup()
+                                                .addGap(65, 65, 65)
+                                                .addComponent(videoCara, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addContainerGap(68, Short.MAX_VALUE))
         );
         vistaPerspectivaCaraLayout.setVerticalGroup(
-            vistaPerspectivaCaraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(vistaPerspectivaCaraLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel6)
-                .addGap(42, 42, 42)
-                .addComponent(videoCara, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(46, Short.MAX_VALUE))
+                vistaPerspectivaCaraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(vistaPerspectivaCaraLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel6)
+                                .addGap(42, 42, 42)
+                                .addComponent(videoCara, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(46, Short.MAX_VALUE))
         );
 
         principal.add(vistaPerspectivaCara, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 455, 370));
@@ -972,12 +1001,12 @@ public class Reproductor extends javax.swing.JFrame {
         javax.swing.GroupLayout vistaTagAutomaticoLayout = new javax.swing.GroupLayout(vistaTagAutomatico);
         vistaTagAutomatico.setLayout(vistaTagAutomaticoLayout);
         vistaTagAutomaticoLayout.setHorizontalGroup(
-            vistaTagAutomaticoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+                vistaTagAutomaticoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 0, Short.MAX_VALUE)
         );
         vistaTagAutomaticoLayout.setVerticalGroup(
-            vistaTagAutomaticoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+                vistaTagAutomaticoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 0, Short.MAX_VALUE)
         );
 
         principal.add(vistaTagAutomatico, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 430, 1290, 49));
@@ -987,12 +1016,12 @@ public class Reproductor extends javax.swing.JFrame {
         javax.swing.GroupLayout vistaTagManualLayout = new javax.swing.GroupLayout(vistaTagManual);
         vistaTagManual.setLayout(vistaTagManualLayout);
         vistaTagManualLayout.setHorizontalGroup(
-            vistaTagManualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+                vistaTagManualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 0, Short.MAX_VALUE)
         );
         vistaTagManualLayout.setVerticalGroup(
-            vistaTagManualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+                vistaTagManualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 0, Short.MAX_VALUE)
         );
 
         principal.add(vistaTagManual, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 480, 1290, 49));
@@ -1070,47 +1099,47 @@ public class Reproductor extends javax.swing.JFrame {
         javax.swing.GroupLayout vistaPanelTagLayout = new javax.swing.GroupLayout(vistaPanelTag);
         vistaPanelTag.setLayout(vistaPanelTagLayout);
         vistaPanelTagLayout.setHorizontalGroup(
-            vistaPanelTagLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(vistaPanelTagLayout.createSequentialGroup()
-                .addGap(63, 63, 63)
-                .addComponent(agregarMarcaTxT)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 96, Short.MAX_VALUE)
-                .addGroup(vistaPanelTagLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(editarMarcasTxt)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, vistaPanelTagLayout.createSequentialGroup()
-                        .addComponent(editarMarcasBtn)
-                        .addGap(17, 17, 17)))
-                .addGap(71, 71, 71))
-            .addGroup(vistaPanelTagLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel12)
-                .addGroup(vistaPanelTagLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(vistaPanelTagLayout.createSequentialGroup()
-                        .addGap(46, 46, 46)
-                        .addComponent(jLabel4))
-                    .addGroup(vistaPanelTagLayout.createSequentialGroup()
-                        .addGap(125, 125, 125)
-                        .addComponent(jLabel13))))
+                vistaPanelTagLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(vistaPanelTagLayout.createSequentialGroup()
+                                .addGap(63, 63, 63)
+                                .addComponent(agregarMarcaTxT)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 96, Short.MAX_VALUE)
+                                .addGroup(vistaPanelTagLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(editarMarcasTxt)
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, vistaPanelTagLayout.createSequentialGroup()
+                                                .addComponent(editarMarcasBtn)
+                                                .addGap(17, 17, 17)))
+                                .addGap(71, 71, 71))
+                        .addGroup(vistaPanelTagLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel12)
+                                .addGroup(vistaPanelTagLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(vistaPanelTagLayout.createSequentialGroup()
+                                                .addGap(46, 46, 46)
+                                                .addComponent(jLabel4))
+                                        .addGroup(vistaPanelTagLayout.createSequentialGroup()
+                                                .addGap(125, 125, 125)
+                                                .addComponent(jLabel13))))
         );
         vistaPanelTagLayout.setVerticalGroup(
-            vistaPanelTagLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(vistaPanelTagLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(vistaPanelTagLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(vistaPanelTagLayout.createSequentialGroup()
-                        .addGroup(vistaPanelTagLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(vistaPanelTagLayout.createSequentialGroup()
-                                .addGap(42, 42, 42)
+                vistaPanelTagLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(vistaPanelTagLayout.createSequentialGroup()
+                                .addContainerGap()
                                 .addGroup(vistaPanelTagLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(editarMarcasBtn)
-                                    .addComponent(jLabel4)))
-                            .addComponent(jLabel13))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(vistaPanelTagLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(editarMarcasTxt)
-                            .addComponent(agregarMarcaTxT)))
-                    .addComponent(jLabel12))
-                .addGap(0, 107, Short.MAX_VALUE))
+                                        .addGroup(vistaPanelTagLayout.createSequentialGroup()
+                                                .addGroup(vistaPanelTagLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(vistaPanelTagLayout.createSequentialGroup()
+                                                                .addGap(42, 42, 42)
+                                                                .addGroup(vistaPanelTagLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addComponent(editarMarcasBtn)
+                                                                        .addComponent(jLabel4)))
+                                                        .addComponent(jLabel13))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(vistaPanelTagLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(editarMarcasTxt)
+                                                        .addComponent(agregarMarcaTxT)))
+                                        .addComponent(jLabel12))
+                                .addGap(0, 107, Short.MAX_VALUE))
         );
 
         principal.add(vistaPanelTag, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 530, 470, 240));
@@ -1228,57 +1257,57 @@ public class Reproductor extends javax.swing.JFrame {
         javax.swing.GroupLayout vistaPanelPerspectivaLayout = new javax.swing.GroupLayout(vistaPanelPerspectiva);
         vistaPanelPerspectiva.setLayout(vistaPanelPerspectivaLayout);
         vistaPanelPerspectivaLayout.setHorizontalGroup(
-            vistaPanelPerspectivaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, vistaPanelPerspectivaLayout.createSequentialGroup()
-                .addGroup(vistaPanelPerspectivaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(vistaPanelPerspectivaLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(obtenerEpisodiosTxt))
-                    .addGroup(vistaPanelPerspectivaLayout.createSequentialGroup()
-                        .addGap(65, 65, 65)
-                        .addComponent(obtenerEpisodiosBtn)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(vistaPanelPerspectivaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(vistaPanelPerspectivaLayout.createSequentialGroup()
-                        .addComponent(cambiarMuestraTxt)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, vistaPanelPerspectivaLayout.createSequentialGroup()
-                        .addComponent(cambiarMuestraBtn)
-                        .addGap(54, 54, 54)))
-                .addGroup(vistaPanelPerspectivaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(vistaPanelPerspectivaLayout.createSequentialGroup()
-                        .addGap(45, 45, 45)
-                        .addComponent(eliminarMuestraBtn))
-                    .addComponent(eliminarMuestraTxt))
-                .addGap(31, 31, 31))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, vistaPanelPerspectivaLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel23)
-                .addGap(174, 174, 174))
+                vistaPanelPerspectivaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, vistaPanelPerspectivaLayout.createSequentialGroup()
+                                .addGroup(vistaPanelPerspectivaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(vistaPanelPerspectivaLayout.createSequentialGroup()
+                                                .addContainerGap()
+                                                .addComponent(obtenerEpisodiosTxt))
+                                        .addGroup(vistaPanelPerspectivaLayout.createSequentialGroup()
+                                                .addGap(65, 65, 65)
+                                                .addComponent(obtenerEpisodiosBtn)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(vistaPanelPerspectivaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(vistaPanelPerspectivaLayout.createSequentialGroup()
+                                                .addComponent(cambiarMuestraTxt)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, vistaPanelPerspectivaLayout.createSequentialGroup()
+                                                .addComponent(cambiarMuestraBtn)
+                                                .addGap(54, 54, 54)))
+                                .addGroup(vistaPanelPerspectivaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(vistaPanelPerspectivaLayout.createSequentialGroup()
+                                                .addGap(45, 45, 45)
+                                                .addComponent(eliminarMuestraBtn))
+                                        .addComponent(eliminarMuestraTxt))
+                                .addGap(31, 31, 31))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, vistaPanelPerspectivaLayout.createSequentialGroup()
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel23)
+                                .addGap(174, 174, 174))
         );
         vistaPanelPerspectivaLayout.setVerticalGroup(
-            vistaPanelPerspectivaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(vistaPanelPerspectivaLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(vistaPanelPerspectivaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(vistaPanelPerspectivaLayout.createSequentialGroup()
-                        .addComponent(eliminarMuestraBtn)
-                        .addGap(28, 28, 28))
-                    .addGroup(vistaPanelPerspectivaLayout.createSequentialGroup()
-                        .addComponent(jLabel23)
-                        .addGap(28, 28, 28)
-                        .addGroup(vistaPanelPerspectivaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(vistaPanelPerspectivaLayout.createSequentialGroup()
-                                .addComponent(obtenerEpisodiosBtn)
-                                .addGap(28, 28, 28))
-                            .addGroup(vistaPanelPerspectivaLayout.createSequentialGroup()
-                                .addComponent(cambiarMuestraBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(vistaPanelPerspectivaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(cambiarMuestraTxt)
-                                    .addComponent(obtenerEpisodiosTxt)
-                                    .addComponent(eliminarMuestraTxt))))))
-                .addContainerGap(99, Short.MAX_VALUE))
+                vistaPanelPerspectivaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(vistaPanelPerspectivaLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(vistaPanelPerspectivaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addGroup(vistaPanelPerspectivaLayout.createSequentialGroup()
+                                                .addComponent(eliminarMuestraBtn)
+                                                .addGap(28, 28, 28))
+                                        .addGroup(vistaPanelPerspectivaLayout.createSequentialGroup()
+                                                .addComponent(jLabel23)
+                                                .addGap(28, 28, 28)
+                                                .addGroup(vistaPanelPerspectivaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                        .addGroup(vistaPanelPerspectivaLayout.createSequentialGroup()
+                                                                .addComponent(obtenerEpisodiosBtn)
+                                                                .addGap(28, 28, 28))
+                                                        .addGroup(vistaPanelPerspectivaLayout.createSequentialGroup()
+                                                                .addComponent(cambiarMuestraBtn)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addGroup(vistaPanelPerspectivaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                                        .addComponent(cambiarMuestraTxt)
+                                                                        .addComponent(obtenerEpisodiosTxt)
+                                                                        .addComponent(eliminarMuestraTxt))))))
+                                .addContainerGap(99, Short.MAX_VALUE))
         );
 
         principal.add(vistaPanelPerspectiva, new org.netbeans.lib.awtextra.AbsoluteConstraints(890, 530, 480, 240));
@@ -1293,20 +1322,20 @@ public class Reproductor extends javax.swing.JFrame {
         javax.swing.GroupLayout vistaPerspectivaActividadLayout = new javax.swing.GroupLayout(vistaPerspectivaActividad);
         vistaPerspectivaActividad.setLayout(vistaPerspectivaActividadLayout);
         vistaPerspectivaActividadLayout.setHorizontalGroup(
-            vistaPerspectivaActividadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(videoActividad, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(vistaPerspectivaActividadLayout.createSequentialGroup()
-                .addGap(116, 116, 116)
-                .addComponent(jLabel5)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                vistaPerspectivaActividadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(videoActividad, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(vistaPerspectivaActividadLayout.createSequentialGroup()
+                                .addGap(116, 116, 116)
+                                .addComponent(jLabel5)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         vistaPerspectivaActividadLayout.setVerticalGroup(
-            vistaPerspectivaActividadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, vistaPerspectivaActividadLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel5)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(videoActividad, javax.swing.GroupLayout.PREFERRED_SIZE, 322, javax.swing.GroupLayout.PREFERRED_SIZE))
+                vistaPerspectivaActividadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, vistaPerspectivaActividadLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(videoActividad, javax.swing.GroupLayout.PREFERRED_SIZE, 322, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         jLabel5.getAccessibleContext().setAccessibleDescription("");
@@ -1323,20 +1352,20 @@ public class Reproductor extends javax.swing.JFrame {
         javax.swing.GroupLayout vistaPerspectivaActividad1Layout = new javax.swing.GroupLayout(vistaPerspectivaActividad1);
         vistaPerspectivaActividad1.setLayout(vistaPerspectivaActividad1Layout);
         vistaPerspectivaActividad1Layout.setHorizontalGroup(
-            vistaPerspectivaActividad1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(videoExterno, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(vistaPerspectivaActividad1Layout.createSequentialGroup()
-                .addGap(101, 101, 101)
-                .addComponent(jLabel7)
-                .addContainerGap(144, Short.MAX_VALUE))
+                vistaPerspectivaActividad1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(videoExterno, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(vistaPerspectivaActividad1Layout.createSequentialGroup()
+                                .addGap(101, 101, 101)
+                                .addComponent(jLabel7)
+                                .addContainerGap(144, Short.MAX_VALUE))
         );
         vistaPerspectivaActividad1Layout.setVerticalGroup(
-            vistaPerspectivaActividad1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(vistaPerspectivaActividad1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel7)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(videoExterno, javax.swing.GroupLayout.PREFERRED_SIZE, 322, javax.swing.GroupLayout.PREFERRED_SIZE))
+                vistaPerspectivaActividad1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(vistaPerspectivaActividad1Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel7)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(videoExterno, javax.swing.GroupLayout.PREFERRED_SIZE, 322, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         principal.add(vistaPerspectivaActividad1, new org.netbeans.lib.awtextra.AbsoluteConstraints(905, 0, 460, 370));
@@ -1344,7 +1373,6 @@ public class Reproductor extends javax.swing.JFrame {
         vistaTiempo.setBackground(new java.awt.Color(153, 153, 0));
         vistaTiempo.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-    
         vistaTiempo.add(sliderTiempo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1280, 60));
 
         principal.add(vistaTiempo, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 370, 1290, 60));
@@ -1355,18 +1383,18 @@ public class Reproductor extends javax.swing.JFrame {
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(23, 23, 23)
-                .addComponent(minutero)
-                .addContainerGap(37, Short.MAX_VALUE))
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(23, 23, 23)
+                                .addComponent(minutero)
+                                .addContainerGap(37, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(minutero)
-                .addGap(22, 22, 22))
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(minutero)
+                                .addGap(22, 22, 22))
         );
 
         principal.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 370, 80, 60));
@@ -1374,14 +1402,14 @@ public class Reproductor extends javax.swing.JFrame {
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(principal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(principal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(principal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(principal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -1397,7 +1425,6 @@ public class Reproductor extends javax.swing.JFrame {
     }
 
     private void btnPlayMouseClicked() {
-        
 
         //PLAY
         if (isRunning == false) {
@@ -1520,7 +1547,6 @@ public class Reproductor extends javax.swing.JFrame {
     public void agregarTag() {
 
         //System.out.println("entre a agregar tag");
-
         for (int i = 0; i < 40; i++) {
 
             //
@@ -1565,7 +1591,7 @@ public class Reproductor extends javax.swing.JFrame {
         Border border = BorderFactory.createLineBorder(colorBordeTag, 1);
         //tiempoParaTags
         //outer.add(new ArrayList<[var type]>(inner));
-        System.out.println("Tengo este tiempo: "+ tiempoParaTags);
+        System.out.println("Tengo este tiempo: " + tiempoParaTags);
         for (int j = 0; j < tiempoParaTags; j++) {
             //System.out.println("minuto: " + j);
             ArrayList<JLabel> arregloTag = new ArrayList<>();
@@ -1573,33 +1599,30 @@ public class Reproductor extends javax.swing.JFrame {
                 System.out.println("entre a agregar");
 
                 JLabel tag = new JLabel();
-                
-               AdapterForTag adapterForTag = new AdapterForTag();
-               
-               
-                       
-               adapterForTag.test(i,j);
-               tag.addMouseListener(adapterForTag);
+
+                AdapterForTag adapterForTag = new AdapterForTag();
+
+                adapterForTag.test(i, j);
+                tag.addMouseListener(adapterForTag);
                 tag.addMouseMotionListener(adapterForTag);
-        
+
                 tag.setText(textoTagManual);
                 tag.setForeground(colorTxtTag);
-            
+
                 tag.setOpaque(true);
                 tag.setBackground(colorFondoTag);
                 tag.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-       
+
                 tag.setBorder(border);
                 arregloTag.add(tag);
 
- 
             }
             tagsPorMinuto.add(0);
             contenedor.add(new ArrayList<JLabel>(arregloTag));
             //System.out.println("CONTENEDOR: "+ contenedor.get(j).get(0).getText());
 //            contenedor.add(arregloTag);
         }
-        System.out.println("tamaño: "+ contenedor.size());
+        System.out.println("tamaño: " + contenedor.size());
     }
 
     public void contadorMinutero(boolean accion) {
@@ -1629,7 +1652,7 @@ public class Reproductor extends javax.swing.JFrame {
                 minutos -= 1;
 
                 agregarTag();
-            } else { 
+            } else {
                 contadorTiempo -= 1;
             }
 
@@ -1640,24 +1663,23 @@ public class Reproductor extends javax.swing.JFrame {
     }
 
     public static void makeVideo(String movFile, String rutaInicial, int frameInicial, int frameFinal) {
-		      System.out.println("Creando video");
-                      //ruta + "/storeFaceRecorder/"
-		JpegImagesToMovie imageToMovie = new JpegImagesToMovie();
-		Vector<String> imgLst = new Vector<String>();
-		File f = new File(rutaInicial);
-		File[] fileLst = f.listFiles();
-		for (int i = frameInicial; i < frameFinal; i++) {
-			imgLst.add(fileLst[i].getAbsolutePath());
-		}
-		// Generate the output media locators.
-                
-                
-		MediaLocator oml;
-		if ((oml = imageToMovie.createMediaLocator(movFile)) == null) {
-                    
-			System.err.println("Cannot build media locator from: " + movFile);
-			System.exit(0);
-		}
+        System.out.println("Creando video");
+        //ruta + "/storeFaceRecorder/"
+        JpegImagesToMovie imageToMovie = new JpegImagesToMovie();
+        Vector<String> imgLst = new Vector<String>();
+        File f = new File(rutaInicial);
+        File[] fileLst = f.listFiles();
+        for (int i = frameInicial; i < frameFinal; i++) {
+            imgLst.add(fileLst[i].getAbsolutePath());
+        }
+        // Generate the output media locators.
+
+        MediaLocator oml;
+        if ((oml = imageToMovie.createMediaLocator(movFile)) == null) {
+
+            System.err.println("Cannot build media locator from: " + movFile);
+            System.exit(0);
+        }
         try {
             imageToMovie.doIt(screenWidth, screenHeight, (1000 / captureInterval),
                     imgLst, oml);
@@ -1665,7 +1687,8 @@ public class Reproductor extends javax.swing.JFrame {
             Logger.getLogger(Reproductor.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-	}
+    }
+
     public String calculoTiempo(int frameSegundo) {
 
         String tiempoFinal = "";
@@ -1716,7 +1739,6 @@ public class Reproductor extends javax.swing.JFrame {
 
             tiempoTotal = minutosStr + ":" + segundosStr + ":" + millesimasStr;
             // //System.out.println("TIEMPO TOTAL: " + tiempoTotal);
-            
 
         }
         //para 20FPS
@@ -1734,6 +1756,139 @@ public class Reproductor extends javax.swing.JFrame {
 
         return tiempoTotal;
     }
+    public void cargaSentimientoAutomatico() throws IndicoException, IOException{
+         File tam = new File(ruta + "/storeFaceRecorder/");
+         File[] afileLstF = tam.listFiles();
+         int cantElementos = afileLstF.length;
+         boolean analizar = true;
+         Indico indico = new Indico("aea60a29b92333183d284f087d633b22");
+         ArrayList< Map<FacialEmotion, Double>> resultadosAnalisis = new ArrayList< Map<FacialEmotion, Double>>();
+         
+         int imagenAnalizada = 0;
+                
+                    while (analizar) {
+                            if (cantElementos == imagenAnalizada) {
+                                                        break;
+                                                    }
+                        String direccionFoto = afileLstF[imagenAnalizada].getAbsolutePath();
+                        System.out.println("direccion: "+ direccionFoto);
+                        IndicoResult single = indico.fer.predict(direccionFoto);
+                        Map<FacialEmotion, Double> result = single.getFer();
+                        resultadosAnalisis.add(result);
+                        System.out.println("imagen num: "+ imagenAnalizada);
+                        imagenAnalizada += 1;
+                        
+                        
+                        
+                    }
+         for (int i = 0; i < resultadosAnalisis.size(); i++) {
+             //System.out.println("resultados "+ i+": "+resultadosAnalisis.get(i));
+     //Angry=0.0947634052, Sad=0.3484043497, Fear=0.23150029, Happy=0.0940359132, Surprise=0.0489270408, Neutral=0.18236900
+                    for (Entry<FacialEmotion, Double> e: resultadosAnalisis.get(i).entrySet()) {
+                         
+                        
+                        if(e.getKey().toString()=="Happy"){
+                        System.out.println("["+e.getKey() + "=" + e.getValue()+"]");    
+                            if(e.getValue()>=0.1 && e.getValue()<0.2){
+                            felicidad1.add(i);
+                            }
+                            if(e.getValue()>=0.2 && e.getValue()<0.3){
+                            felicidad2.add(i);
+                            }
+                            
+                            if(e.getValue()>=0.3){
+                            felicidad3.add(i);
+                            }
+                            
+                        }
+                        
+                        if(e.getKey().toString()=="Surprise"){
+                        System.out.println("["+e.getKey() + "=" + e.getValue()+"]");    
+                            if(e.getValue()>=0.1 && e.getValue()<0.2){
+                                sorpresa1.add(i);
+                            }
+                            if(e.getValue()>=0.2 && e.getValue()<0.3){
+                            sorpresa2.add(i);
+                                }
+                            if(e.getValue()>=0.3){
+                                sorpresa3.add(i);
+                            }
+                        
+                        }
+                        
+                        if(e.getKey().toString()=="Fear"){
+                        System.out.println("["+e.getKey() + "=" + e.getValue()+"]");    
+                            if(e.getValue()>=0.1 && e.getValue()<0.2){
+                            temeroso1.add(i);
+                            }
+                            if(e.getValue()>=0.2 && e.getValue()<0.3){
+                            temeroso2.add(i);
+                            }
+                            if(e.getValue()>=0.3){
+                               temeroso3.add(i);
+                            }                        
+                        }
+                        
+                        if(e.getKey().toString()=="Angry"){
+                        System.out.println("["+e.getKey() + "=" + e.getValue()+"]");    
+                            if(e.getValue()>=0.1 && e.getValue()<0.2){
+                                enojado1.add(i);
+                            }
+                            if(e.getValue()>=0.2 && e.getValue()<0.3){
+                                enojado2.add(i);
+                            }
+                            if(e.getValue()>=0.3){
+                                enojado3.add(i);
+                            }                        
+                        }
+                        
+                        if(e.getKey().toString()=="Neutral"){
+                        System.out.println("["+e.getKey() + "=" + e.getValue()+"]");    
+                            if(e.getValue()>=0.1 && e.getValue()<0.2){
+                            neutral1.add(i);
+                            }
+                            if(e.getValue()>=0.2 && e.getValue()<0.3){
+                            neutral2.add(i);
+                            }
+                            if(e.getValue()>=0.3){
+                            neutral3.add(i);
+                            
+                            }                        
+                        }
+                        if(e.getKey().toString()=="Sad"){
+                        System.out.println("["+e.getKey() + "=" + e.getValue()+"]");    
+                            if(e.getValue()>=0.1 && e.getValue()<0.2){
+                                tristeza1.add(i);
+                            }
+                            if(e.getValue()>=0.2 && e.getValue()<0.3){
+                                tristeza2.add(i);
+                            }
+                            if(e.getValue()>=0.3){
+                                tristeza3.add(i);
+                            
+                            }                        
+                        }
+                    }
+             
+        }
+         
+         
+         
+         
+    
+    
+        /* String filePath = "C:\\Users\\Katherine\\Desktop\\kathy.jpg";
+        Indico indico = new Indico("aea60a29b92333183d284f087d633b22");
+       
+        System.out.println(result);*/
+         
+         
+         
+         
+         
+//    ArrayList<String> duracionMuestras = new ArrayList<>();
+    
+    } 
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -2579,14 +2734,14 @@ public class Reproductor extends javax.swing.JFrame {
 
     private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
         // TODO add your handling code here:
-        
-         jFrameMin.setSize(515, 417);
+
+        jFrameMin.setSize(515, 417);
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice defaultScreen = ge.getDefaultScreenDevice();
         jFrameMin.setLocationRelativeTo(null);
         jFrameMin.setVisible(true);
         setVisible(false);
-      
+
     }//GEN-LAST:event_jLabel4MouseClicked
 
     private void editarMarcasBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_editarMarcasBtnMouseClicked
@@ -2599,8 +2754,8 @@ public class Reproductor extends javax.swing.JFrame {
         textoEditarActual1.setText(textoTagManual);
         jFrameMin1.setVisible(true);
         setVisible(false);
-        
-        
+
+
     }//GEN-LAST:event_editarMarcasBtnMouseClicked
 
     private void agregarMarcaTxTMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_agregarMarcaTxTMouseClicked
@@ -2613,28 +2768,26 @@ public class Reproductor extends javax.swing.JFrame {
 
     private void retrocederBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_retrocederBtnMouseClicked
 
-        if(minutos!=0){
-             contadorTiempo = 0;
+        if (minutos != 0) {
+            contadorTiempo = 0;
             quitarTag();
-            minutos -=1;
+            minutos -= 1;
             agregarTag();
             contador = 0;
-            
-        
+
         }
-      
-         sliderTiempo.setValue(contadorTiempo);
-         minutero.setText(String.valueOf(minutos));
-         int frame = minutos*600;
-         frameSegundoA = frame;
+
+        sliderTiempo.setValue(contadorTiempo);
+        minutero.setText(String.valueOf(minutos));
+        int frame = minutos * 600;
+        frameSegundoA = frame;
         frameSegundoF = frame;
         frameSegundoE = frame;
-            String tiempog = calculoTiempo(frame);
-            
-            
-            jLabel8.setText(tiempog);
-         
-        
+        String tiempog = calculoTiempo(frame);
+
+        jLabel8.setText(tiempog);
+
+
     }//GEN-LAST:event_retrocederBtnMouseClicked
 
     private void btnPlayMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPlayMouseClicked
@@ -2643,109 +2796,101 @@ public class Reproductor extends javax.swing.JFrame {
 
     private void avanzarBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_avanzarBtnMouseClicked
         // TODO add your handling code here:
-         String[] parts = tiempo.split(":");
-            int minMax  = Integer.parseInt(parts[0]);
-        
-        System.out.println("[avanzar] min max: "+ minMax);
-         if(minutos<minMax){
-             System.out.println("[avanzar] if con min: "+  minutos );
+        String[] parts = tiempo.split(":");
+        int minMax = Integer.parseInt(parts[0]);
+
+        System.out.println("[avanzar] min max: " + minMax);
+        if (minutos < minMax) {
+            System.out.println("[avanzar] if con min: " + minutos);
             contadorTiempo = 0;
             quitarTag();
-            minutos +=1;
+            minutos += 1;
             agregarTag();
             contador = 0;
-            
-        
+
         }
-      
-         sliderTiempo.setValue(contadorTiempo);
-         minutero.setText(String.valueOf(minutos));
-         int frame = minutos*600;
-         if (frame>frameMas){
-             System.out.println("[avanzar] framemas: "+ frameMas);
-         frame = frameMas;
-         }
-         frameSegundoA = frame;
+
+        sliderTiempo.setValue(contadorTiempo);
+        minutero.setText(String.valueOf(minutos));
+        int frame = minutos * 600;
+        if (frame > frameMas) {
+            System.out.println("[avanzar] framemas: " + frameMas);
+            frame = frameMas;
+        }
+        frameSegundoA = frame;
         frameSegundoF = frame;
         frameSegundoE = frame;
-        System.out.println("[avanzar]frame: "+ frameSegundoA);
+        System.out.println("[avanzar]frame: " + frameSegundoA);
         String tiempog = calculoTiempo(frame);
-            
-            
+
         jLabel8.setText(tiempog);
     }//GEN-LAST:event_avanzarBtnMouseClicked
 
     private void obtenerEpisodiosBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_obtenerEpisodiosBtnMouseClicked
         // TODO add your handling code here:
-     
-        
-           for (int i = 0; i < tiempoParaTags; i++) {
-               for (int j = 0; j < 40; j++) {
-                   if(contenedor.get(i).get(j).getBounds().getX() == 0 && contenedor.get(i).get(j).getBounds().getY()==0)
-                   {}
-               else{
-                       System.out.println("tag min "+i+"/id "+j+": "+intValue(contenedor.get(i).get(j).getBounds().getX()));
-                       System.out.println("tag min "+i+"/id "+j+": "+contenedor.get(i).get(j).getBounds());
-                       
-        
-                        
-                       ///faceRecorder
-                                
-                                //
-                                String rutaInicialFR = ruta + "/storeFaceRecorder/";
-                                String rutaVideoFR = ruta + "/episodio"+i+j+"/faceRecorder.mov";
-                                int frameIFR = intValue(contenedor.get(i).get(j).getBounds().getX());
-                                int frameFFR = frameIFR + intValue(contenedor.get(i).get(j).getBounds().getWidth());
-                                int frameInicialFR = convercionPosicionFrame(frameIFR);
-                                int frameFinalFR = convercionPosicionFrame(frameFFR);
-                                
-             //makeVideo(rutaVideoFR,rutaInicialFR,frameInicialFR,frameFinalFR);
-             ////C:/Users/Katherine/Desktop/ReproductorMuestras/Muestra0/test1.mov"
-                                makeVideo(rutaVideoFR,rutaInicialFR,frameInicialFR,frameFinalFR);
-                                
-                       ///activityRender
-                                //ruta + "/storeActivityRender/"
-                                String rutaInicialAR = ruta + "/storeActivityRender/";
-                                String rutaVideoAR = ruta + "/episodio"+i+j+"/activityRender.mov";
-                                int frameIAR = intValue(contenedor.get(i).get(j).getBounds().getX());
-                                int frameFAR = frameIAR + intValue(contenedor.get(i).get(j).getBounds().getWidth());
-                                int frameInicialAR = convercionPosicionFrame(frameIAR);
-                                int frameFinalAR = convercionPosicionFrame(frameFAR);
-                                makeVideo(rutaVideoAR,rutaInicialAR,frameInicialAR,frameFinalAR);
-                       ///Perspectiva Externa
-                                //ruta + "/storeExternalPerspective"   
-                                String rutaInicialEP = ruta + "/storeExternalPerspective/";
-                                String rutaVideoEP = ruta + "/episodio"+i+j+"/ExternalPerspective.mov";
-                                int frameIEP = intValue(contenedor.get(i).get(j).getBounds().getX());
-                                int frameFEP = frameIEP + intValue(contenedor.get(i).get(j).getBounds().getWidth());
-                                int frameInicialEP = convercionPosicionFrame(frameIEP);
-                                int frameFinalEP = convercionPosicionFrame(frameFEP);
-                                makeVideo(rutaVideoEP,rutaInicialEP,frameInicialEP,frameFinalEP);
-                                
-                       }
-                       }
-               
+
+        for (int i = 0; i < tiempoParaTags; i++) {
+            for (int j = 0; j < 40; j++) {
+                if (contenedor.get(i).get(j).getBounds().getX() == 0 && contenedor.get(i).get(j).getBounds().getY() == 0) {
+                } else {
+                    System.out.println("tag min " + i + "/id " + j + ": " + intValue(contenedor.get(i).get(j).getBounds().getX()));
+                    System.out.println("tag min " + i + "/id " + j + ": " + contenedor.get(i).get(j).getBounds());
+
+                    ///faceRecorder
+                    //
+                    String rutaInicialFR = ruta + "/storeFaceRecorder/";
+                    String rutaVideoFR = ruta + "/episodio" + i + j + "/faceRecorder.mov";
+                    int frameIFR = intValue(contenedor.get(i).get(j).getBounds().getX());
+                    int frameFFR = frameIFR + intValue(contenedor.get(i).get(j).getBounds().getWidth());
+                    int frameInicialFR = convercionPosicionFrame(frameIFR);
+                    int frameFinalFR = convercionPosicionFrame(frameFFR);
+
+                    //makeVideo(rutaVideoFR,rutaInicialFR,frameInicialFR,frameFinalFR);
+                    ////C:/Users/Katherine/Desktop/ReproductorMuestras/Muestra0/test1.mov"
+                    makeVideo(rutaVideoFR, rutaInicialFR, frameInicialFR, frameFinalFR);
+
+                    ///activityRender
+                    //ruta + "/storeActivityRender/"
+                    String rutaInicialAR = ruta + "/storeActivityRender/";
+                    String rutaVideoAR = ruta + "/episodio" + i + j + "/activityRender.mov";
+                    int frameIAR = intValue(contenedor.get(i).get(j).getBounds().getX());
+                    int frameFAR = frameIAR + intValue(contenedor.get(i).get(j).getBounds().getWidth());
+                    int frameInicialAR = convercionPosicionFrame(frameIAR);
+                    int frameFinalAR = convercionPosicionFrame(frameFAR);
+                    makeVideo(rutaVideoAR, rutaInicialAR, frameInicialAR, frameFinalAR);
+                    ///Perspectiva Externa
+                    //ruta + "/storeExternalPerspective"   
+                    String rutaInicialEP = ruta + "/storeExternalPerspective/";
+                    String rutaVideoEP = ruta + "/episodio" + i + j + "/ExternalPerspective.mov";
+                    int frameIEP = intValue(contenedor.get(i).get(j).getBounds().getX());
+                    int frameFEP = frameIEP + intValue(contenedor.get(i).get(j).getBounds().getWidth());
+                    int frameInicialEP = convercionPosicionFrame(frameIEP);
+                    int frameFinalEP = convercionPosicionFrame(frameFEP);
+                    makeVideo(rutaVideoEP, rutaInicialEP, frameInicialEP, frameFinalEP);
+
+                }
+            }
+
         }
-        
-        
-        
+
+
     }//GEN-LAST:event_obtenerEpisodiosBtnMouseClicked
 
     private void cambiarMuestraBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cambiarMuestraBtnMouseClicked
         // TODO add your handling code here:
-        
-              escribirJson(false);
-              escribirTags();
+
+        escribirJson(false);
+        escribirTags();
 
         VisualizacionMuestras visualizacionMuestras = new VisualizacionMuestras(direccion);
         visualizacionMuestras.setVisible(true);
         this.setVisible(false);
-        
+
     }//GEN-LAST:event_cambiarMuestraBtnMouseClicked
 
     private void eliminarMuestraBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_eliminarMuestraBtnMouseClicked
         // TODO add your handling code here:
-        
+
         escribirJson(true);
         VisualizacionMuestras visualizacionMuestras = new VisualizacionMuestras(direccion);
         visualizacionMuestras.setVisible(true);
@@ -2754,7 +2899,7 @@ public class Reproductor extends javax.swing.JFrame {
 
     private void jButtonDetenerMinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDetenerMinActionPerformed
         // TODO add your handling code here:
-       
+
         //jButton6ActionPerformed(evt);
     }//GEN-LAST:event_jButtonDetenerMinActionPerformed
 
@@ -2776,62 +2921,89 @@ public class Reproductor extends javax.swing.JFrame {
 
     private void jButtonDetenerMinMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonDetenerMinMouseClicked
         // TODO add your handling code here:
-       
-        jFrameMin2.setSize(431, 490);
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice defaultScreen = ge.getDefaultScreenDevice();
-        Rectangle rect = defaultScreen.getDefaultConfiguration().getBounds();
+            
         String x = String.valueOf(jComboBox1.getSelectedItem());
-        System.out.println("Opcion elegida: "+ x);
-        jFrameMin2.setLocationRelativeTo(null);
-        jFrameMin2.setVisible(true);
-        jFrameMin.setVisible(false);
+        System.out.println("Opcion elegida: " + x);
+        jFrameMin2.setSize(431, 490);
         
-               
+        jFrameMin2.setLocationRelativeTo(null);
+        jFrameMin.setVisible(false);
+        jFrameMin2.setVisible(true);
+        this.setVisible(false);
+        try {
+            cargaSentimientoAutomatico();
+        } catch (IndicoException ex) {
+            Logger.getLogger(Reproductor.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Reproductor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        
+        final Timer t = new Timer(1000, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+                if (time == 60) {
+                    System.out.println("tiempoFinal:"+ time);
+                    
+                    jFrameMin2.setVisible(false);
+                    
+                    ((Timer) e.getSource()).stop();
+                    
+               }
+                time+=1;
+                
+                
+                
+            }
+        });
+        t.start();
+        this.setVisible(true);
+
+        
+        
+
+        
+
         //jFrameMin2.setVisible(false);
         //setVisible(true);
-        
-        
-        
+
     }//GEN-LAST:event_jButtonDetenerMinMouseClicked
 
     private void jButtonDetenerMin1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonDetenerMin1MouseClicked
         // TODO add your handling code here:
-        
+
         String opcionRealizada = String.valueOf(jComboBox1.getSelectedItem());
-        System.out.println("Opcion: "+ opcionRealizada);
+        System.out.println("Opcion: " + opcionRealizada);
         setVisible(true);
         jFrameMin.setVisible(false);
-        
-        
-        
-        
+
+
     }//GEN-LAST:event_jButtonDetenerMin1MouseClicked
 
     private void jButtonDetenerMin2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonDetenerMin2MouseClicked
         // TODO add your handling code here:
-        
+
         String ntextoTagManual = textoEditarNuevo1.getText();
         textoTagManual = ntextoTagManual;
-                   for (int i = 0; i < tiempoParaTags; i++) {
-               for (int j = 0; j < 40; j++) {
-                   contenedor.get(i).get(j).setText(ntextoTagManual);
-                            }
-               
+        for (int i = 0; i < tiempoParaTags; i++) {
+            for (int j = 0; j < 40; j++) {
+                contenedor.get(i).get(j).setText(ntextoTagManual);
+            }
+
         }
-                   vistaTagManual.revalidate();
-                vistaTagManual.repaint();
-          jFrameMin1.setVisible(false);
+        vistaTagManual.revalidate();
+        vistaTagManual.repaint();
+        jFrameMin1.setVisible(false);
         setVisible(true);
-        
+
     }//GEN-LAST:event_jButtonDetenerMin2MouseClicked
 
     private void jButtonDetenerMin3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonDetenerMin3MouseClicked
         // TODO add your handling code here:
-        
+
         jFrameMin1.setVisible(false);
         setVisible(true);
-        
+
     }//GEN-LAST:event_jButtonDetenerMin3MouseClicked
 
     /**
@@ -2865,108 +3037,112 @@ public class Reproductor extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 //System.out.println("size: " + Toolkit.getDefaultToolkit().getScreenSize());
-                
 
             }
         });
     }
-  class PopUpDemo extends JPopupMenu {
-    JMenuItem anItem;
-    private int i, j;
-    public PopUpDemo(){
-    
-        
-        anItem = new JMenuItem(new AbstractAction("Eliminar Marca") {
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Hice click en eliminar");
-                vistaTagManual.getComponent(i).setBounds(new Rectangle(0, 0, 0, 0));
-                vistaTagManual.revalidate();
-                vistaTagManual.repaint();
-    }
-});
-        //tag.;
-     
-        add(anItem);
-        
-        
-        
-    }
-    public void setI(int iN){
-        this.i = iN;
-    
-    }
-    public void setJ(int jN){
-        this.j = jN;
-    }
-    
-}
 
-    class AdapterForTag extends MouseAdapter{
-    private int id, idContenedor;
-        @Override
-        public void mouseClicked (MouseEvent e){
-            System.out.println("FUI CLICKEADO");
-            System.out.println("id: "+ this.id);
-            System.out.println("contenedor: "+ this.idContenedor);
-            
-            
-            
-        
+    class PopUpDemo extends JPopupMenu {
+
+        JMenuItem anItem;
+        private int i, j;
+
+        public PopUpDemo() {
+
+            anItem = new JMenuItem(new AbstractAction("Eliminar Marca") {
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("Hice click en eliminar");
+                    vistaTagManual.getComponent(i).setBounds(new Rectangle(0, 0, 0, 0));
+                    vistaTagManual.revalidate();
+                    vistaTagManual.repaint();
+                }
+            });
+            //tag.;
+
+            add(anItem);
+
         }
-        public void test(int i, int j){
-          
+
+        public void setI(int iN) {
+            this.i = iN;
+
+        }
+
+        public void setJ(int jN) {
+            this.j = jN;
+        }
+
+    }
+
+    class AdapterForTag extends MouseAdapter {
+
+        private int id, idContenedor;
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            System.out.println("FUI CLICKEADO");
+            System.out.println("id: " + this.id);
+            System.out.println("contenedor: " + this.idContenedor);
+
+        }
+
+        public void test(int i, int j) {
+
             this.id = i;
             this.idContenedor = j;
-        
-        }
-        @Override
-        public void mousePressed(MouseEvent e){
-             if (e.isPopupTrigger())
-                 doPop(e);
-         }
-         @Override
-         public void mouseReleased(MouseEvent e){
-             if (e.isPopupTrigger())
-                 doPop(e);
-         }
 
-         private void doPop(MouseEvent e){
-             PopUpDemo menu = new PopUpDemo();
-             menu.setI(this.id);
-             menu.setJ(this.idContenedor);
-             menu.show(e.getComponent(), e.getX(), e.getY());
-         }
-    
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            if (e.isPopupTrigger()) {
+                doPop(e);
+            }
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            if (e.isPopupTrigger()) {
+                doPop(e);
+            }
+        }
+
+        private void doPop(MouseEvent e) {
+            PopUpDemo menu = new PopUpDemo();
+            menu.setI(this.id);
+            menu.setJ(this.idContenedor);
+            menu.show(e.getComponent(), e.getX(), e.getY());
+        }
+
     }
+
     class MyMouseAdapter extends MouseAdapter {
 
         private int innerX, innerY, id, idContenedor;
         //false = aun no se le asignan bonds
         //true = ya se le asignan bonds
         private boolean estado = false;
-        
 
         @Override
         public void mousePressed(MouseEvent e) {
             //System.out.println("PRIMER EVENTO: mousePressed");
             //SE CONSIGUE LA POSICIÓN DEL MOUSE (ACA PODRIA LIMITAR EL ESPACIO)
-            
+
             x = e.getX();
             y = e.getY();
             innerX = x;
             innerY = y;
             width = 0;
             height = 0;
-            System.out.println("pos que sale de mouse presionado "+ innerX);
+            System.out.println("pos que sale de mouse presionado " + innerX);
             int frame = convercionPosicionFrame(innerX);
             String tiempo = calculoTiempo(frame);
             inicioTiempoTag.setVisible(true);
             finTiempoTag.setVisible(true);
             inicioTiempoTag.setText(tiempo);
-            
 
             drawRect = true;
-            
+
         }
 
         @Override
@@ -2976,7 +3152,6 @@ public class Reproductor extends javax.swing.JFrame {
 
             drawRect = true;
             vistaTagManual.repaint();
-            
 
         }
 
@@ -2992,16 +3167,16 @@ public class Reproductor extends javax.swing.JFrame {
             //System.out.println("y: " + y);
             //System.out.println("widtg: " + width);
             //System.out.println("height: " + height);
-            if(!this.estado){int numTag = tagsPorMinuto.get(minutos);
-            vistaTagManual.getComponent(numTag).setBounds(x, y, width, height);
-            System.out.println("x: " + vistaTagManual.getComponent(numTag).getBounds());
-          
-            tagsPorMinuto.set(minutos, numTag + 1);
-            inicioTiempoTag.setVisible(false);
-            finTiempoTag.setVisible(false);
-          
+            if (!this.estado) {
+                int numTag = tagsPorMinuto.get(minutos);
+                vistaTagManual.getComponent(numTag).setBounds(x, y, width, height);
+                System.out.println("x: " + vistaTagManual.getComponent(numTag).getBounds());
+
+                tagsPorMinuto.set(minutos, numTag + 1);
+                inicioTiempoTag.setVisible(false);
+                finTiempoTag.setVisible(false);
+
             }
-            
 
         }
 
@@ -3035,14 +3210,12 @@ public class Reproductor extends javax.swing.JFrame {
 
             }
             int frameTemp = 0;
-            
-             frameTemp = convercionPosicionFrame(x+width);
-            
-            
+
+            frameTemp = convercionPosicionFrame(x + width);
+
             String tiempoTempo = calculoTiempo(frameTemp);
             finTiempoTag.setText(tiempoTempo);
-            
-            
+
         }
 
     }
