@@ -18,6 +18,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.List;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
@@ -350,6 +351,22 @@ public class Reproductor extends javax.swing.JFrame {
         System.out.println("Lista en la pos 0: " + frameFinal);
 
         return frameFinal;
+
+    }
+        public int convercionFramePosicion(int frame) {
+        System.out.println("pos que llega a conversion: " + frame);
+        int posFinal = 0;
+        boolean first = true;
+            for (int i = 0; i < lista.length; i++) {
+                if(frame == lista[i] && first == true){
+                    first = false;
+                    posFinal = lista[i];
+                }
+            }
+        
+        System.out.println("Lista en la pos 0: " + posFinal);
+
+        return posFinal;
 
     }
 
@@ -2921,8 +2938,88 @@ public class Reproductor extends javax.swing.JFrame {
 
     private void jButtonDetenerMinMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonDetenerMinMouseClicked
         // TODO add your handling code here:
-            
+        ArrayList<Integer> ejemploLista = new ArrayList<Integer>();
+        ejemploLista.add(30);
+        ejemploLista.add(40);
+        ejemploLista.add(50);
+        ejemploLista.add(60);
+        ejemploLista.add(70);
+        ejemploLista.add(80);
+        ejemploLista.add(90);
+        
+        boolean detente = true;
         String x = String.valueOf(jComboBox1.getSelectedItem());
+        //felicidad, tristeza, enfado, miedo, sorpresa, neutro
+        int numeroi=0;
+        int numerof = 0;
+        
+        if(x == "felicidad"){
+        int n = felicidad3.size()-1;
+        int temporal = 0;
+        while(detente){
+            
+            numeroi = (int) (Math.random() * n) + 1;
+        temporal = n-numeroi;
+        if(temporal>0){
+            
+            detente= false;
+        }
+        
+        
+        }
+        detente=true;
+         while(detente){
+            
+            numerof = (int) (Math.random() * n) + 1;
+        temporal = n+numerof;
+        if(temporal<599){
+            
+            detente= false;
+        }
+        
+        
+        }
+         int posInit = convercionFramePosicion(numeroi);
+         int posFin = convercionFramePosicion(numerof);
+         
+                 for (int i = 0; i < tiempoParaTags; i++) {
+            for (int j = 0; j < 40; j++) {
+            
+            contenedor.get(i).get(j).setBounds(new Rectangle(posInit, -4, posInit+posFin, 52));
+            
+            
+            
+            
+            }}
+         
+        }
+        
+        
+        
+
+        if(x== "tristeza"){
+        
+        }
+        if(x == "enfado"){
+        }
+        if(x== "miedo"){
+        }
+        if(x=="sorpresa"){
+        
+        
+        }
+        if(x=="neutro"){
+            
+            
+           for (int i = 0; i < tiempoParaTags; i++) {
+            for (int j = 0; j < 40; j++) {
+            
+            contenedor.get(i).get(j).setBounds(new Rectangle(0, 0, 0, 0));
+            
+            
+            
+            }}
+        }
         System.out.println("Opcion elegida: " + x);
         jFrameMin2.setSize(431, 490);
         
@@ -2932,6 +3029,13 @@ public class Reproductor extends javax.swing.JFrame {
         this.setVisible(false);
         try {
             cargaSentimientoAutomatico();
+            
+            for (int i = 0; i < felicidad1.size(); i++) {
+                System.out.println("<Felicidad>: ");
+                System.out.println(felicidad1.get(i));
+            }
+            
+            
         } catch (IndicoException ex) {
             Logger.getLogger(Reproductor.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
