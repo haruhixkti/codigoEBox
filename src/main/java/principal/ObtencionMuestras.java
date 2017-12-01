@@ -206,7 +206,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     /**
      *
      */
-    public static int MAX_HEIGHT = 300;
+    public static int MAX_HEIGHT = 500;
     /**
      * Interval between which the image needs to be captured.
      */
@@ -273,6 +273,11 @@ public class ObtencionMuestras extends javax.swing.JFrame {
 
         initComponents();
         creacionCarpetas();
+//        jButton6.setVisible(false);
+        jButton3.setVisible(false);
+        jButton5.setVisible(false);
+        jButton4.setVisible(false);
+        //jButton2.setVisible(false);
 
 
     }
@@ -501,17 +506,14 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         jButton5 = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         jSeparator2 = new javax.swing.JSeparator();
-        jButton6 = new javax.swing.JButton();
-        cargando = new javax.swing.JLabel();
         jButton4 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         jButton8 = new javax.swing.JButton();
+        numeroDeMuestras = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         jLabel15 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
@@ -627,9 +629,9 @@ public class ObtencionMuestras extends javax.swing.JFrame {
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addGap(26, 26, 26)
                 .addComponent(Face, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(43, 43, 43)
-                .addComponent(Activity, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(37, 37, 37)
+                .addGap(18, 18, 18)
+                .addComponent(Activity, javax.swing.GroupLayout.PREFERRED_SIZE, 364, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(Externa, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(18, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
@@ -658,16 +660,17 @@ public class ObtencionMuestras extends javax.swing.JFrame {
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel22)
                     .addComponent(jLabel23))
-                .addGap(24, 24, 24)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                        .addComponent(Activity, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(72, 72, 72))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(Externa, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(Face, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(30, 30, 30))))
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addGap(24, 24, 24)
+                        .addComponent(Externa, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addGap(33, 33, 33)
+                        .addComponent(Activity, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(Face, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(30, 30, 30))
         );
 
         javax.swing.GroupLayout jFrameMin1Layout = new javax.swing.GroupLayout(jFrameMin1.getContentPane());
@@ -764,28 +767,6 @@ public class ObtencionMuestras extends javax.swing.JFrame {
 
         jSeparator2.setBackground(new java.awt.Color(200, 230, 201));
 
-        jButton6.setBackground(new java.awt.Color(56, 142, 60));
-        jButton6.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
-        jButton6.setForeground(new java.awt.Color(255, 255, 255));
-        jButton6.setText("Detener captura");
-        jButton6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
-        jButton6.setContentAreaFilled(false);
-        jButton6.setFocusPainted(false);
-        jButton6.setOpaque(true);
-        jButton6.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton6MouseClicked(evt);
-            }
-        });
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
-            }
-        });
-
-        cargando.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
-        cargando.setForeground(new java.awt.Color(255, 255, 255));
-
         jButton4.setBackground(new java.awt.Color(121, 85, 72));
         jButton4.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
         jButton4.setForeground(new java.awt.Color(255, 255, 255));
@@ -833,29 +814,21 @@ public class ObtencionMuestras extends javax.swing.JFrame {
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel12)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(cargando)
-                        .addGap(141, 141, 141))))
+                        .addGap(141, 378, Short.MAX_VALUE))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(53, 53, 53)
-                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(80, 80, 80))
+                .addGap(403, 403, 403))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(46, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel12)
-                    .addComponent(cargando))
+                .addComponent(jLabel12)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addGap(75, 75, 75)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(66, 66, 66)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(55, 55, 55)
@@ -883,7 +856,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
 
         jLabel7.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(33, 33, 33));
-        jLabel7.setText("LISTA DE MUESTRAS CAPTURADAS");
+        jLabel7.setText("NÚMERO DE MUESTRAS CAPTURADAS");
 
         jButton1.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
         jButton1.setText("Análizar");
@@ -895,43 +868,6 @@ public class ObtencionMuestras extends javax.swing.JFrame {
                 jButton1ActionPerformed(evt);
             }
         });
-
-        jTable1.setAutoCreateRowSorter(true);
-        jTable1.setFont(new java.awt.Font("Roboto", 0, 10)); // NOI18N
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "CÓDIGO MUESTRA", "DURACIÓN MUESTRA"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jTable1.setGridColor(new java.awt.Color(255, 255, 255));
-        jTable1.setIntercellSpacing(new java.awt.Dimension(5, 5));
-        jTable1.setRowHeight(25);
-        jTable1.setSelectionBackground(new java.awt.Color(200, 230, 201));
-        jScrollPane2.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setResizable(false);
-            jTable1.getColumnModel().getColumn(0).setPreferredWidth(10);
-            jTable1.getColumnModel().getColumn(1).setResizable(false);
-            jTable1.getColumnModel().getColumn(1).setPreferredWidth(10);
-        }
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/Imagen1.png"))); // NOI18N
 
@@ -953,6 +889,9 @@ public class ObtencionMuestras extends javax.swing.JFrame {
             }
         });
 
+        numeroDeMuestras.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
+        numeroDeMuestras.setForeground(new java.awt.Color(33, 33, 33));
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -972,8 +911,8 @@ public class ObtencionMuestras extends javax.swing.JFrame {
                         .addGap(145, 145, 145)
                         .addComponent(jLabel7))
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 627, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(316, 316, 316)
+                        .addComponent(numeroDeMuestras, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
@@ -983,17 +922,17 @@ public class ObtencionMuestras extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel7)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 492, Short.MAX_VALUE)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(78, 78, 78))
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(74, 74, 74)
+                        .addGap(36, 36, 36)
+                        .addComponent(numeroDeMuestras, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(338, 338, 338)
                         .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(110, Short.MAX_VALUE))))
+                        .addContainerGap(139, Short.MAX_VALUE))))
         );
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -1134,7 +1073,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
                                 timeFRC = System.currentTimeMillis();
                                 String ruta = storeExternalPerspective + timeFRC + ".jpg";
                                 ImageIO.write(image3, "jpg", new File(ruta));
-                                //copyImage(ruta, ruta);
+                                
                                 Thread.sleep(captureInterval);
 
                             } catch (InterruptedException ex) {
@@ -1221,10 +1160,11 @@ public class ObtencionMuestras extends javax.swing.JFrame {
                             BufferedImage img = rt.createScreenCapture(new Rectangle(screenWidth, screenHeight));
 
                             timeAR = System.currentTimeMillis();
+                            String nombreParaCopia =  nombreMuestraActual + "/" + "storeActivityRenderVisualizacion" + "/"+ String.valueOf(timeAR) + ".jpeg";
                             String name = storeActivityRender + String.valueOf(timeAR) + ".jpeg";
                             ImageIO.write(img, "jpeg", new File(name));
 
-                            //copyImage(name, name);
+                            copyImage(name, nombreParaCopia);
                             // System.out.println(record);
                             Thread.sleep(captureInterval);
                         }
@@ -1273,7 +1213,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         
             if (webcamPC.isOpen()) {
                 System.out.println("Despues de abrir la camara1");
-                cargando.setText("Grabando");
+
                 t1.start();
                 t2.start();
                 t3.start();
@@ -1298,13 +1238,13 @@ public class ObtencionMuestras extends javax.swing.JFrame {
 
     }//GEN-LAST:event_jButton2MouseClicked
 
-    private void jButton6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton6MouseClicked
+    private void jButtonDetenerMinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDetenerMinActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton6MouseClicked
-
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
-
+        
+        setVisible(true);
+        jFrameMin.setVisible(false);
+        
+        
         isRunning = false;
         System.out.println("Deteniendo capturas");
 
@@ -1321,16 +1261,13 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         int tiempo = cantidadFrame / 10;
         System.out.println("Segundos que deberia durar: " + tiempo + " segundos");
         // jLabel6.setText(String.valueOf(tiempo)+" segundos");
-        cargando.setText(String.valueOf(tiempo));
 
-
-    }//GEN-LAST:event_jButton6ActionPerformed
-
-    private void jButtonDetenerMinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDetenerMinActionPerformed
-        // TODO add your handling code here:
-        setVisible(true);
-        jFrameMin.setVisible(false);
-        jButton6ActionPerformed(evt);
+        
+        jButton3.setVisible(true);
+        jButton5.setVisible(true);
+        jButton4.setVisible(true);
+        jButton2.setVisible(false);
+        
     }//GEN-LAST:event_jButtonDetenerMinActionPerformed
 
     private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
@@ -1353,7 +1290,8 @@ public class ObtencionMuestras extends javax.swing.JFrame {
                     gate2.await();
                     //do stuff 
                     System.out.println("Entre al hilo Vista previa activyty");
-                    fA = new File(storeActivityRender);
+                    String tamanito =  nombreMuestraActual + "/" + "storeActivityRenderVisualizacion" + "/";
+                    fA = new File(tamanito);
                     fileLstA = fA.listFiles();
 
                     System.out.println("cantidad de imagenes: " + fileLstA.length);
@@ -1504,12 +1442,17 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
         // TODO add your handling code here:
 
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        model.addRow(new Object[]{codigoMuestra, tiempoTotal});
+       // DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        //model.addRow(new Object[]{codigoMuestra, tiempoTotal});
+        
+        numeroDeMuestras.setText(String.valueOf(cantidadMuestras));
         rutasMuestras.add(nombreMuestraActual);
         duracionMuestras.add(tiempoTotal);
         nombreMuestras.add("Muestra" + String.valueOf(cantidadMuestras));
-
+        jButton3.setVisible(false);
+        jButton5.setVisible(false);
+        jButton4.setVisible(false);
+        jButton2.setVisible(true);
 
     }//GEN-LAST:event_jButton4MouseClicked
 
@@ -1534,6 +1477,10 @@ public class ObtencionMuestras extends javax.swing.JFrame {
             // File permission problems are caught here.
             System.err.println(x);
         }
+         jButton3.setVisible(false);
+        jButton5.setVisible(false);
+        jButton4.setVisible(false);
+        jButton2.setVisible(true);
     }//GEN-LAST:event_jButton5MouseClicked
 
     private void jButton8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton8MouseClicked
@@ -1555,6 +1502,25 @@ public class ObtencionMuestras extends javax.swing.JFrame {
      * @param copyPath
      */
     public static void copyImage(String filePath, String copyPath) {
+        int numerLargo = 400;
+        int numerAlto = 400;
+        //heihg: altura
+        BufferedImage bimage = loadImage(filePath);
+        if (bimage.getHeight() > bimage.getWidth()) {
+            int heigt = (bimage.getHeight() * numerLargo) / bimage.getWidth();
+            bimage = resize(bimage, numerLargo, heigt);
+            int width = (bimage.getWidth() * numerAlto) / bimage.getHeight();
+            bimage = resize(bimage, width, numerAlto);
+        } else {
+            int width = (bimage.getWidth() * numerAlto) / bimage.getHeight();
+            bimage = resize(bimage, width, numerAlto);
+            int heigt = (bimage.getHeight() * numerLargo) / bimage.getWidth();
+            bimage = resize(bimage, numerLargo, heigt);
+        }
+        saveImage(bimage, copyPath);
+    }
+    
+       /* public static void copyImage(String filePath, String copyPath) {
         BufferedImage bimage = loadImage(filePath);
         if (bimage.getHeight() > bimage.getWidth()) {
             int heigt = (bimage.getHeight() * MAX_WIDTH) / bimage.getWidth();
@@ -1568,7 +1534,7 @@ public class ObtencionMuestras extends javax.swing.JFrame {
             bimage = resize(bimage, MAX_WIDTH, heigt);
         }
         saveImage(bimage, copyPath);
-    }
+    }*/
 
     /*
     Este método se utiliza para cargar la imagen de disco
@@ -1797,13 +1763,11 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     private javax.swing.JLabel Activity;
     private javax.swing.JLabel Externa;
     private javax.swing.JLabel Face;
-    private javax.swing.JLabel cargando;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButtonDetenerMin;
     private javax.swing.JFrame jFrameMin;
@@ -1832,9 +1796,8 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JLabel numeroDeMuestras;
     // End of variables declaration//GEN-END:variables
 }

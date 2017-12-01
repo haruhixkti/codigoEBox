@@ -107,6 +107,7 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
  
         
         leerJson();
+        
         busquedaCamaras();
 
     }
@@ -129,8 +130,9 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
         jCheckBox1 = new javax.swing.JCheckBox();
         jCheckBox4 = new javax.swing.JCheckBox();
         jCheckBox5 = new javax.swing.JCheckBox();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jLabel21 = new javax.swing.JLabel();
+        Nombre1 = new javax.swing.JLabel();
+        Nombre2 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
@@ -211,51 +213,26 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
             }
         });
 
-        jTable1.setAutoCreateRowSorter(true);
-        jTable1.setFont(new java.awt.Font("Roboto", 0, 10)); // NOI18N
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
+        jLabel21.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
+        jLabel21.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel21.setText("Camaras detectadas");
 
-            },
-            new String [] {
-                "CAMARAS DETECTADAS"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false
-            };
+        Nombre1.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
+        Nombre1.setForeground(new java.awt.Color(255, 255, 255));
+        Nombre1.setText("Perspectiva externa");
 
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jTable1.setGridColor(new java.awt.Color(255, 255, 255));
-        jTable1.setIntercellSpacing(new java.awt.Dimension(5, 5));
-        jTable1.setRowHeight(25);
-        jTable1.setSelectionBackground(new java.awt.Color(200, 230, 201));
-        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jTable1MouseClicked(evt);
-            }
-        });
-        jScrollPane2.setViewportView(jTable1);
+        Nombre2.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
+        Nombre2.setForeground(new java.awt.Color(255, 255, 255));
+        Nombre2.setText("Perspectiva externa");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(98, 98, 98)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 411, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(98, 98, 98)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel12)
                             .addComponent(jLabel18)
@@ -264,7 +241,14 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jCheckBox4)
                             .addComponent(jCheckBox1)
-                            .addComponent(jCheckBox5))))
+                            .addComponent(jCheckBox5)))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(229, 229, 229)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(Nombre2)
+                                .addComponent(Nombre1))
+                            .addComponent(jLabel21))))
                 .addContainerGap(173, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -274,17 +258,21 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel12)
                     .addComponent(jCheckBox5))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel18)
                     .addComponent(jCheckBox1))
                 .addGap(69, 69, 69)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel20)
-                    .addComponent(jCheckBox4))
-                .addGap(150, 150, 150)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(175, 175, 175))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jCheckBox4)
+                    .addComponent(jLabel20))
+                .addGap(89, 89, 89)
+                .addComponent(jLabel21)
+                .addGap(41, 41, 41)
+                .addComponent(Nombre1)
+                .addGap(27, 27, 27)
+                .addComponent(Nombre2)
+                .addGap(185, 185, 185))
         );
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, 720, 730));
@@ -494,11 +482,6 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jCheckBox5ActionPerformed
 
-    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
-        // TODO add your handling code here:
-     
-    }//GEN-LAST:event_jTable1MouseClicked
-
     private void jCheckBox5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jCheckBox5MouseClicked
         // TODO add your handling code here:
         
@@ -527,23 +510,22 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
         
     List<Webcam> webcamTest = Webcam.getWebcams();
     
-    DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+    /*DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         for (int i = 0; i < webcamTest.size(); i++) {
             model.addRow(new Object[]{webcamTest.get(i).getName()});
-        }
-        
+        }*/
+        Nombre1.setText(webcamTest.get(0).getName());
+        Nombre2.setText(webcamTest.get(1).getName());
     
     
     }
     public void leerJson() {
-         
+         System.out.println("Entre a leer jjson");
         //JSON parser object to parse read file
-        if(objeto == 0){
-        objeto+=1;
-        }
-        else{
+    
+        
         JSONParser jsonParser = new JSONParser();
-
+            System.out.println("direccion:"+direccion);
         try (FileReader reader = new FileReader(direccion+"informacionProyecto.json")) {
             //Read JSON file
             Object obj = jsonParser.parse(reader);
@@ -561,20 +543,25 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-    }
+    
 
     }
     public void parseEmployeeObject(JSONObject employee) {
+        
+    if(objeto == 0){
+        objeto+=1;
+        }
+    else{
         //Get employee object within list
         JSONObject employeeObject = (JSONObject) employee.get("proyecto");
-
+        System.out.println("employeeObject: "+employeeObject);
         //Get employee first name
         nombreProyecto = (String) employeeObject.get("nombre");
         System.out.println("NOMBRE leido: "+ nombreProyecto);
         ruta = (String) employeeObject.get("destino");
         codigoProyecto = (String) employeeObject.get("codigo");
         descripcionProyecto= (String) employeeObject.get("descripcion");
-        
+    }
 
     }
     public void escribirJson() {
@@ -665,6 +652,8 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel Nombre1;
+    private javax.swing.JLabel Nombre2;
     private javax.swing.JButton jButton1;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JCheckBox jCheckBox4;
@@ -678,6 +667,7 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -687,7 +677,5 @@ public class CreacionProyecto2 extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 }

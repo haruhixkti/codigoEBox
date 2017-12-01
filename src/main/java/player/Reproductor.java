@@ -71,6 +71,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import principal.VisualizacionMuestras;
 import java.util.Map.Entry;
+import javax.swing.JOptionPane;
 /**
  *
  * @author Katherine
@@ -1480,7 +1481,8 @@ public class Reproductor extends javax.swing.JFrame {
                 try {
                     gate.await();
                     // //System.out.println("--Comienzo grabaciones <ActivityRender> --");
-                    fA = new File(ruta + "/storeActivityRender/");
+                    //String nombreParaCopia =  nombreMuestraActual + "/" + "/storeActivityRenderVisualizacion/" + "/"+ String.valueOf(timeAR) + ".jpeg";
+                    fA = new File(ruta + "/storeActivityRenderVisualizacion/");
                     fileLstA = fA.listFiles();
                     while (isRunning) {
 
@@ -1662,7 +1664,7 @@ public class Reproductor extends javax.swing.JFrame {
         minutero.setText(String.valueOf(minutos));
     }
 
-    public static void makeVideo(String movFile, String rutaInicial, int frameInicial, int frameFinal) {
+    public static void makeVideo(String movFile, String rutaInicial, int frameInicial, int frameFinal, int AWidht, int LHeight) {
         System.out.println("Creando video");
         //ruta + "/storeFaceRecorder/"
         JpegImagesToMovie imageToMovie = new JpegImagesToMovie();
@@ -1681,7 +1683,7 @@ public class Reproductor extends javax.swing.JFrame {
             System.exit(0);
         }
         try {
-            imageToMovie.doIt(screenWidth, screenHeight, (1000 / captureInterval),
+            imageToMovie.doIt(AWidht, LHeight, (1000 / captureInterval),
                     imgLst, oml);
         } catch (MalformedURLException ex) {
             Logger.getLogger(Reproductor.class.getName()).log(Level.SEVERE, null, ex);
@@ -2883,7 +2885,7 @@ neutral1
 
                     //makeVideo(rutaVideoFR,rutaInicialFR,frameInicialFR,frameFinalFR);
                     ////C:/Users/Katherine/Desktop/ReproductorMuestras/Muestra0/test1.mov"
-                    makeVideo(rutaVideoFR, rutaInicialFR, frameInicialFR, frameFinalFR);
+                    makeVideo(rutaVideoFR, rutaInicialFR, frameInicialFR, frameFinalFR, 320, 240);
 
                     ///activityRender
                     //ruta + "/storeActivityRender/"
@@ -2893,7 +2895,7 @@ neutral1
                     int frameFAR = frameIAR + intValue(contenedor.get(i).get(j).getBounds().getWidth());
                     int frameInicialAR = convercionPosicionFrame(frameIAR);
                     int frameFinalAR = convercionPosicionFrame(frameFAR);
-                    makeVideo(rutaVideoAR, rutaInicialAR, frameInicialAR, frameFinalAR);
+                    makeVideo(rutaVideoAR, rutaInicialAR, frameInicialAR, frameFinalAR,screenWidth, screenHeight );
                     ///Perspectiva Externa
                     //ruta + "/storeExternalPerspective"   
                     String rutaInicialEP = ruta + "/storeExternalPerspective/";
@@ -2902,14 +2904,15 @@ neutral1
                     int frameFEP = frameIEP + intValue(contenedor.get(i).get(j).getBounds().getWidth());
                     int frameInicialEP = convercionPosicionFrame(frameIEP);
                     int frameFinalEP = convercionPosicionFrame(frameFEP);
-                    makeVideo(rutaVideoEP, rutaInicialEP, frameInicialEP, frameFinalEP);
+                    makeVideo(rutaVideoEP, rutaInicialEP, frameInicialEP, frameFinalEP,640,480);
+                    
 
                 }
             }
 
         }
 
-
+       JOptionPane.showMessageDialog(null, "Muestra Guardada", "InfoBox: " + "Creacion Captura", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_obtenerEpisodiosBtnMouseClicked
 
     private void cambiarMuestraBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cambiarMuestraBtnMouseClicked
