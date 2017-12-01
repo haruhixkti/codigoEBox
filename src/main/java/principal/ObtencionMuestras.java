@@ -52,19 +52,58 @@ import org.json.simple.parser.ParseException;
  */
 public class ObtencionMuestras extends javax.swing.JFrame {
 
+    /**
+     *
+     */
     public static String storeMuestras = "muestras";
+
+    /**
+     *
+     */
     public static String storeMuestra = "muestra";
+
+    /**
+     *
+     */
     public static String storeActivityRender = "activityRender";
+
+    /**
+     *
+     */
     public static String storeFaceRecorder = "faceRecorder";
+
+    /**
+     *
+     */
     public static String storeExternalPerspective = "ExternalPerspective";
+
+    /**
+     *
+     */
     public boolean carpetaPrincipalCreada = false;
+
+    /**
+     *
+     */
     public int cantidadMuestras = 0;
     Webcam webcamPC, webcamCelu;
      List<Webcam> webcamTest;
     boolean isRunning = false;
     boolean repr = true;
+
+    /**
+     *
+     */
     public boolean activityRender = true;
+
+    /**
+     *
+     */
     public boolean faceRecorder = true;
+
+    /**
+     *
+     */
     public boolean externalPerspective = true;
     BufferedImage image2, image3;
     Thread t1, t2, t3;
@@ -74,15 +113,75 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     long tiempoFaceRecorderi, tiempoActivityRenderi, tiempoFaceRecorderf, tiempoActivityRenderf;
     String codigoMuestra, tiempoTotal;
 
-    public File fA, fF, fE;
-    public File[] fileLstA, fileLstF, fileLstE;
-    public ImageIcon icon, icon2;
+    /**
+     *
+     */
+    public File fA,
+
+    /**
+     *
+     */
+    fF,
+
+    /**
+     *
+     */
+    fE;
+
+    /**
+     *
+     */
+    public File[] fileLstA,
+
+    /**
+     *
+     */
+    fileLstF,
+
+    /**
+     *
+     */
+    fileLstE;
+
+    /**
+     *
+     */
+    public ImageIcon icon,
+
+    /**
+     *
+     */
+    icon2;
     //frames que han sido mostrados
+
+    /**
+     *
+     */
     public int frameSegundoA = 0;
+
+    /**
+     *
+     */
     public int frameSegundoF = 0;
+
+    /**
+     *
+     */
     public int frameSegundoE = 0;
+
+    /**
+     *
+     */
     public ArrayList<String> rutasMuestras = new ArrayList<>();
+
+    /**
+     *
+     */
     public ArrayList<String> nombreMuestras = new ArrayList<>();
+
+    /**
+     *
+     */
     public ArrayList<String> duracionMuestras = new ArrayList<>();
 
     /**
@@ -97,8 +196,16 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     public static int screenHeight = (int) Toolkit.getDefaultToolkit()
             .getScreenSize().getHeight();
     //Ancho máximo
+
+    /**
+     *
+     */
     public static int MAX_WIDTH = 320;
     //Alto máximo
+
+    /**
+     *
+     */
     public static int MAX_HEIGHT = 300;
     /**
      * Interval between which the image needs to be captured.
@@ -107,17 +214,57 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     // 20 FPS -> (50)
     // 25 FPS -> (40)
     public static int captureInterval = 100;
+
+    /**
+     *
+     */
     public static int fps = 10;
     String nombreCarpeta, nombreMuestraActual;
+
+    /**
+     *
+     */
     public boolean AR = false;
+
+    /**
+     *
+     */
     public boolean FR = false;
+
+    /**
+     *
+     */
     public boolean PE = false;
+
+    /**
+     *
+     */
     public int objeto = 0;
-    public String nombreProyecto, codigoProyecto, descripcionProyecto, ruta;
+
+    /**
+     *
+     */
+    public String nombreProyecto,
+
+    /**
+     *
+     */
+    codigoProyecto,
+
+    /**
+     *
+     */
+    descripcionProyecto,
+
+    /**
+     *
+     */
+    ruta;
     private final String direccion;
 
     /**
-     * Creates new form VentanaPrincipal
+     * 
+     * @param dir 
      */
     public ObtencionMuestras(String dir) {
         System.out.println("<<<<<<OBTENCIÓN DE MUESTRAS>>>>>");
@@ -126,18 +273,13 @@ public class ObtencionMuestras extends javax.swing.JFrame {
 
         initComponents();
         creacionCarpetas();
-                this.setDefaultCloseOperation(this.DO_NOTHING_ON_CLOSE);
-        this.addWindowListener(new java.awt.event.WindowAdapter() {
-        @Override
-        public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-            
-            escribirJson();
-            System.exit(0);
-    }
-});
+
 
     }
 
+    /**
+     *
+     */
     public void leerJson() {
         //JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();
@@ -162,6 +304,10 @@ public class ObtencionMuestras extends javax.swing.JFrame {
 
     }
 
+    /**
+     *
+     * @param employee
+     */
     public void parseEmployeeObject(JSONObject employee) {
         //Get employee object within list
         if(objeto == 0){
@@ -199,6 +345,11 @@ public class ObtencionMuestras extends javax.swing.JFrame {
 
     }
 
+    /**
+     *
+     * @param elemento
+     * @return
+     */
     public boolean stringToBoolean(String elemento) {
         if (elemento == "true") {
             return true;
@@ -208,6 +359,9 @@ public class ObtencionMuestras extends javax.swing.JFrame {
 
     }
 
+    /**
+     *
+     */
     public void escribirJson() {
         JSONArray employeeList = new JSONArray();
         
@@ -261,6 +415,9 @@ public class ObtencionMuestras extends javax.swing.JFrame {
 
     }
 
+    /**
+     *
+     */
     public void creacionCarpetas() {
         /*
     |-muestras(carpeta)
@@ -1392,6 +1549,11 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton8ActionPerformed
 
+    /**
+     *
+     * @param filePath
+     * @param copyPath
+     */
     public static void copyImage(String filePath, String copyPath) {
         BufferedImage bimage = loadImage(filePath);
         if (bimage.getHeight() > bimage.getWidth()) {
@@ -1411,6 +1573,13 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     /*
     Este método se utiliza para cargar la imagen de disco
      */
+
+    /**
+     *
+     * @param pathName
+     * @return
+     */
+
     public static BufferedImage loadImage(String pathName) {
         BufferedImage bimage = null;
         try {
@@ -1424,6 +1593,13 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     /*
     Este método se utiliza para almacenar la imagen en disco
      */
+
+    /**
+     *
+     * @param bufferedImage
+     * @param pathName
+     */
+
     public static void saveImage(BufferedImage bufferedImage, String pathName) {
         try {
             String format = (pathName.endsWith(".png")) ? "png" : "jpg";
@@ -1438,6 +1614,15 @@ public class ObtencionMuestras extends javax.swing.JFrame {
     /*
     Este método se utiliza para redimensionar la imagen
      */
+
+    /**
+     *
+     * @param bufferedImage
+     * @param newW
+     * @param newH
+     * @return
+     */
+
     public static BufferedImage resize(BufferedImage bufferedImage, int newW, int newH) {
         int w = bufferedImage.getWidth();
         int h = bufferedImage.getHeight();
@@ -1449,6 +1634,11 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         return bufim;
     }
 
+    /**
+     *
+     * @param frameSegundo
+     * @return
+     */
     public String calculoTiempo(int frameSegundo) {
 
         String tiempoFinal = "";
@@ -1518,6 +1708,11 @@ public class ObtencionMuestras extends javax.swing.JFrame {
         return tiempoFinal;
     }
 
+    /**
+     *
+     * @param val
+     * @return
+     */
     static public String formatMillis(long val) {
         StringBuilder buf = new StringBuilder(20);
         String sgn = "";

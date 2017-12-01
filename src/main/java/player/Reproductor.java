@@ -177,28 +177,11 @@ public class Reproductor extends javax.swing.JFrame {
     int posMuestraElegida;
     public int frameX[];
     public ArrayList<Integer> felicidad1 = new ArrayList<Integer>();
-    public ArrayList<Integer> felicidad2 = new ArrayList<Integer>();
-    public ArrayList<Integer> felicidad3 = new ArrayList<Integer>();
-    
     public ArrayList<Integer> sorpresa1 = new ArrayList<Integer>();
-    public ArrayList<Integer> sorpresa2 = new ArrayList<Integer>();
-    public ArrayList<Integer> sorpresa3 = new ArrayList<Integer>();
-    
     public ArrayList<Integer> tristeza1 = new ArrayList<Integer>();
-    public ArrayList<Integer> tristeza2 = new ArrayList<Integer>();
-    public ArrayList<Integer> tristeza3 = new ArrayList<Integer>();
-    
     public ArrayList<Integer> temeroso1 = new ArrayList<Integer>();
-    public ArrayList<Integer> temeroso2 = new ArrayList<Integer>();
-    public ArrayList<Integer> temeroso3 = new ArrayList<Integer>();
-    
     public ArrayList<Integer> enojado1 = new ArrayList<Integer>();
-    public ArrayList<Integer> enojado2 = new ArrayList<Integer>();
-    public ArrayList<Integer> enojado3 = new ArrayList<Integer>();
-    
     public ArrayList<Integer> neutral1 = new ArrayList<Integer>();
-    public ArrayList<Integer> neutral2 = new ArrayList<Integer>();
-    public ArrayList<Integer> neutral3 = new ArrayList<Integer>();
     
     
          
@@ -1806,106 +1789,142 @@ public class Reproductor extends javax.swing.JFrame {
                         
                         if(e.getKey().toString()=="Happy"){
                         System.out.println("["+e.getKey() + "=" + e.getValue()+"]");    
-                            if(e.getValue()>=0.1 && e.getValue()<0.2){
-                            felicidad1.add(i);
-                            }
-                            if(e.getValue()>=0.2 && e.getValue()<0.3){
-                            felicidad2.add(i);
-                            }
+                
                             
-                            if(e.getValue()>=0.3){
-                            felicidad3.add(i);
-                            }
+                            felicidad1.add(i);
+                            
                             
                         }
                         
                         if(e.getKey().toString()=="Surprise"){
                         System.out.println("["+e.getKey() + "=" + e.getValue()+"]");    
-                            if(e.getValue()>=0.1 && e.getValue()<0.2){
+                            
                                 sorpresa1.add(i);
-                            }
-                            if(e.getValue()>=0.2 && e.getValue()<0.3){
-                            sorpresa2.add(i);
-                                }
-                            if(e.getValue()>=0.3){
-                                sorpresa3.add(i);
-                            }
+                                 
                         
                         }
                         
                         if(e.getKey().toString()=="Fear"){
                         System.out.println("["+e.getKey() + "=" + e.getValue()+"]");    
-                            if(e.getValue()>=0.1 && e.getValue()<0.2){
-                            temeroso1.add(i);
-                            }
-                            if(e.getValue()>=0.2 && e.getValue()<0.3){
-                            temeroso2.add(i);
-                            }
-                            if(e.getValue()>=0.3){
-                               temeroso3.add(i);
-                            }                        
+                     
+                            
+                               temeroso1.add(i);
+                            
                         }
                         
                         if(e.getKey().toString()=="Angry"){
                         System.out.println("["+e.getKey() + "=" + e.getValue()+"]");    
-                            if(e.getValue()>=0.1 && e.getValue()<0.2){
+                           
                                 enojado1.add(i);
-                            }
-                            if(e.getValue()>=0.2 && e.getValue()<0.3){
-                                enojado2.add(i);
-                            }
-                            if(e.getValue()>=0.3){
-                                enojado3.add(i);
-                            }                        
+                           
                         }
                         
                         if(e.getKey().toString()=="Neutral"){
                         System.out.println("["+e.getKey() + "=" + e.getValue()+"]");    
-                            if(e.getValue()>=0.1 && e.getValue()<0.2){
+                   
+                           
                             neutral1.add(i);
-                            }
-                            if(e.getValue()>=0.2 && e.getValue()<0.3){
-                            neutral2.add(i);
-                            }
-                            if(e.getValue()>=0.3){
-                            neutral3.add(i);
                             
-                            }                        
+                           
                         }
                         if(e.getKey().toString()=="Sad"){
                         System.out.println("["+e.getKey() + "=" + e.getValue()+"]");    
-                            if(e.getValue()>=0.1 && e.getValue()<0.2){
+                    
+                           
                                 tristeza1.add(i);
-                            }
-                            if(e.getValue()>=0.2 && e.getValue()<0.3){
-                                tristeza2.add(i);
-                            }
-                            if(e.getValue()>=0.3){
-                                tristeza3.add(i);
                             
-                            }                        
+                                                   
                         }
                     }
              
         }
-         
-         
-         
-         
+         escibirTagAutomaticos();
+
     
+    }
+    public void escibirTagAutomaticos(){
+        //Anger, Sadness, Surprise, Fear, Happiness, and Neutral.
+        JSONArray employeeList = new JSONArray();
+
+        
+
+        JSONObject employeeDetails1 = new JSONObject();
+        
+/*
+felicidad1
+sorpresa1 
+tristeza1 
+temeroso1 
+enojado1 
+neutral1
+        */for (int i = 0; i < enojado1.size(); i++) {
+            employeeDetails1.put(String.valueOf(i),String.valueOf(enojado1.get(i)) );
+        }
+        JSONObject employeeObject = new JSONObject();
+        employeeObject.put("Anger", employeeDetails1);
+        employeeList.add(employeeObject);
+
+        ///
+        
+        JSONObject employeeDetails2 = new JSONObject();
+        for (int i = 0; i < tristeza1.size(); i++) {
+            employeeDetails2.put(String.valueOf(i),String.valueOf(tristeza1.get(i)) );
+        }
+        JSONObject employeeObject2 = new JSONObject();
+        employeeObject2.put("Sadnes", employeeDetails2);
+        employeeList.add(employeeObject2);
+        
+        ///
+        
+        JSONObject employeeDetails3 = new JSONObject();
+        for (int i = 0; i < sorpresa1.size(); i++) {
+            employeeDetails3.put(String.valueOf(i),String.valueOf(sorpresa1.get(i)) );
+        }
+        JSONObject employeeObject3 = new JSONObject();
+        employeeObject3.put("Surprise", employeeDetails3);
+        employeeList.add(employeeObject3);
+        ///
+        
+        
+        JSONObject employeeDetails4 = new JSONObject();
+        for (int i = 0; i < temeroso1.size(); i++) {
+            employeeDetails4.put(String.valueOf(i),String.valueOf(temeroso1.get(i)) );
+        }
+        JSONObject employeeObject4 = new JSONObject();
+        employeeObject4.put("Fear", employeeDetails4);
+        employeeList.add(employeeObject4);
+        
+        
+        JSONObject employeeDetails5 = new JSONObject();
+      for (int i = 0; i < felicidad1.size(); i++) {
+            employeeDetails5.put(String.valueOf(i),String.valueOf(felicidad1.get(i)) );
+        }
+        JSONObject employeeObject5 = new JSONObject();
+        employeeObject5.put("Happiness", employeeDetails5);
+        employeeList.add(employeeObject5);
+        
+        
+        JSONObject employeeDetails6 = new JSONObject();
+         for (int i = 0; i < neutral1.size(); i++) {
+            employeeDetails6.put(String.valueOf(i),String.valueOf(neutral1.get(i)) );
+        }
+        JSONObject employeeObject6 = new JSONObject();
+        employeeObject6.put("neutral", employeeDetails6);
+        employeeList.add(employeeObject6);
+        
+
+
+
+        try (FileWriter file = new FileWriter(ruta + "/informacionTagAutomaticos.json")) {
+
+            file.write(employeeList.toJSONString());
+            file.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     
-        /* String filePath = "C:\\Users\\Katherine\\Desktop\\kathy.jpg";
-        Indico indico = new Indico("aea60a29b92333183d284f087d633b22");
-       
-        System.out.println(result);*/
-         
-         
-         
-         
-         
-//    ArrayList<String> duracionMuestras = new ArrayList<>();
-    
-    } 
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -2938,88 +2957,17 @@ public class Reproductor extends javax.swing.JFrame {
 
     private void jButtonDetenerMinMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonDetenerMinMouseClicked
         // TODO add your handling code here:
-        ArrayList<Integer> ejemploLista = new ArrayList<Integer>();
-        ejemploLista.add(30);
-        ejemploLista.add(40);
-        ejemploLista.add(50);
-        ejemploLista.add(60);
-        ejemploLista.add(70);
-        ejemploLista.add(80);
-        ejemploLista.add(90);
+    
         
-        boolean detente = true;
-        String x = String.valueOf(jComboBox1.getSelectedItem());
+ 
+         
+         
+         
+        
+        //int numeroi = (int) (Math.random() * n) + 1;
+         
         //felicidad, tristeza, enfado, miedo, sorpresa, neutro
-        int numeroi=0;
-        int numerof = 0;
-        
-        if(x == "felicidad"){
-        int n = felicidad3.size()-1;
-        int temporal = 0;
-        while(detente){
-            
-            numeroi = (int) (Math.random() * n) + 1;
-        temporal = n-numeroi;
-        if(temporal>0){
-            
-            detente= false;
-        }
-        
-        
-        }
-        detente=true;
-         while(detente){
-            
-            numerof = (int) (Math.random() * n) + 1;
-        temporal = n+numerof;
-        if(temporal<599){
-            
-            detente= false;
-        }
-        
-        
-        }
-         int posInit = convercionFramePosicion(numeroi);
-         int posFin = convercionFramePosicion(numerof);
-         
-                 for (int i = 0; i < tiempoParaTags; i++) {
-            for (int j = 0; j < 40; j++) {
-            
-            contenedor.get(i).get(j).setBounds(new Rectangle(posInit, -4, posInit+posFin, 52));
-            
-            
-            
-            
-            }}
-         
-        }
-        
-        
-        
 
-        if(x== "tristeza"){
-        
-        }
-        if(x == "enfado"){
-        }
-        if(x== "miedo"){
-        }
-        if(x=="sorpresa"){
-        
-        
-        }
-        if(x=="neutro"){
-            
-            
-           for (int i = 0; i < tiempoParaTags; i++) {
-            for (int j = 0; j < 40; j++) {
-            
-            contenedor.get(i).get(j).setBounds(new Rectangle(0, 0, 0, 0));
-            
-            
-            
-            }}
-        }
         System.out.println("Opcion elegida: " + x);
         jFrameMin2.setSize(431, 490);
         
@@ -3027,13 +2975,10 @@ public class Reproductor extends javax.swing.JFrame {
         jFrameMin.setVisible(false);
         jFrameMin2.setVisible(true);
         this.setVisible(false);
-        try {
+       try {
             cargaSentimientoAutomatico();
             
-            for (int i = 0; i < felicidad1.size(); i++) {
-                System.out.println("<Felicidad>: ");
-                System.out.println(felicidad1.get(i));
-            }
+        
             
             
         } catch (IndicoException ex) {
@@ -3043,33 +2988,9 @@ public class Reproductor extends javax.swing.JFrame {
         }
 
         
-        final Timer t = new Timer(1000, new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-
-                if (time == 60) {
-                    System.out.println("tiempoFinal:"+ time);
-                    
-                    jFrameMin2.setVisible(false);
-                    
-                    ((Timer) e.getSource()).stop();
-                    
-               }
-                time+=1;
-                
-                
-                
-            }
-        });
-        t.start();
+        //t.start();
+        jFrameMin2.setVisible(false);
         this.setVisible(true);
-
-        
-        
-
-        
-
-        //jFrameMin2.setVisible(false);
-        //setVisible(true);
 
     }//GEN-LAST:event_jButtonDetenerMinMouseClicked
 

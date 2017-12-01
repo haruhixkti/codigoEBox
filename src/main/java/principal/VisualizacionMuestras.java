@@ -6,6 +6,8 @@
 package principal;
 
 import com.github.sarxos.webcam.Webcam;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
@@ -248,6 +250,20 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
         jLabel22 = new javax.swing.JLabel();
         jLabel23 = new javax.swing.JLabel();
         jLabel21 = new javax.swing.JLabel();
+        jFrameMin2 = new javax.swing.JFrame();
+        frame = new javax.swing.JPanel();
+        jButtonDetenerMin2 = new javax.swing.JButton();
+        jLabel25 = new javax.swing.JLabel();
+        txtNombreNuevo = new javax.swing.JTextField();
+        jSeparator4 = new javax.swing.JSeparator();
+        jLabel26 = new javax.swing.JLabel();
+        jButtonDetenerMin3 = new javax.swing.JButton();
+        TxtNombreActual = new javax.swing.JLabel();
+        jLabel27 = new javax.swing.JLabel();
+        TxtCodigoActual = new javax.swing.JLabel();
+        jLabel28 = new javax.swing.JLabel();
+        jSeparator5 = new javax.swing.JSeparator();
+        TxtCodigoNuevo = new javax.swing.JTextField();
         jPanel1 = new javax.swing.JPanel();
         jPanel8 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
@@ -272,6 +288,7 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         jLabel15 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
@@ -472,6 +489,163 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
                     .addGap(161, 161, 161)
                     .addComponent(jLabel21)
                     .addContainerGap(201, Short.MAX_VALUE)))
+        );
+
+        jFrameMin2.setAlwaysOnTop(true);
+        jFrameMin2.setBackground(new java.awt.Color(56, 142, 60));
+        jFrameMin2.setUndecorated(true);
+
+        frame.setBackground(new java.awt.Color(56, 142, 60));
+        frame.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(200, 230, 201)));
+
+        jButtonDetenerMin2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jButtonDetenerMin2.setText("Guardar");
+        jButtonDetenerMin2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButtonDetenerMin2MouseClicked(evt);
+            }
+        });
+        jButtonDetenerMin2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDetenerMin2ActionPerformed(evt);
+            }
+        });
+
+        jLabel25.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        jLabel25.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel25.setText("Nombre del Proyecto Nuevo");
+
+        txtNombreNuevo.setBackground(new java.awt.Color(56, 142, 60));
+        txtNombreNuevo.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        txtNombreNuevo.setForeground(new java.awt.Color(204, 204, 204));
+        txtNombreNuevo.setBorder(null);
+        txtNombreNuevo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtNombreNuevoActionPerformed(evt);
+            }
+        });
+
+        jLabel26.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        jLabel26.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel26.setText("Nombre del Proyecto Actual:");
+
+        jButtonDetenerMin3.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jButtonDetenerMin3.setText("Cancelar");
+        jButtonDetenerMin3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButtonDetenerMin3MouseClicked(evt);
+            }
+        });
+        jButtonDetenerMin3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDetenerMin3ActionPerformed(evt);
+            }
+        });
+
+        TxtNombreActual.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        TxtNombreActual.setForeground(new java.awt.Color(200, 230, 201));
+        TxtNombreActual.setText("Texto actual:");
+
+        jLabel27.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        jLabel27.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel27.setText("Código del proyecto Actual");
+
+        TxtCodigoActual.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        TxtCodigoActual.setForeground(new java.awt.Color(200, 230, 201));
+        TxtCodigoActual.setText("Código del proyecto Actual");
+
+        jLabel28.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        jLabel28.setForeground(new java.awt.Color(200, 230, 201));
+        jLabel28.setText("Código del proyecto nuevo");
+
+        TxtCodigoNuevo.setBackground(new java.awt.Color(56, 142, 60));
+        TxtCodigoNuevo.setFont(new java.awt.Font("Roboto Light", 0, 14)); // NOI18N
+        TxtCodigoNuevo.setForeground(new java.awt.Color(204, 204, 204));
+        TxtCodigoNuevo.setBorder(null);
+        TxtCodigoNuevo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TxtCodigoNuevoActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout frameLayout = new javax.swing.GroupLayout(frame);
+        frame.setLayout(frameLayout);
+        frameLayout.setHorizontalGroup(
+            frameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(frameLayout.createSequentialGroup()
+                .addGap(42, 42, 42)
+                .addGroup(frameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(frameLayout.createSequentialGroup()
+                        .addGap(21, 21, 21)
+                        .addComponent(jButtonDetenerMin3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButtonDetenerMin2)
+                        .addGap(70, 70, 70))
+                    .addGroup(frameLayout.createSequentialGroup()
+                        .addGroup(frameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(frameLayout.createSequentialGroup()
+                                .addComponent(jLabel26)
+                                .addGap(35, 35, 35)
+                                .addComponent(TxtNombreActual, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(frameLayout.createSequentialGroup()
+                                .addGroup(frameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel27)
+                                    .addComponent(jLabel25)
+                                    .addComponent(jLabel28))
+                                .addGap(38, 38, 38)
+                                .addGroup(frameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(TxtCodigoActual, javax.swing.GroupLayout.DEFAULT_SIZE, 279, Short.MAX_VALUE)
+                                    .addComponent(jSeparator4)
+                                    .addComponent(jSeparator5)
+                                    .addComponent(txtNombreNuevo)
+                                    .addComponent(TxtCodigoNuevo))))
+                        .addContainerGap(60, Short.MAX_VALUE))))
+        );
+        frameLayout.setVerticalGroup(
+            frameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(frameLayout.createSequentialGroup()
+                .addGap(37, 37, 37)
+                .addGroup(frameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel26)
+                    .addComponent(TxtNombreActual))
+                .addGap(27, 27, 27)
+                .addGroup(frameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel27)
+                    .addComponent(TxtCodigoActual))
+                .addGap(64, 64, 64)
+                .addGroup(frameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel25)
+                    .addGroup(frameLayout.createSequentialGroup()
+                        .addComponent(txtNombreNuevo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(frameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(frameLayout.createSequentialGroup()
+                        .addGap(33, 33, 33)
+                        .addComponent(jLabel28))
+                    .addGroup(frameLayout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addComponent(TxtCodigoNuevo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 178, Short.MAX_VALUE)
+                .addGroup(frameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonDetenerMin2)
+                    .addComponent(jButtonDetenerMin3))
+                .addGap(46, 46, 46))
+        );
+
+        javax.swing.GroupLayout jFrameMin2Layout = new javax.swing.GroupLayout(jFrameMin2.getContentPane());
+        jFrameMin2.getContentPane().setLayout(jFrameMin2Layout);
+        jFrameMin2Layout.setHorizontalGroup(
+            jFrameMin2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jFrameMin2Layout.createSequentialGroup()
+                .addComponent(frame, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        jFrameMin2Layout.setVerticalGroup(
+            jFrameMin2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(frame, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -728,6 +902,13 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/Imagen1.png"))); // NOI18N
 
+        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/icons8-Settings.png"))); // NOI18N
+        jLabel6.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel6MouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -736,7 +917,9 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(255, 255, 255)
-                        .addComponent(jLabel1))
+                        .addComponent(jLabel1)
+                        .addGap(143, 143, 143)
+                        .addComponent(jLabel6))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(145, 145, 145)
                         .addComponent(jLabel7))
@@ -749,7 +932,9 @@ public class VisualizacionMuestras extends javax.swing.JFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel6))
                 .addGap(18, 18, 18)
                 .addComponent(jLabel7)
                 .addGap(18, 18, 18)
@@ -985,6 +1170,63 @@ public void escribirJson(int seleccionada) {
 
     }//GEN-LAST:event_jTable1MouseClicked
 
+    private void jButtonDetenerMin2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonDetenerMin2MouseClicked
+        // TODO add your handling code here:
+            if(txtNombreNuevo.getText()!= null){
+                nombreProyecto = txtNombreNuevo.getText();
+            }
+            if(TxtCodigoNuevo.getText()!=null){
+                codigoProyecto = TxtCodigoNuevo.getText();
+            }
+            
+            
+        jFrameMin2.setVisible(false);
+        setVisible(true);
+            
+    }//GEN-LAST:event_jButtonDetenerMin2MouseClicked
+
+    private void jButtonDetenerMin2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDetenerMin2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonDetenerMin2ActionPerformed
+
+    private void txtNombreNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombreNuevoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtNombreNuevoActionPerformed
+
+    private void jButtonDetenerMin3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonDetenerMin3MouseClicked
+        // TODO add your handling code here:
+
+             jFrameMin2.setVisible(false);
+        setVisible(true);;
+    }//GEN-LAST:event_jButtonDetenerMin3MouseClicked
+
+    private void jButtonDetenerMin3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDetenerMin3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonDetenerMin3ActionPerformed
+
+    private void jLabel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel6MouseClicked
+        // TODO add your handling code here:
+        System.out.println("nombreProyecto: "+nombreProyecto);
+        System.out.println("codigoProyecto:"+codigoProyecto);
+         TxtNombreActual.setText(nombreProyecto);
+         TxtCodigoActual.setText(codigoProyecto);
+         txtNombreNuevo.setText("");
+         TxtCodigoNuevo.setText("");
+         jFrameMin2.setSize(594, 507);
+        
+        jFrameMin2.setLocationRelativeTo(null);
+        
+        jFrameMin2.setVisible(true);
+        setVisible(false);
+
+        
+        
+    }//GEN-LAST:event_jLabel6MouseClicked
+
+    private void TxtCodigoNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TxtCodigoNuevoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TxtCodigoNuevoActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1054,13 +1296,20 @@ public void escribirJson(int seleccionada) {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel Activity;
     private javax.swing.JLabel Face;
+    private javax.swing.JLabel TxtCodigoActual;
+    private javax.swing.JTextField TxtCodigoNuevo;
+    private javax.swing.JLabel TxtNombreActual;
     private javax.swing.JLabel cargando;
+    private javax.swing.JPanel frame;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButtonDetenerMin;
+    private javax.swing.JButton jButtonDetenerMin2;
+    private javax.swing.JButton jButtonDetenerMin3;
     private javax.swing.JFrame jFrameMin;
     private javax.swing.JFrame jFrameMin1;
+    private javax.swing.JFrame jFrameMin2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel13;
@@ -1076,9 +1325,14 @@ public void escribirJson(int seleccionada) {
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
@@ -1093,9 +1347,12 @@ public void escribirJson(int seleccionada) {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JSeparator jSeparator5;
     private javax.swing.JTable jTable1;
     private javax.swing.JLabel nombreMuestra;
     private javax.swing.JTextArea txtDescripcionMuestra;
+    private javax.swing.JTextField txtNombreNuevo;
     private javax.swing.JTextField txtNombredelIndividuo;
     // End of variables declaration//GEN-END:variables
 }
